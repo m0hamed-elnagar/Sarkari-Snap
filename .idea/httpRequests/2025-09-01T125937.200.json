@@ -1,0 +1,29 @@
+{
+  "kind": "blogger#post",
+  "id": "252207238930334231",
+  "blog": {
+    "id": "3213900"
+  },
+  "published": "2011-09-27T16:42:00-07:00",
+  "updated": "2020-05-28T21:58:13-07:00",
+  "url": "http://blogger-developers.googleblog.com/2011/09/as-you-may-have-noticed-blogger.html",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231",
+  "title": "Trying on the new Dynamic Views from Blogger",
+  "content": "As you may have noticed, the Blogger Development Network Blog looks a lot different today. That’s because we—along with a few other Google blogs—are trying out a new set of Blogger templates called Dynamic Views.\n\n<a href=\"http://buzz.blogger.com/2011/09/dynamic-views-seven-new-ways-to-share.html\">Launched today</a>, Dynamic Views is a unique browsing experience that makes it easier and faster for readers to explore blogs in interactive ways. We’re using the Classic view, but you can also preview this blog in any of the other six new views by using the view selection bar at the top left of the screen.\n\n<iframe allowfullscreen=\"\" frameborder=\"0\" height=\"284\" src=\"http://www.youtube.com/embed/lpDQF2lFnBU\" width=\"500\"></iframe>\n\nWe’re eager to hear what you think about the new Dynamic Views. You can submit feedback using the “Send feedback” link on the bottom right of this page. \n\nIf you like what you see here, and we hope you do, we encourage you to try out the new look(s) on your own blog—read the <a href=\"http://buzz.blogger.com/2011/09/dynamic-views-seven-new-ways-to-share.html\">Blogger Buzz post</a> for more info.</div>",
+  "author": {
+    "id": "08434147677241700960",
+    "displayName": "Google Blogs",
+    "url": "https://www.blogger.com/profile/08434147677241700960",
+    "image": {
+      "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+    }
+  },
+  "replies": {
+    "totalItems": "0",
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231/comments"
+  },
+  "labels": [
+    "Blogger Developers"
+  ],
+  "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM3MDgKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+}

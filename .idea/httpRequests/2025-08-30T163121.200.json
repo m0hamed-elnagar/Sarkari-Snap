@@ -1,0 +1,23 @@
+{
+  "kind": "blogger#blog",
+  "id": "190535731829050983",
+  "name": "Sarkari Snap",
+  "description": "",
+  "published": "2025-08-30T06:15:45-07:00",
+  "updated": "2025-08-30T06:31:10-07:00",
+  "url": "http://sarkarisnapz.blogspot.com/",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/190535731829050983",
+  "posts": {
+    "totalItems": 2,
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts"
+  },
+  "pages": {
+    "totalItems": 0,
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages"
+  },
+  "locale": {
+    "language": "en",
+    "country": "",
+    "variant": ""
+  }
+}

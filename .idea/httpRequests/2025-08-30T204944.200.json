@@ -1,0 +1,23 @@
+{
+  "kind": "blogger#blog",
+  "id": "3213900",
+  "name": "Blogger Developers",
+  "description": "The latest updates on Blogger developer tools\n",
+  "published": "2007-02-09T10:13:10-08:00",
+  "updated": "2024-11-08T07:40:01-08:00",
+  "url": "http://blogger-developers.googleblog.com/",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900",
+  "posts": {
+    "totalItems": 53,
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts"
+  },
+  "pages": {
+    "totalItems": 1,
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/pages"
+  },
+  "locale": {
+    "language": "en",
+    "country": "",
+    "variant": ""
+  }
+}

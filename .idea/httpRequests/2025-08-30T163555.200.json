@@ -1,0 +1,297 @@
+{
+  "kind": "blogger#postList",
+  "nextPageToken": "CgkIChig6IvCpCYQzJTEARgA",
+  "items": [
+    {
+      "kind": "blogger#post",
+      "id": "8266404449195608384",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2013-04-09T19:03:00-07:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2013/04/improvements-to-blogger-template-html.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/8266404449195608384",
+      "title": "Improvements to the Blogger template HTML editor",
+      "content": "Posted by: <a class=\"g-profile\" href=\"http://plus.google.com/106884078206744750860\" target=\"_blank\">+Samantha Schaffer</a>&nbsp;and <a class=\"g-profile\" href=\"http://plus.google.com/116429990887322072749\" target=\"_blank\">+Renee Kwang</a>,&nbsp;Software Engineer Interns.\n<br />\n<br />\nWhether you’re a web developer who builds blog templates for a living, or a web-savvy blog owner who prefers to make changes to your template using HTML, CSS or JavaScript, you may be interested in some enhancements that we made to <a href=\"http://support.google.com/blogger/bin/answer.py?hl=en&amp;answer=46870\">Blogger’s Template HTML Editor</a>.<br />\n<br />\nYour blog’s HTML template is the source code that controls the appearance of your blog. This template can be customized to appear however you’d like. The improved HTML template editor now supports line numbering, syntax highlighting, auto-indentation and code folding to make editing your template much easier.<br />\n<br />\nSuppose we wanted to move the date of a blog post underneath the post title, similar to the <a href=\"http://buzz.blogger.com/\">Blogger Buzz blog</a>. To do this, follow these steps:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRpjyMO0FaXfJoPlgvjx7iRcloyHTOiyEiVPvui9Vo2wcJ8jUGKdruah3DjoCkxzop7TZMdeMDXhmKc3ytEqtUsUqaoI00C3TPuC9hiOaF6Vu_wkD-8XZKC9Am3lHA6BhczLgEKw/s1600/post-image-01.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"172\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRpjyMO0FaXfJoPlgvjx7iRcloyHTOiyEiVPvui9Vo2wcJ8jUGKdruah3DjoCkxzop7TZMdeMDXhmKc3ytEqtUsUqaoI00C3TPuC9hiOaF6Vu_wkD-8XZKC9Am3lHA6BhczLgEKw/s640/post-image-01.png\" width=\"640\" /></a></div>\nClick the “Template” tab on the Blogger dashboard, then the “Edit HTML” button, to see the new template HTML editor:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiA4gAg2lZYH2iOpI9cUMEVqsHdEGIBSEw69CniGstGPm5viVOaK-Ma3vqo9q1RPeKrmE2RW_nJfaWpUFTQ5zyrnmj9_mDlAunk2Z2v2Ai91Ya-8pRHETe-0VKXov5rJEMCzYbujQ/s1600/post-image-02.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"338\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiA4gAg2lZYH2iOpI9cUMEVqsHdEGIBSEw69CniGstGPm5viVOaK-Ma3vqo9q1RPeKrmE2RW_nJfaWpUFTQ5zyrnmj9_mDlAunk2Z2v2Ai91Ya-8pRHETe-0VKXov5rJEMCzYbujQ/s640/post-image-02.png\" width=\"640\" /></a></div>\nLocate the “Blog1” widget quickly using the new “Jump to widget” drop down:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_un0vZinje1jVn2Ufk0OKFeHHpP56UnL9Z8qjkYFFF_PKVESpfugT-ezURw1ryPLOk2rwDYCPWLv-DeuJpicpvq_3RchYcjgMErkrLgzTwjrTKyJi4anEwJpUcfxIQqd5yt5gQw/s1600/post-image-03.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"224\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_un0vZinje1jVn2Ufk0OKFeHHpP56UnL9Z8qjkYFFF_PKVESpfugT-ezURw1ryPLOk2rwDYCPWLv-DeuJpicpvq_3RchYcjgMErkrLgzTwjrTKyJi4anEwJpUcfxIQqd5yt5gQw/s320/post-image-03.png\" width=\"320\" /></a></div>\nThis widget controls how your blog posts are displayed. The code inside the widget is folded by default. Clicking the new fold markers ‘►’ next to the line numbers expands the widget and reveals a set of “includable” tags:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjmMrdxD0TuCtHqkE1IkE1Vcbrh-25hWcld0j-EzkaotoCdoRG2U_k7HePWcmwWQRRrCSS73qX3iyAV-4xrEcjSgMWbEQgAozCaYOZaBJ9XfbBLCNdTdW3XyOwiUUpyrK5VBxwnuQ/s1600/post-image-04.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"274\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjmMrdxD0TuCtHqkE1IkE1Vcbrh-25hWcld0j-EzkaotoCdoRG2U_k7HePWcmwWQRRrCSS73qX3iyAV-4xrEcjSgMWbEQgAozCaYOZaBJ9XfbBLCNdTdW3XyOwiUUpyrK5VBxwnuQ/s640/post-image-04.png\" width=\"640\" /></a></div>\nInside the “main” includable is the block of code that renders the post date:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEglzfnWpZH9j_pg4kQzHdAYLg1CCZhLt8wS9eEmktTDReQBM0Xhu51lJ241xmFAZannuEFXffe4l5dqlXdq1Hi0lllDB83U6ndHLRLhDr5hMW0xpSK5gNU-e5mZTp2OLgVenDJTQQ/s1600/post-image-05.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"232\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEglzfnWpZH9j_pg4kQzHdAYLg1CCZhLt8wS9eEmktTDReQBM0Xhu51lJ241xmFAZannuEFXffe4l5dqlXdq1Hi0lllDB83U6ndHLRLhDr5hMW0xpSK5gNU-e5mZTp2OLgVenDJTQQ/s640/post-image-05.png\" width=\"640\" /></a></div>\nCut the post date code section and move it to where we want it, in this case, under the post title in the “post” includable:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgF7fqLlzgThU1xneePs-hvTbSzJvXYvrvauYuNtyqISMUMiptHn8YYHHi0s0kOaziwewYs9Eean2ErcpsMObkDqxKAtO0eFY7hzdUbgZI2kKkZwakIV0-nJlmCxXW8IkfU7kzzxw/s1600/post-image-06.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"270\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgF7fqLlzgThU1xneePs-hvTbSzJvXYvrvauYuNtyqISMUMiptHn8YYHHi0s0kOaziwewYs9Eean2ErcpsMObkDqxKAtO0eFY7hzdUbgZI2kKkZwakIV0-nJlmCxXW8IkfU7kzzxw/s640/post-image-06.png\" width=\"640\" /></a></div>\nTo check our changes, click the new “Preview template” button to see the updates:<br />\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgivxMzt1odom2EETzmtp1VmveLiGz7FdSsY6b0JrY18rU3smtLz28lRN7XNjBGiZiIevv71f1qLrmCRJUBuKOGdrljIhH44M4n1OrefUV2WkWcH5IjTYvYqr_Dttn7n-ntpOJejw/s1600/post-image-07.png\" imageanchor=\"1\" style=\"margin-left: 1em; margin-right: 1em;\"><img border=\"0\" height=\"264\" src=\"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgivxMzt1odom2EETzmtp1VmveLiGz7FdSsY6b0JrY18rU3smtLz28lRN7XNjBGiZiIevv71f1qLrmCRJUBuKOGdrljIhH44M4n1OrefUV2WkWcH5IjTYvYqr_Dttn7n-ntpOJejw/s640/post-image-07.png\" width=\"640\" /></a></div>\nThe post date is exactly where we want it, so tab back to “Edit template”, hit “Save template” and we’re done!<br />\n<br />\nFinally, we’ve added a “Format template” button that automatically cleans up the indentation of the template, and made it possible to search for text by pressing “Ctrl+F” once you’ve clicked into the editor. To find and replace text occurrences one by one, use “Ctrl+Shift+F” or to find and replace all occurrences at once, use “Ctrl+Shift+R”.<br />\n<div>\n&nbsp; <br />\nWe worked on this project as part of Google Australia’s <a href=\"http://www.google.com/intl/en/jobs/students/tech/internships/australia/2013-bold-engineering-intern-sydney.html\">BOLD Diversity Internship Program</a>. We hope you enjoy the changes we’ve made!</div>\n",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "1",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/8266404449195608384/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM5ODMKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "738097307410258659",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2012-06-19T17:29:00-07:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2012/06/blogger-api-v3.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/738097307410258659",
+      "title": "Blogger API v3",
+      "content": "<p>One of the most requested features that developers have for the Blogger JSON API is the ability to create posts. So have a quick guess what the following HTTP request does?</p>\n\n<pre>\nPOST https://www.googleapis.com/blogger/v3/blogs/8070105920543249955/posts/ HTTP/1.0\nHost: www.googleapis.com\nAuthorization: Bearer &lt;OAuth2 key>\nContent-Type: application/json\n\n{\n  \"kind\": \"blogger#post\",\n  \"blog\": {\n    \"id\": \"8070105920543249955\"\n  },\n  \"title\": \"A new post\",\n  \"content\": \"With &lt;b>exciting&lt;/b> content...\"\n}\n</pre>\n\n<p>That’s right, Blogger API v3 gives you the ability to <a href=\"https://developers.google.com/blogger/docs/3.0/reference/posts/insert\">create posts</a>! Oh, and <a href=\"https://developers.google.com/blogger/docs/3.0/reference/posts/update\">edit</a>, <a href=\"https://developers.google.com/blogger/docs/3.0/reference/posts/delete\">delete</a> and <a href=\"https://developers.google.com/blogger/docs/3.0/reference/posts/search\">search</a> them as well!</p>\n\n<p>There is documentation that covers all this new functionality. Firstly we have a <a href=\"https://developers.google.com/blogger/docs/3.0/getting_started\">Getting Started</a> document that gives you an overview of using the API. Then there is a more detailed <a href=\"https://developers.google.com/blogger/docs/3.0/using\">Using Blogger API</a> guide that shows how you would use the API. Finally the <a href=\"https://developers.google.com/blogger/docs/3.0/reference/\">API Reference</a> that covers the fine details, like argument and result specifications for all the calls.</p>\n\n<p>If you have any questions about how to use this new API, please join in the discussion on the <a href=\"https://groups.google.com/forum/?fromgroups#!forum/bloggerdev\">Blogger Developer group</a>.</p>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "1",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/738097307410258659/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM5MzAKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "1387873546480002228",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2012-03-23T01:58:00-07:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2012/03/blogger-documentation-has-moved-to.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/1387873546480002228",
+      "title": "Blogger Documentation has moved to developers.google.com",
+      "content": "Blogger documentation has a new home: it has moved to <a href=\"https://developers.google.com/blogger/\">developers.google.com/blogger</a>!<br />\n<br />\nI have re-arranged the documentation a little to make it easier to navigate, but it is largely the same documentation you will remember from <a href=\"http://code.google.com/apis/blogger\">code.google.com/apis/blogger</a>. If you find anything is out of place or hard to find, please let us know on the <a href=\"https://groups.google.com/forum/#!forum/bloggerdev\">Blogger Developer forum</a>.",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/1387873546480002228/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM2NTUKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "3727559627660892860",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2012-01-21T17:40:00-08:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2012/01/customising-threaded-comments.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/3727559627660892860",
+      "title": "Customising Threaded Comments",
+      "content": "<p>Recently we released an update to Blogger’s commenting system that enables people to directly respond to comments. This capability is known as <a href=\"http://buzz.blogger.com/2012/01/engage-with-your-readers-through.html\">Threaded Comments</a>. We are pleased to see quite a few people diving in and writing tutorials, including a <a href=\"http://www.youtube.com/watch?v=LsVV2nyfIEM\">screencast</a>. It’s wonderful to see the enthusiasm of our developers!</p>\n\n<p>In this post we will look at what are the changes required to modify a custom template to enable Threaded Comments, once you have fulfilled the requirements outlined in the <a href=\"http://buzz.blogger.com/2012/01/engage-with-your-readers-through.html\">Threaded Comments</a> announcement post on Buzz.blogger.com. We will then look at how to customise the look and feel of the Threaded Comments using just CSS, and also have a quick peek at alternatives.</p>\n\n<p>Please note, these instructions may not work if your blog’s template is heavily customised. Your template may possibly missing some of the <code>b:includable</code>s that the instructions below depend on. Please try the following instructions on your template, but if they don’t work come to our <a href=\"https://groups.google.com/forum/#!forum/bloggerdev\">Blogger Developer forum</a> and get some help with patching your template. </p>\n\n<p>The first step is to Edit the HTML for your Template, which can be found inside Settings under the Template tab. You must make sure to expand the Widget Templates, as we need to modify the main Blog Widget Template. To find the main Blog Widget code, search for the following Blogger Layouts Template code:</p>\n\n<pre>&lt;b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'&gt;</pre>\n\n<p>Inside the <code>b:widget</code> are a series of <code>b:includable</code> blocks. These act a lot like functions in programming languages, in that they can be called from other <code>b:includable</code> blocks to insert chunks of HTML. The only special block is the includable called <code>main</code>, which is where the Layout Template engine starts when rendering the Widget’s content. If you don’t see content inside the <code>b:widget</code>, you need to click the Expand Widget Templates radio button above the edit area.</p>\n\n<p>The Layout Template should include the following code:</p>\n\n<pre>&lt;b:if cond='data:post.showThreadedComments'&gt;\n  &lt;b:include data='post' name='threaded_comments'/&gt;\n&lt;b:else/&gt;\n  &lt;b:include data='post' name='comments'/&gt;\n&lt;/b:if&gt;</pre>\n\n<p>The interesting part is that we have a fork here, implemented as a <code>b:if</code> conditional block, that decides whether to render the comments as threaded or not. The need for this split can be seen on the Threaded Comments announcement on <a href=\"http://buzz.blogger.com/2012/01/engage-with-your-readers-through.html\">Buzz.blogger.com</a>. </p>\n\n<p>As a quick aside, if you don’t have this code, but instead just have something like the following:</p>\n\n<pre>&lt;b:include data='post' name='comments'/&gt;</pre>\n\n<p>Then you can get threaded comments by replacing this b:include with the above logic block, assuming you fulfill the requirements laid out in the <a href=\"http://buzz.blogger.com/2012/01/engage-with-your-readers-through.html\">Threaded Comments announcement post on Buzz.blogger.com</a>.</p>\n\n<p>Now you can look at the implementation of the threaded_comments includable by searching for the following line of code:</p>\n\n<pre>&lt;b:includable id='threaded_comments' var='post'&gt;</pre>\n\n<p>This code is responsible for rendering the actual threaded comments to screen. You can choose to override this code block to customise the look of your comments, but it is worth noting that if you do, you won’t get updates to this functionality as we change the implementation in the future.</p>\n\n<p>There are two new data members we have introduced with this feature release that you can use to render comment threads:</p>\n<ul>\n  <li><code>data:post.commentSrc</code> This is the source to the javascript library that handles actions</li>\n  <li><code>data:post.commentHtml</code> This is the rendered HTML for the comment thread</li>\n</ul>\n\n<p>If you want to change the look and feel of your comments, we strongly recommend you use the Template Designer to set custom CSS to style the Threaded Comments. We suggest you customise the comments by modifying the property \"Advanced > Add CSS\". For example, you can add the following CSS code to change the look:</p>\n\n<pre>.comments blockquote { \n    border: 1px solid black; color: white; font: Helvetica;\n} // draws a border around comment bodies, sets the text font and colour\n.comments .inline-thread li { list-style-type: decimal; } // numbers replies\n</pre>\n\n<p>Finally, you can implement your own version of Threaded Comments by walking the <code>data:post.comments</code> directly. This will contain all the comments, ordered by time of comment, now with an optional extra field <code>data:comment.inReplyTo</code> which will contain the <code>id</code> of the parent comment, if there is one.</p>\n\n<p>If you have any questions about how to customise your Blogger Comments, please feel free to drop by the <a href=\"https://groups.google.com/forum/#!forum/bloggerdev\">Blogger Developer Forum</a>. We’re glad to help!</p>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "1",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/3727559627660892860/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM3NjYKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "1356679731059154830",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2012-01-04T22:06:00-08:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2012/01/easier-to-use-interface-for-blogger.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/1356679731059154830",
+      "title": "An easier to use interface for the Blogger JSON API",
+      "content": "As I have been reviewing the applications to use the <a href=\"http://code.google.com/apis/blogger/docs/2.0/json/getting_started.html\">Blogger JSON API</a>, I have noticed that a fair number of you appear to be integrating with Blogger JSON API using JavaScript. So, in the interests of making things easier for all of you, here is a walk through of using the just released <a href=\"http://googlecode.blogspot.com/2011/11/javascript-client-library-for-google.html\">JavaScript Client Library for Google APIs</a> to access the Blogger JSON API.<br />\nThe first step is exploring the methods we can call in the <a href=\"http://code.google.com/apis/explorer/\">Google APIs Explorer</a>. The method in the Blogger JSON API collection that most people use, understandably, is the method to list the most recent posts for a Blog - <a href=\"http://code.google.com/apis/explorer/#_s=blogger&amp;_v=v2&amp;_m=posts.list\"><code>posts.list</code></a>. This method takes one required field - the <code>blogId</code> that identifies a particular blog - and a number of optional arguments that allow us to tune what information is returned.<br />\nThe information I am requesting from the Blogger JSON API is the post titles and content for the <a href=\"http://code.blogger.com/\">code.blogger.com</a> blog which has a <code>blogId</code> of 3213900. To limit the returned data to just the post titles and content, we use the optional argument <code>fields</code> with the value of <code>items(content,title)</code>. Here is a link to the <a href=\"http://code.google.com/apis/explorer/#_s=blogger&amp;_v=v2&amp;_m=posts.list&amp;blogId=3213900&amp;fields=items(content,title)\">Google APIs Explorer</a> with the appropriate information pre-filled so you can see both the underlying query that is sent to the Google APIs servers, as well as the shape of the returned JSON data.<br />\nThe next step is the JavaScript required to request this data and make use of it. I am using the JavaScript Client Library to both construct the query, as well as navigate the results, reducing the complexity of the code.<br />\nTo load the library, all we have to do is include a script in our HTML that loads the library as follows:<br />\n<pre>&lt;script src=\"https://apis.google.com/js/client.js?onload=init\"&gt;&lt;/script&gt;</pre>\nThe part of this code to pay attention to is the argument <code>onload=init</code>. This nominates the <code>init</code> function to be called once the JavaScript Client Library has loaded. The <code>init</code> function is where we configure the client key and the API we want to work with:<br />\n<pre>function init() {\n  gapi.client.setApiKey('YOUR_API_KEY');\n  gapi.client.load('blogger', 'v2', function() {\n    // ...  \n  });\n}</pre>\nYou can retrieve the API Key from your project on the <a href=\"https://code.google.com/apis/console/\">Google APIs Console</a>, once you have requested that I enable the Blogger API for your project. The <code>gapi.client.load</code> function takes the API name, and version, of the API you want to use, and a callback function to run once the API support code has been loaded. In this code, we are loading the Blogger v2 API.<br />\nInside the <code>gapi.client.load</code> callback, we have the following code to configure a request to the Google APIs servers:<br />\n<pre>var request = gapi.client.blogger.posts.list({\n  'blogId': 3213900,\n  'fields': 'items(content,title)'\n});</pre>\nNote how we now no longer need to construct our own query url. The JavaScript Client Library deals with all the messy issues of making sure the arguments are correctly escaped. Next, we can issue the request to the servers as follows:<br />\n<pre>request.execute(function(response) {\n  // ...\n});</pre>\nThe execute method takes a callback function that will be executed once the Google APIs servers respond. The most important part of this callback function is the data that is handed to us in the <code>response</code> argument. In the body of the callback function, I iterate over the items member to pull out the titles and contents of all the returned posts:<br />\n<pre>for (var i = 0; i &lt; response.items.length; i++) {\n  $(\"#target\").append(\"&lt;h2&gt;\" + response.items[i].title + \"&lt;/h2&gt;\");\n  $(\"#target\").append(response.items[i].content);\n  if (i+1&lt;response.items.length) {\n    $(\"#target\").append(\"&lt;hr/&gt;\");\n  }\n}</pre>\nThe eagle eyed among you will have noticed that I am using <a href=\"http://jquery.com/\">jQuery</a> to insert the returned HTML into the DOM. I am using the latest stable jQuery hosted on Google’s Libraries API.<br />\nYou can see the results on <a href=\"http://code-blogger.appspot.com/\">code-blogger.appspot.com</a>. I have used <a href=\"http://html5boilerplate.com/\">HTML5 Boilerplate</a> as the starting point for building this example, to get all the latest HTML5 magic. If you have any questions about this sample, please post them to the <a href=\"https://groups.google.com/group/bloggerdev\">Blogger Developers Group</a>.",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/1356679731059154830/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM2NDIKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "780823247460418352",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2011-12-18T22:40:00-08:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2011/12/changes-to-profileid-for-google-profile.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/780823247460418352",
+      "title": "Changes to ProfileID for Google+ profile users",
+      "content": "<p>It’s wonderful to see a lot of our users taking us up on our offer to merge our Blogger Profile with the Google+ Profile. For developers this means that there is one small wrinkle to worry about - the format of the <code>ProfileId</code> for these migrated users has changed.</p>\n\n<p>What’s a <code>ProfileId</code>, and what’s it used for? </p>\n\n<p>The <code>ProfileId</code> is a component of the path for the <a href=\"http://code.google.com/apis/blogger/docs/2.0/developers_guide_protocol.html#RetrievingMetafeed\">Retrieving a List of Blogs</a> Blogger GData protocol call, which can either be the value <code>default</code>, which is the recommended value and means the currently authenticated user, or alternatively it can be the profile identifier of the current authenticated user. Up until now, the profile identifier has always been numeric, but for the converted Google+ Profile Blogger users, this is no longer the case.</p>\n\n<p>For users that have converted to using Google+ Profiles on Blogger, the <code>ProfileId</code> can be derived as follows. Take the Google+ profile url for a user that has chosen to convert, for example <a href=\"https://plus.google.com/114895967455102275039/\">https://plus.google.com/114895967455102275039/</a>, then take the numeric portion at the end of the URL, prepend it with a g, and like magic, you have the new Blogger <code>ProfileId</code>.</p>\n\n<p>If you have any questions, please do not hesitate to ask on the <a href=\"https://groups.google.com/group/bloggerdev\">Blogger Developers group</a>, and if you are on Google+, have a look at our <a href=\"https://plus.google.com/110587955497525318489/posts\">Blogger Google+ Page</a>.</p>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/780823247460418352/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM5NjkKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "7298836173227646779",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2011-11-08T16:24:00-08:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2011/11/introducing-custom-mobile-templates.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/7298836173227646779",
+      "title": "Introducing custom mobile templates",
+      "content": "<p>Many Bloggers put a lot of time and effort into creating a unique look for their blog, so today we’re excited to announce that custom templates are now also viewable from mobile devices.</p>\n\n<p>If you have a custom template for your blog and want it to appear on mobile browsers as well, visit the “Template” tab of your dashboard, click on the gear icon beneath the mobile template preview.</p>\n\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"http://2.bp.blogspot.com/-kEQMaYxebJs/Tq-eMEEQTPI/AAAAAAAAARk/OtL411nW0l8/s1600/Screen%2Bshot%2B2011-10-20%2Bat%2B11.14.31%2BAM.png\" imageanchor=\"1\" style=\"clear:left; float:left;margin-right:1em; margin-bottom:1em\"><img border=\"0\" height=\"185\" width=\"320\" src=\"http://2.bp.blogspot.com/-kEQMaYxebJs/Tq-eMEEQTPI/AAAAAAAAARk/OtL411nW0l8/s320/Screen%2Bshot%2B2011-10-20%2Bat%2B11.14.31%2BAM.png\" /></a></div>\n\n<p style=\"clear:both\">Then select “Custom” from the “Choose mobile template” pulldown.</p>\n\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"http://1.bp.blogspot.com/-dyyH6l2heQI/Tp5hR4sdzdI/AAAAAAAAAPs/HkYfZ8kpAwQ/s1600/mobile_template_picker_pulldown.png\" imageanchor=\"1\" style=\"clear:left; float:left;margin-right:1em; margin-bottom:1em\"><img border=\"0\" height=\"287\" width=\"320\" src=\"http://1.bp.blogspot.com/-dyyH6l2heQI/Tp5hR4sdzdI/AAAAAAAAAPs/HkYfZ8kpAwQ/s320/mobile_template_picker_pulldown.png\" /></a></div>\n\n<p style=\"clear:both\">Your template may not look exactly the same on a mobile browser, so click “Preview” to make sure it appears the way you want it to before you save it. </p>\n\n<div class=\"separator\" style=\"clear: both; text-align: center;\">\n<a href=\"http://2.bp.blogspot.com/-0WqjKBhin9A/Tp5hIvXfoaI/AAAAAAAAAPg/3uRo92-FlmA/s1600/mobile_template_picker.png\" imageanchor=\"1\" style=\"clear:left; float:left;margin-right:1em; margin-bottom:1em\"><img border=\"0\" height=\"288\" width=\"320\" src=\"http://2.bp.blogspot.com/-0WqjKBhin9A/Tp5hIvXfoaI/AAAAAAAAAPg/3uRo92-FlmA/s320/mobile_template_picker.png\" /></a></div>\n\n<p style=\"clear:both\">If you have gadgets on your blog, you can also control which of them will be available in mobile view, using this new attribute: <code>mobile</code> in <code>&lt;b:widget&gt;</code> tag.  It can be <code>'default'</code>, <code>'yes'</code>, <code>'no'</code>, or <code>'only'</code>.</p>\n\n<p>The widgets that display on mobile by default are the following:\n<ul><li>Header</li>\n<li>Blog</li>\n<li>Profile</li>\n<li>PageList</li>\n<li>AdSense</li>\n<li>Attribution</li></ul></p>\n\n<p>The following widget will not be available in mobile view, because it’s a <b>BlogArchive</b> widget.</p>\n\n<pre>\n&lt;b:widget id='BlogArchive1' title='Blog Archive' type='BlogArchive'&gt;\n</pre>\n\n<p>To make it available in mobile view, add <code>mobile=’yes’</code> attribute to it.</p>\n\n<pre>\n&lt;b:widget id='BlogArchive1' <span style=\"color:red;\">mobile='yes'</span> title='Blog Archive' type='BlogArchive'&gt;\n</pre>\n\n<p>Setting <code>mobile</code> to <code>'no'</code> makes a widget not display in mobile view, even if available in mobile view by default.</p>\n\n<pre>\n&lt;b:widget id='Attribution1' <span style=\"color: red;\">mobile='no'</span> title='Attribution' type='Attribution'&gt;\n</pre>\n\n<p>You can also make a widget available only in mobile view by setting it to <code>'only'</code>.</p>\n\n<pre>\n&lt;b:widget id='BlogArchive1' <span style=\"color: red;\">mobile='only'</span> title='Blog Archive' type='BlogArchive'&gt;\n</pre>\n\n<p>The content of a widget can modified for mobile view with the <code>boolean</code> variable <code>data:blog.isMobile</code>.</p>\n\n<pre>\n&lt;div class=\"widget-content\"&gt;\n  &lt;b:if cond=\"data:blog.isMobile\"&gt;\n    &lt;!-- Show a text link in mobile view.--&gt;\n    &lt;a href=\"http://www.blogger.com\"&gt;\n      Powered By Blogger\n    &lt;/a&gt;\n  &lt;b:else/&gt;\n    &lt;!-- Show an image link in desktop view.--&gt;\n    &lt;a href=\"http://www.blogger.com\"&gt;\n      &lt;img expr:src=\"data:fullButton\" alt=\"Powered By Blogger\"/&gt;\n    &lt;/a&gt;\n  &lt;/b:if&gt;\n&lt;/div&gt;\n</pre>\n\n<p>The above template HTML shows different contents between desktop view and mobile view, depending on the value of the <code>data:blog.isMobile</code> variable.</p>\n\n<p>You can conditionally give different CSS properties to a same class between desktop view and mobile view, as the <code>&lt;body&gt;</code> tag of Blogger mobile templates has <code>mobile</code> as its class. First, make sure the <code>&lt;body&gt;</code> tag of your custom template is same as the following one. </p>\n\n<pre>\n&lt;body expr:class='&amp;quot;loading&amp;quot; + data:blog.mobileClass'&gt;\n</pre>\n\n<p>Then, you can define different CSS properties for desktop and mobile view.</p>\n\n<pre>\n/* For desktop view */\n.date-posts {\n  margin: 0 -$(separator.outdent);\n  padding: 0 $(separator.outdent);\n}\n\n/* For mobile view */\n.mobile .date-posts {\n  margin: 0;\n  padding: 0;\n}\n</pre>\n\n<p>We hope you will enjoy making your very own mobile templates.</p>\n\n<p><b>Updated:</b> Changed <code>data:mobile</code> to <code>data:blog.isMobile</code></p>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/7298836173227646779/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM5MTgKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "6049643111519186400",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2011-10-13T17:51:00-07:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2011/10/today-we-have-made-change-to-layouts.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/6049643111519186400",
+      "title": "Template Change: Analytics Section",
+      "content": "<p>Today we have made a change to the Layouts Template language to improve <a href=\"http://www.google.com/analytics/\">Google Analytics</a> coverage. We have added the following includable section. </p>\n<pre>\n&lt;b:includable id='google-analytics' var='blog'>\n  &lt;b:if cond='data:blog.analyticsAccountNumber'&gt;\n    &lt;script type='text/javascript'&gt;\n      var _gaq = _gaq || [];\n      _gaq.push(['_setAccount', '&lt;data:blog.analyticsAccountNumber/&gt;']);\n      _gaq.push(['_trackPageview']);\n      (function() {\n        var ga = document.createElement('script');\n        ga.type = 'text/javascript';\n        ga.async = true;\n        ga.src = (document.location.protocol == 'https:' ?\n                  'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n        var s = document.getElementsByTagName('script')[0];\n        s.parentNode.insertBefore(ga, s);\n      })();\n    &lt;/script&gt;\n  &lt;/b:if&gt;\n&lt;/b:includable&gt;\n</pre>\n<p>This now allows you to include analytics tracking on your blog by adding the following include call to your template, preferably right before the close body tag so it doesn’t delay the visible page being rendered:</p>\n<pre>\n&lt;b:include name='google-analytics' data='blog'/&gt;\n</pre>\n<p>For more details on the benefits you get from using Google Analytics, see <a href=\"http://buzz.blogger.com/2011/10/google-analytics-support-in-blogger.html\">this post on Blogger Buzz</a>. If you have any questions about this new functionality, please join in the discussion on the <a href=\"http://groups.google.com/group/bloggerDev\">Blogger Developer Group</a>.</p>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/6049643111519186400/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM4MTYKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "252207238930334231",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2011-09-27T16:42:00-07:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2011/09/as-you-may-have-noticed-blogger.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231",
+      "title": "Trying on the new Dynamic Views from Blogger",
+      "content": "As you may have noticed, the Blogger Development Network Blog looks a lot different today. That’s because we—along with a few other Google blogs—are trying out a new set of Blogger templates called Dynamic Views.\n\n<a href=\"http://buzz.blogger.com/2011/09/dynamic-views-seven-new-ways-to-share.html\">Launched today</a>, Dynamic Views is a unique browsing experience that makes it easier and faster for readers to explore blogs in interactive ways. We’re using the Classic view, but you can also preview this blog in any of the other six new views by using the view selection bar at the top left of the screen.\n\n<iframe allowfullscreen=\"\" frameborder=\"0\" height=\"284\" src=\"http://www.youtube.com/embed/lpDQF2lFnBU\" width=\"500\"></iframe>\n\nWe’re eager to hear what you think about the new Dynamic Views. You can submit feedback using the “Send feedback” link on the bottom right of this page. \n\nIf you like what you see here, and we hope you do, we encourage you to try out the new look(s) on your own blog—read the <a href=\"http://buzz.blogger.com/2011/09/dynamic-views-seven-new-ways-to-share.html\">Blogger Buzz post</a> for more info.</div>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM3MDgKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    },
+    {
+      "kind": "blogger#post",
+      "id": "237676474877526514",
+      "blog": {
+        "id": "3213900"
+      },
+      "published": "2011-09-08T01:59:00-07:00",
+      "updated": "2020-05-28T21:58:13-07:00",
+      "url": "http://blogger-developers.googleblog.com/2011/09/blogger-json-api-now-available.html",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/237676474877526514",
+      "title": "Blogger JSON API now available",
+      "content": "Today we’re announcing the public availability of the Blogger JSON API we <a href=\"http://www.google.com/events/io/2011/sessions/building-a-business-web-presence-using-blogger-apis.html\">spoke about at this year’s Google I/O</a>. The focus of this release is to make it easier to build applications that interoperate with Blogger by using a lightweight JSON syntax.<br />\n<br />\nOne of the driving reasons for this release is to recognize how much the world has changed during the lifetime of Blogger. Where once we built everything as desktop applications, we now spend our time building full-blown applications inside the browser frame using JavaScript and HTML5 apps.<br />\n<br />\nTo start using the Blogger JSON API, sign in to the <a href=\"https://code.google.com/apis/console\">Google API Console</a> and request Blogger API access. This will take you to a form that asks you to explain how you intend to use the API, and an estimate of your daily traffic levels. This information helps us evaluate your request for approval and give us a better understanding of how the community is using our APIs as we work to improve them.<br />\n<br />\nTo demonstrate how much easier this API is to use, especially for JavaScript mashups, here is a JavaScript renderer for the Blogger Buzz blog.<br />\n<br />\n<pre>&lt;html&gt;\n  &lt;script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js\"&gt;&lt;/script&gt;\n  &lt;script&gt;\n  // Request an API Key for the Blogger API from \n  // https://code.google.com/apis/console/\n  var apikey = \"YOUR API KEY HERE\";\n  \n  // You can find the blogId in the HTML source of a blog\n  var blogId = \"2399953\";\n  \n  // When the document is loaded\n  $(document).ready(function() {\n   \n    // Make a JSONP request for the Posts on the Blogger Buzz blog\n    $.ajax({\n      url:\"https://www.googleapis.com/blogger/v2/blogs/”+\n        blogId+”/posts?key=\"+apikey,\n      dataType: \"jsonp\",\n      success: function(data, textStatus, jqXHR) {\n        var items = [];   \n        // Construct a chunk of HTML for each post\n        // containing the Post title, content, and a \n        // link to the post author.\n        $.each(data.items, function(index, value) {\n          items.push(\"&lt;h2&gt;\"+value.title+\"&lt;/h2&gt;\"+value.content+\n            \"&lt;p&gt;Posted by &lt;em&gt;&lt;a href='\"+value.author.url+\"'&gt;\"+\n            value.author.displayName+\"&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;\");\n        });\n\n        // And finally, append the generated content to the page body.\n        $(items.join('')).appendTo('body');\n      }\n    });\n  });\n  &lt;/script&gt;\n&lt;/html&gt;</pre><br />\n<p>It is important to understand that this release is the first step on a journey of discovery, as we work with all of you to build a better API for using Blogger. Please review the <a href=\"https://code.google.com/apis/blogger/docs/2.0/json/getting_started.html\">documentation</a>, and join in the discussion on <a href=\"http://groups.google.com/group/bloggerdev\">Blogger Developer Group</a> and let us know what we can add to the API to make it more useful for you!</p>",
+      "author": {
+        "id": "08434147677241700960",
+        "displayName": "Google Blogs",
+        "url": "https://www.blogger.com/profile/08434147677241700960",
+        "image": {
+          "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+        }
+      },
+      "replies": {
+        "totalItems": "0",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/3213900/posts/237676474877526514/comments"
+      },
+      "labels": [
+        "Blogger Developers"
+      ],
+      "etag": "\"dGltZXN0YW1wOiAJIDE1OTA3MjgyOTM2OTUKb2Zmc2V0OiAtMjUyMDAwMDAK\""
+    }
+  ],
+  "etag": "\"MjAyMC0wNS0yOVQwNDo1ODoxNC4wMTJa\""
+}

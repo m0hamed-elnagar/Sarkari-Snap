@@ -1,0 +1,31 @@
+{
+  "error": {
+    "code": 403,
+    "message": "Requests from this Android client application <empty> are blocked.",
+    "errors": [
+      {
+        "message": "Requests from this Android client application <empty> are blocked.",
+        "domain": "global",
+        "reason": "forbidden"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "API_KEY_ANDROID_APP_BLOCKED",
+        "domain": "googleapis.com",
+        "metadata": {
+          "androidPackage": "<empty>",
+          "service": "blogger.googleapis.com",
+          "consumer": "projects/413527549477"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "Requests from this Android client application <empty> are blocked."
+      }
+    ]
+  }
+}
