@@ -6,4 +6,5 @@ sealed interface PostDetailsActions {
     data object OnBackClick :PostDetailsActions
     data class OnPostFavoriteClick(val post: Post) : PostDetailsActions
     data class OnSelectedPostChange(val post: Post) : PostDetailsActions
+    data class OnLinkClicked(val url: String) : PostDetailsActions
 }

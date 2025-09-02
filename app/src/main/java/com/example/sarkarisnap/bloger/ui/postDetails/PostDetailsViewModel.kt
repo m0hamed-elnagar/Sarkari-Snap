@@ -29,6 +29,8 @@ class PostDetailsViewModel(
             is PostDetailsActions.OnSelectedPostChange -> {
                 _state.value = _state.value.copy(post = action.post)
             }
+
+            is PostDetailsActions.OnLinkClicked ->{}
         }
     }
 }
