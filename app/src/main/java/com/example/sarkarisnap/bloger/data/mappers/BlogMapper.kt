@@ -22,7 +22,8 @@ fun toDomain(dto: PostDto): Post {
         content = cleanHtml,
         date = dto.updated.toDateOnly(),
         url = dto.url,
-        imageUrls = images
+        imageUrls = images,
+        labels = dto.labels
     )
 }
 private fun String?.toDateOnly(): String {

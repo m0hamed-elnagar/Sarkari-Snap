@@ -42,7 +42,7 @@ fun InAppWebScreen(url: String, onBack: () -> Unit = {}) {
                 .fillMaxSize(),
             onOverrideUrlLoading = { newUrl ->
                 // decide what to keep in this webview
-                true   // keep everything inside
+                false   // keep everything inside
             }
         )
     }

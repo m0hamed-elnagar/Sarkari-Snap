@@ -25,17 +25,31 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
 
-    override suspend fun getHomePosts(): Result<BloggerResponse, DataError.Remote> {
+    override suspend fun getHomePosts(limit: Int ): Result<BloggerResponse, DataError.Remote> {
         return safeCall<BloggerResponse> {
 
             httpClient
                 .get("$BASE_URL/posts")
                 {
                     parameter("key", apiKey)
-                    parameter("maxResults", 20)
-                    parameter("fields", "items(id,updated,url,title,content)")
+                    parameter("maxResults", limit)
+                    parameter("fields", "items(id,updated,url,title,content,labels)")
                 }
                 .body()
         }
     }
+
+    override suspend fun getRelatedPosts(limit: Int,label:String): Result<BloggerResponse, DataError.Remote> {
+        return safeCall<BloggerResponse> {
+
+            httpClient
+                .get("$BASE_URL/posts")
+                {
+                    parameter("key", apiKey)
+                    parameter("maxResults", limit)
+                    parameter("labels", label)
+                    parameter("fields", "items(id,updated,url,title,content,labels)")
+                }
+                .body()
+        }    }
 }

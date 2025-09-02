@@ -13,12 +13,23 @@ class DefaultPostsRepo(
 ) : PostsRepo {
 
 
-    override suspend fun getHomePosts(): Result<List<Post>, DataError.Remote> {
-        return remoteBookDataSource.getHomePosts()
+    override suspend fun getHomePosts(limit: Int): Result<List<Post>, DataError.Remote> {
+        return remoteBookDataSource.getHomePosts(limit)
             .map { dto ->
                 dto.items.map {
                     toDomain(it)
                 }
             }
     }
+
+    override suspend fun getRelatedPosts(
+        limit: Int,label:String
+    ): Result<List<Post>, DataError.Remote> {
+        return remoteBookDataSource.getRelatedPosts(limit, label)
+            .map { dto ->
+                dto.items.map {
+                    toDomain(it)
+                }
+            }    }
+
 }

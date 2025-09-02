@@ -13,6 +13,7 @@ data class PostDto(
     val updated: String,
     val url: String,
     val title: String,
-    val content: String
+    val content: String,
+    val labels : List<String> = emptyList(),
 )
 

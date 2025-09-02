@@ -1,16 +1,22 @@
 package com.example.sarkarisnap.bloger.ui.postDetails
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,16 +28,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.sarkarisnap.R
+import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.postImagePainter
+import com.example.sarkarisnap.bloger.ui.postDetails.componentes.ChipSize
+import com.example.sarkarisnap.bloger.ui.postDetails.componentes.HtmlContent
+import com.example.sarkarisnap.bloger.ui.postDetails.componentes.PostChip
+import com.example.sarkarisnap.bloger.ui.postDetails.componentes.RelatedPostsSection
+import com.example.sarkarisnap.core.ui.theme.LightOrange
+import com.example.sarkarisnap.core.ui.theme.SandYellow
 import com.example.sarkarisnap.core.utils.openUrlInCustomTab
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,8 +55,9 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PostDetailsScreenRoot(
     viewModel: PostDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {},
+    onOpenPost: (Post) -> Unit,
 
-) {
+    ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -50,14 +66,18 @@ fun PostDetailsScreenRoot(
             when (action) {
                 is PostDetailsActions.OnBackClick -> onBackClicked()
                 is PostDetailsActions.OnLinkClicked -> {
-                    openUrlInCustomTab(context, action.url)
 
+                    Log.d("url", "Opening URL: ${action.url}")
+
+                    openUrlInCustomTab(context, action.url)
                 }
-                else -> Unit
+
+                is PostDetailsActions.OnRelatedPostClick -> onOpenPost(action.post)
+                else -> viewModel.onAction(action) // only forward actions that matter
             }
-            viewModel.onAction(action)
         })
 }
+
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,149 +88,168 @@ private fun PostDetailsScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Article") }, navigationIcon = {
-                IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
+            TopAppBar(
+                title = { Text("Article") },
+                navigationIcon = {
+                    IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
                 }
-            })
-        }) { padding ->
+            )
+        }
+    ) { padding ->
 
-        Column(
+        val post = state.post
+        if (post == null) {
+            // Full-screen loading
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
+
+        // Single LazyColumn for the whole screen – no nesting scrollables
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
-            val post = state.post
-            if (post == null) {
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {/* Title */
-                post.imageUrls?.forEach { coverImage ->
-                    val painter = postImagePainter(coverImage)
+            // --- Hero image(s) ---
+            post.imageUrls?.forEach { url ->
+                item(key = url) {
+                    val painter = postImagePainter(url)
                     Image(
                         painter = painter,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 20.dp, top = 12.dp)
+                            .padding(top = 12.dp, bottom = 20.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
                 }
-                    //todo add to favorite
+            }
 
+            // --- Title ---
+            item {
                 Text(
                     text = post.title,
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
+            }
 
-                /* Meta line */
-                Text(
-                    text = "Updated: ${post.date}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
 
-                /* Body */
-                HtmlContent5(
+            // --- Date ---
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Updated: ${post.date}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colorScheme.onSurfaceVariant
+                    )
+
+                    val isFavorite = state.isFavorite
+                    IconButton(
+                        onClick = { onAction(PostDetailsActions.OnPostFavoriteClick(post)) },
+                        modifier = Modifier
+
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(
+                                        LightOrange, Color.Transparent
+                                    ),
+                                    radius = 70f
+                                )
+                            )
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) {
+                                Icons.Filled.Favorite
+                            } else {
+                                Icons.Outlined.FavoriteBorder
+                            },
+                            tint = Color.Red,
+                            contentDescription = if (isFavorite) {
+                                stringResource(R.string.remove_from_favorites)
+                            } else {
+                                stringResource(R.string.mark_as_favorite)
+                            }
+                        )
+                    }
+                }
+            }
+// --- Chips / labels ---
+            if (post.labels.isNotEmpty()) {
+                item {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.wrapContentSize(Alignment.Center)
+                    ) {
+                        post.labels.forEach { label ->
+                            PostChip(
+                                size = ChipSize.SMALL,
+                                modifier = Modifier.padding(2.dp)
+                            ) {
+                                Text(
+                                    text = label.uppercase(),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            // --- Post body ---
+            item {
+                HtmlContent(
                     html = post.content,
                     onLinkClicked = { url ->
                         onAction(PostDetailsActions.OnLinkClicked(url))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                //todo things u might like
             }
+
+            item {
+
+                RelatedPostsSection(
+                    relatedPosts = state.relatedPosts,
+                    isLoading = state.isLoadingRelated,
+                    title = "Latest articles",
+                    onPostClick = { related ->
+                        onAction(PostDetailsActions.OnRelatedPostClick(related))
+                    },
+                )
+            }
+
+            item {
+
+                RelatedPostsSection(
+                    relatedPosts = state.relatedPosts,
+                    isLoading = state.isLoadingRelated,
+                    onPostClick = { related ->
+                        onAction(PostDetailsActions.OnRelatedPostClick(related))
+                    },
+                )
+            }
+
         }
     }
 }
 
-@Composable
-private fun HtmlContent5(html: String,
-                         onLinkClicked: (String) -> Unit,
-                         modifier: Modifier = Modifier) {
-    val textColorArgb = MaterialTheme.colorScheme.onSurface.toArgb()
-    val linkColorArgb = MaterialTheme.colorScheme.primary.toArgb()
-
-    // Utility to convert ARGB → #RRGGBB
-    fun toCssColor(argb: Int): String {
-        return String.format("#%06X", 0xFFFFFF and argb) }
-
-    val cleanedHtml = remember(html) {
-        html
-            .replace(Regex("background-color:[^;]+;?"), "") // remove inline bg
-            .replace(Regex("<p>(&nbsp;|\\s)*</p>"), "")
-            .replace(Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"), "")
-            .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
-            .replace("</a><a", "</a> <a")
-
-
-    }
-
-    val fullHtml = remember(cleanedHtml) {
-        """
-        <html>
-        <head>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    font-size: 17px;
-                    line-height: 1.7;
-                    color: ${toCssColor(textColorArgb)};
-                    margin: 0 10px;
-                    background-color: transparent;
-                }
-                a {
-                    color: ${toCssColor(linkColorArgb)};
-text-decoration: none;
-                }
-            </style>
-        </head>
-        <body>$cleanedHtml</body>
-        </html>
-        """.trimIndent()
-    }
-
-    AndroidView(
-        modifier = modifier.fillMaxWidth(),
-        factory = { ctx ->
-            android.webkit.WebView(ctx).apply {
-                setBackgroundColor(android.graphics.Color.TRANSPARENT)
-
-                webViewClient = object : android.webkit.WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: android.webkit.WebView?,
-                        request: android.webkit.WebResourceRequest?
-                    ): Boolean {
-                                view?.loadUrl(request?.url.toString())
-                        request?.url?.let { uri ->
-                            onLinkClicked(uri.toString())
-                        }
-                        return true
-                    }
-                }
-                settings.javaScriptEnabled = false        // safe
-                settings.loadsImagesAutomatically = true  // keep images
-                loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
-            }
-        },
-        update = { webView ->
-            webView.loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
-        }
-    )
-}

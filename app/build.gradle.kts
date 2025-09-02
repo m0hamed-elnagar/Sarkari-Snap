@@ -132,13 +132,14 @@ dependencies {
 
     // for handles messy HTML
     implementation(libs.jsoup)
-//    implementation("jp.wasabeef:richeditor-android:2.0.0")
     implementation("com.github.ireward:compose-html:1.0.2")
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc13")
 
 //    webview
     implementation("com.google.accompanist:accompanist-webview:0.34.0")
-//    implementation("com.google.accompanist:accompanist-web:0.34.0")
-//    implementation("io.github.KevinnZou:compose-webview:0.33.3")
     implementation("androidx.browser:browser:1.5.0")
+
+//    swipe to refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
+    implementation("androidx.compose.material:material:1.6.8")
 }

@@ -31,7 +31,7 @@ import com.example.sarkarisnap.core.ui.theme.DesertWhite
 import com.example.sarkarisnap.core.ui.theme.SandYellow
 
 @Composable
-fun BookSearchBar(
+fun BlogSearchBar(
     query: String,
     onQueryChanged: (String) -> Unit,
     onImeSearch: () -> Unit = {},

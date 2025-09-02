@@ -6,7 +6,7 @@ data class Post(
     val url: String,
     val description: String,
     val content: String = "",
-//    val imageUrl: String?,
+    val labels: List<String> = emptyList(),
     val imageUrls: List<String>,
     val date: String
 )

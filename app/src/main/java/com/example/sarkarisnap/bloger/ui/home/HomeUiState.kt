@@ -8,6 +8,7 @@ data class HomeUiState(
     val posts: List<Post> = emptyList(),
     val favoritePosts: List<Post> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val selectedTabIndex: Int = 0,
     val errorMessage: UiText? = null,
 )

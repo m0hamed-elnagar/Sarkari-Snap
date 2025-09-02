@@ -34,10 +34,10 @@ fun App() {
                 startDestination = Route.BlogHome
             ) {
                 // Define the book list screen
-                composable<Route.BlogHome> (
+                composable<Route.BlogHome>(
                     exitTransition = { slideOutHorizontally() },
                     popEnterTransition = { slideInHorizontally() }
-                ){
+                ) {
                     val viewModel = koinViewModel<HomeViewModel>()
                     val sharedViewModel =
                         it.sharedKoinViewModel<SelectedPostViewModel>(navController)
@@ -57,13 +57,15 @@ fun App() {
                     )
                 }
 
-                composable<Route.PostDetails> (
+                composable<Route.PostDetails>(
 
-                    enterTransition = { slideInHorizontally{
-                        it
-                    }},
-                    exitTransition = { slideOutHorizontally{it} }
-                ){
+                    enterTransition = {
+                        slideInHorizontally {
+                            it
+                        }
+                    },
+                    exitTransition = { slideOutHorizontally { it } }
+                ) {
                     val sharedViewModel =
                         it.sharedKoinViewModel<SelectedPostViewModel>(navController)
                     val viewModel = koinViewModel<PostDetailsViewModel>()
@@ -71,13 +73,22 @@ fun App() {
                     LaunchedEffect(selectedBook) {
                         selectedBook?.let {
                             viewModel.onAction(
-                                PostDetailsActions.OnSelectedPostChange(it) )
+                                PostDetailsActions.OnSelectedPostChange(it)
+                            )
                         }
                     }
                     PostDetailsScreenRoot(
                         viewModel = viewModel,
                         onBackClicked = {
                             navController.navigateUp()
+                        },
+                        onOpenPost = { newPost ->
+                            sharedViewModel.selectPost(newPost)          // new data
+                            navController.navigate(Route.PostDetails(newPost.id)) {
+                                popUpTo<Route.PostDetails> { inclusive = true }   // remove current
+                                launchSingleTop =
+                                    true                              // forbid duplicates
+                            }
                         }
                     )
 

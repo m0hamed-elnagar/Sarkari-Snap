@@ -14,7 +14,8 @@ val samplePosts = listOf(
         description = "This is the featured post description.",
         date = "2025-08-31",
         imageUrls = listOf("https://via.placeholder.com/600x400"),
-        url = ""
+        url = "",
+
     ),
     Post(
         id = "2",
