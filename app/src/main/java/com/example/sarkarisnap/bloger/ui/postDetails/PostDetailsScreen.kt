@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -33,20 +34,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
-import com.example.sarkarisnap.bloger.ui.components.postImagePainter
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.ChipSize
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.HtmlContent
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.PostChip
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.RelatedPostsSection
 import com.example.sarkarisnap.core.ui.theme.LightOrange
-import com.example.sarkarisnap.core.ui.theme.SandYellow
 import com.example.sarkarisnap.core.utils.openUrlInCustomTab
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -85,22 +87,52 @@ fun PostDetailsScreenRoot(
 private fun PostDetailsScreen(
     state: PostDetailsState,
     onAction: (PostDetailsActions) -> Unit,
-) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Article") },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
+) {Scaffold(
+    topBar = {
+        TopAppBar(
+            title = { Text("Article") },
+            navigationIcon = {
+                IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
-            )
-        }
-    ) { padding ->
+            },
+            actions = {
+                IconButton(
+                    onClick = { state.post?.let { onAction(PostDetailsActions.OnPostFavoriteClick(it)) } },
+                    modifier = Modifier
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    LightOrange, Color.Transparent
+                                ),
+                                radius = 90f
+                            )
+                        )
+                ) {
+                    val isFavorite = state.isFavorite
+
+                    Icon(
+                        imageVector = if (isFavorite) {
+                            Icons.Filled.Favorite
+                        } else {
+                            Icons.Outlined.FavoriteBorder
+                        },
+                        tint = Color.Red,
+                        contentDescription = if (isFavorite) {
+                            stringResource(R.string.remove_from_favorites)
+                        } else {
+                            stringResource(R.string.mark_as_favorite)
+                        }
+                    )
+                }
+            }
+        )
+    }
+) { padding ->
+
 
         val post = state.post
         if (post == null) {
@@ -120,9 +152,10 @@ private fun PostDetailsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(padding),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+
             // --- Hero image(s) ---
             post.imageUrls?.forEach { url ->
                 item(key = url) {
@@ -133,7 +166,7 @@ private fun PostDetailsScreen(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp, bottom = 20.dp)
+                            .padding(top = 12.dp, bottom = 12.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
                 }
@@ -144,7 +177,7 @@ private fun PostDetailsScreen(
                 Text(
                     text = post.title,
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 4.dp)
+
                 )
             }
 
@@ -153,8 +186,7 @@ private fun PostDetailsScreen(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -164,34 +196,6 @@ private fun PostDetailsScreen(
                         color = colorScheme.onSurfaceVariant
                     )
 
-                    val isFavorite = state.isFavorite
-                    IconButton(
-                        onClick = { onAction(PostDetailsActions.OnPostFavoriteClick(post)) },
-                        modifier = Modifier
-
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(
-                                        LightOrange, Color.Transparent
-                                    ),
-                                    radius = 70f
-                                )
-                            )
-                    ) {
-                        Icon(
-                            imageVector = if (isFavorite) {
-                                Icons.Filled.Favorite
-                            } else {
-                                Icons.Outlined.FavoriteBorder
-                            },
-                            tint = Color.Red,
-                            contentDescription = if (isFavorite) {
-                                stringResource(R.string.remove_from_favorites)
-                            } else {
-                                stringResource(R.string.mark_as_favorite)
-                            }
-                        )
-                    }
                 }
             }
 // --- Chips / labels ---
@@ -215,6 +219,7 @@ private fun PostDetailsScreen(
                     }
                 }
             }
+
             // --- Post body ---
             item {
                 HtmlContent(
@@ -253,3 +258,9 @@ private fun PostDetailsScreen(
     }
 }
 
+@Composable
+fun postImagePainter(imageUrl: String) = rememberAsyncImagePainter(
+    model = imageUrl,
+    placeholder = painterResource(R.drawable.news_placeholder),
+    error = painterResource(R.drawable.news_placeholder),
+)

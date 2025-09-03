@@ -53,19 +53,24 @@ fun HomeScreen(
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
-            PostList(
-                posts = state.posts,
-                onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
-                modifier = Modifier.fillMaxSize(),
-                scrollState = listState
-            )
+        when {
+            // Initial load, no posts yet -> show centered loader only
+            state.isLoading && state.posts.isEmpty() -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
 
-        // 2. Centered loading indicator (initial load)
-        if (state.isLoading && state.posts.isEmpty()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            // Otherwise show post list
+            else -> {
+                PostList(
+                    posts = state.posts,
+                    onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
+                    modifier = Modifier.fillMaxSize(),
+                    scrollState = listState
+                )
+            }
         }
 
-        // 3. Pull-to-refresh indicator
+        // Pull-to-refresh indicator (always shown above)
         PullRefreshIndicator(
             refreshing = state.isRefreshing,
             state = pullRefreshState,
