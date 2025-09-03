@@ -15,6 +15,8 @@ import androidx.navigation.navigation
 import com.example.sarkarisnap.bloger.ui.SelectedPostViewModel
 import com.example.sarkarisnap.bloger.ui.home.HomeScreenRoot
 import com.example.sarkarisnap.bloger.ui.home.HomeViewModel
+import com.example.sarkarisnap.bloger.ui.labeled.LabeledPostsViewModel
+import com.example.sarkarisnap.bloger.ui.labeled.LabeledScreenRoot
 import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsActions
 import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsScreenRoot
 import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsViewModel
@@ -89,10 +91,36 @@ fun App() {
                                 launchSingleTop =
                                     true                              // forbid duplicates
                             }
+                        },
+                        onLabelClick = {label->
+                            navController.navigate(Route.LabeledPosts(label))
                         }
                     )
-
                 }
+                composable<Route.LabeledPosts>(
+                    exitTransition = { slideOutHorizontally() },
+                    popEnterTransition = { slideInHorizontally() }
+                ) {
+                    val viewModel = koinViewModel<LabeledPostsViewModel>()
+                    val sharedViewModel =
+                        it.sharedKoinViewModel<SelectedPostViewModel>(navController)
+
+                    LaunchedEffect(true) {
+                        // Reset the selected book when navigating to the book list
+                        sharedViewModel.selectPost(null)
+                    }
+                    LabeledScreenRoot(
+                        viewModel = viewModel,
+                        onBackClick = { navController.navigateUp() },
+                        onPostClick = { post ->
+                            sharedViewModel.selectPost(post)
+                            navController.navigate(
+                                Route.PostDetails(post.id)
+                            )
+                        }
+                    )
+                }
+
             }
         }
     }

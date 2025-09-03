@@ -1,6 +1,7 @@
 package com.example.sarkarisnap.bloger.ui.postDetails.componentes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ enum class ChipSize {
 fun PostChip (
     modifier: Modifier = Modifier,
     size: ChipSize = ChipSize.REGULAR,
+    onClick: () -> Unit = {},
     chipContent: @Composable RowScope.()-> Unit
 ){
     Box(
@@ -34,8 +36,9 @@ fun PostChip (
             }
         ).clip(RoundedCornerShape(16.dp))
             .background(LightOrange)
+            .clickable { onClick() }
             .padding(
-                vertical = 8.dp,
+                vertical = 4.dp,
                 horizontal = 12.dp
             ),
         contentAlignment = Alignment.Center

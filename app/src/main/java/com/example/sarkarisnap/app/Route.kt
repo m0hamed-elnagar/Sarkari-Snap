@@ -9,5 +9,7 @@ sealed interface Route {
     data object BlogHome : Route
     @Serializable
     data class PostDetails(val postId: String) : Route
+    @Serializable
+    data class LabeledPosts(val label: String) : Route
 
 }

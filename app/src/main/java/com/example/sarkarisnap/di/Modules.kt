@@ -6,6 +6,7 @@ import com.example.sarkarisnap.bloger.data.network.RemotePostDataSource
 import com.example.sarkarisnap.bloger.data.repo.DefaultPostsRepo
 import com.example.sarkarisnap.bloger.domain.PostsRepo
 import com.example.sarkarisnap.bloger.ui.SelectedPostViewModel
+import com.example.sarkarisnap.bloger.ui.labeled.LabeledPostsViewModel
 import com.example.sarkarisnap.bloger.ui.home.HomeViewModel
 import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsViewModel
 import com.plcoding.bookpedia.core.data.HttpClientFactory
@@ -32,6 +33,7 @@ val sharedModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::PostDetailsViewModel)
     viewModelOf(::SelectedPostViewModel)
+    viewModelOf(::LabeledPostsViewModel)
 
 
 

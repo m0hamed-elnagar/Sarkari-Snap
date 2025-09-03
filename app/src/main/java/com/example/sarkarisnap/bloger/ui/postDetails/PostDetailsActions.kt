@@ -8,4 +8,5 @@ sealed interface PostDetailsActions {
     data class OnSelectedPostChange(val post: Post) : PostDetailsActions
     data class OnLinkClicked(val url: String) : PostDetailsActions
     data class OnRelatedPostClick(val post: Post) : PostDetailsActions
+    data class OnLabelClick(val label: String) : PostDetailsActions
 }

@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,16 +40,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
+import com.example.sarkarisnap.bloger.ui.components.FavoriteToggleIcon
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.ChipSize
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.HtmlContent
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.PostChip
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.RelatedPostsSection
 import com.example.sarkarisnap.core.ui.theme.LightOrange
+import com.example.sarkarisnap.core.ui.theme.SandYellow
 import com.example.sarkarisnap.core.utils.openUrlInCustomTab
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -58,7 +62,7 @@ fun PostDetailsScreenRoot(
     viewModel: PostDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {},
     onOpenPost: (Post) -> Unit,
-
+    onLabelClick: (String) -> Unit
     ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +79,7 @@ fun PostDetailsScreenRoot(
                 }
 
                 is PostDetailsActions.OnRelatedPostClick -> onOpenPost(action.post)
+                is PostDetailsActions.OnLabelClick -> onLabelClick(action.label)
                 else -> viewModel.onAction(action) // only forward actions that matter
             }
         })
@@ -84,10 +89,11 @@ fun PostDetailsScreenRoot(
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PostDetailsScreen(
+ fun PostDetailsScreen(
     state: PostDetailsState,
     onAction: (PostDetailsActions) -> Unit,
-) {Scaffold(
+) {
+    Scaffold(
     topBar = {
         TopAppBar(
             title = { Text("Article") },
@@ -100,35 +106,14 @@ private fun PostDetailsScreen(
                 }
             },
             actions = {
-                IconButton(
-                    onClick = { state.post?.let { onAction(PostDetailsActions.OnPostFavoriteClick(it)) } },
-                    modifier = Modifier
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    LightOrange, Color.Transparent
-                                ),
-                                radius = 90f
-                            )
-                        )
-                ) {
-                    val isFavorite = state.isFavorite
-
-                    Icon(
-                        imageVector = if (isFavorite) {
-                            Icons.Filled.Favorite
-                        } else {
-                            Icons.Outlined.FavoriteBorder
-                        },
-                        tint = Color.Red,
-                        contentDescription = if (isFavorite) {
-                            stringResource(R.string.remove_from_favorites)
-                        } else {
-                            stringResource(R.string.mark_as_favorite)
-                        }
-                    )
-                }
-            }
+                FavoriteToggleIcon(
+                    isFavorite = state.isFavorite,
+                    onToggle = { state.post?.let { onAction(PostDetailsActions.OnPostFavoriteClick(it)) } }
+                )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = SandYellow,
+            )
         )
     }
 ) { padding ->
@@ -153,7 +138,7 @@ private fun PostDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
 
             // --- Hero image(s) ---
@@ -208,6 +193,7 @@ private fun PostDetailsScreen(
                         post.labels.forEach { label ->
                             PostChip(
                                 size = ChipSize.SMALL,
+                                onClick = { onAction(PostDetailsActions.OnLabelClick(label)) },
                                 modifier = Modifier.padding(2.dp)
                             ) {
                                 Text(
@@ -234,8 +220,8 @@ private fun PostDetailsScreen(
             item {
 
                 RelatedPostsSection(
-                    relatedPosts = state.relatedPosts,
-                    isLoading = state.isLoadingRelated,
+                    relatedPosts = state.latestArticlesPosts,
+                    isLoading = state.isLoadingLatestArticles,
                     title = "Latest articles",
                     onPostClick = { related ->
                         onAction(PostDetailsActions.OnRelatedPostClick(related))

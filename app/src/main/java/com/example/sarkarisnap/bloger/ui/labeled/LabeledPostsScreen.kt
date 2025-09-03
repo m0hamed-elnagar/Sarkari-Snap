@@ -1,6 +1,7 @@
-package com.example.sarkarisnap.bloger.ui.home
+@file:JvmName("LabeledPostsUiStateKt")
 
-import androidx.compose.foundation.background
+package com.example.sarkarisnap.bloger.ui.labeled
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -8,8 +9,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,29 +25,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.PostList
 import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsActions
-import com.example.sarkarisnap.core.ui.theme.LightOrange
 import com.example.sarkarisnap.core.ui.theme.SandYellow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreenRoot(
-    viewModel: HomeViewModel = koinViewModel(),
+fun LabeledScreenRoot(
+    viewModel: LabeledPostsViewModel = koinViewModel(),
+    onBackClick: () -> Unit,
     onPostClick: (Post) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    HomeScreen(
+    LabeledScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                is HomeActions.OnPostClick -> onPostClick(action.post)
+                is LabeledPostsActions.OnBackClick -> onBackClick()
+                is LabeledPostsActions.OnPostClick -> onPostClick(action.post)
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -58,20 +55,27 @@ fun HomeScreenRoot(
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    state: HomeUiState,
-    onAction: (HomeActions) -> Unit,
-    title: String = "Latest articles",
+fun LabeledScreen(
+    state: LabeledPostsUiState,
+    onAction: (LabeledPostsActions) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = title,
+                        text = state.title,
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )},
+                navigationIcon = {
+                    IconButton(onClick = { onAction(LabeledPostsActions.OnBackClick) }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                         colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = SandYellow,
             )
@@ -82,7 +86,7 @@ fun HomeScreen(
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = state.isRefreshing,
-            onRefresh = { onAction(HomeActions.OnRefresh) }
+            onRefresh = { onAction(LabeledPostsActions.OnRefresh) }
         )
 
         Box(
@@ -101,7 +105,7 @@ fun HomeScreen(
                 else -> {
                     PostList(
                         posts = state.posts,
-                        onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
+                        onPostClick = { post -> onAction(LabeledPostsActions.OnPostClick(post)) },
                         modifier = Modifier.fillMaxSize(),
                         scrollState = listState
                     )
