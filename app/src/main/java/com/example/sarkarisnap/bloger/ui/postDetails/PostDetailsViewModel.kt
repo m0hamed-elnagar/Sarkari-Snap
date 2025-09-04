@@ -8,6 +8,8 @@ import com.plcoding.bookpedia.core.domain.onError
 import com.plcoding.bookpedia.core.domain.onSuccess
 import com.plcoding.bookpedia.core.presentation.toUiText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.getOrElse
 
 class PostDetailsViewModel(
     private val postsRepo: PostsRepo,
@@ -38,26 +41,37 @@ class PostDetailsViewModel(
             }
             is PostDetailsActions.OnSelectedPostChange -> {
                 _state.value = _state.value.copy(post = action.post)
-                loadRelatedPosts(3, action.post.labels)
-                loadLatestArticles(3)
+                loadPostDataSequentially(2, action.post.labels)
+
             }
 
 
            else -> {}
         }
     }
-
+    private fun loadPostDataSequentially(limit: Int, labels: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadRelatedPosts(limit, labels)
+            delay(100)
+            loadLatestArticles(limit)
+        }
+    }
     private fun loadRelatedPosts(limit: Int, labels:List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             _state.update { it.copy(isLoadingRelated = true, relatedError = null, relatedFetched = true) }
 
             postsRepo.getRelatedPosts(limit, labels.firstOrNull().orEmpty())
                 .onSuccess { list ->
-                    _state.update {
-                        it.copy(
-                            relatedPosts = list,
-                            isLoadingRelated = false
-                        )
+                    _state.update { currentState ->
+                        // FIX: Only update if list actually changed
+                        if (currentState.relatedPosts != list) {
+                            currentState.copy(
+                                relatedPosts = list,
+                                isLoadingRelated = false
+                            )
+                        } else {
+                            currentState.copy(isLoadingRelated = false)
+                        }
                     }
                 }
                 .onError { error ->
@@ -73,18 +87,22 @@ class PostDetailsViewModel(
     }
     private fun loadLatestArticles(limit: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _state.update { it.copy(isLoadingRelated = true, relatedError = null) }
+            _state.update { it.copy(isLoadingLatestArticles = true, latestArticlesError = null) }
 
             postsRepo.getHomePosts(limit)
                 .onSuccess { list ->
-                    _state.update {
-                        it.copy(
-
+                    _state.update { currentState ->      if (currentState.latestArticlesPosts != list) {
+                        currentState.copy(
                             latestArticlesPosts = list,
-                            isLoadingRelated = false,
+                            isLoadingLatestArticles = false,
                             latestArticlesFetched = true
                         )
-                    }
+                    } else {
+                        currentState.copy(
+                            isLoadingLatestArticles = false,
+                            latestArticlesFetched = true
+                        )
+                    }}
                 }
                 .onError { error ->
                     _state.update {

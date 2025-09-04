@@ -1,5 +1,8 @@
 package com.example.sarkarisnap.app
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.MaterialTheme
@@ -37,8 +40,10 @@ fun App() {
             ) {
                 // Define the book list screen
                 composable<Route.BlogHome>(
-                    exitTransition = { slideOutHorizontally() },
-                    popEnterTransition = { slideInHorizontally() }
+                    enterTransition = { fadeIn(tween( 800)) },
+                    exitTransition  = { fadeOut(tween( 800)) },
+                    popEnterTransition = { fadeIn(tween( 800)) },
+                    popExitTransition  = { fadeOut(tween( 800)) }
                 ) {
                     val viewModel = koinViewModel<HomeViewModel>()
                     val sharedViewModel =
@@ -54,20 +59,19 @@ fun App() {
                             sharedViewModel.selectPost(post)
                             navController.navigate(
                                 Route.PostDetails(post.id)
-                            )
+                            ){ launchSingleTop = true}
                         }
                     )
                 }
 
                 composable<Route.PostDetails>(
 
-                    enterTransition = {
-                        slideInHorizontally {
-                            it
-                        }
-                    },
-                    exitTransition = { slideOutHorizontally { it } }
-                ) {
+                        enterTransition = { fadeIn(tween( 800)) },
+                        exitTransition  = { fadeOut(tween( 800)) },
+                        popEnterTransition = { fadeIn(tween( 800)) },
+                        popExitTransition  = { fadeOut(tween( 800)) }
+
+                        ) {
                     val sharedViewModel =
                         it.sharedKoinViewModel<SelectedPostViewModel>(navController)
                     val viewModel = koinViewModel<PostDetailsViewModel>()
@@ -87,19 +91,25 @@ fun App() {
                         onOpenPost = { newPost ->
                             sharedViewModel.selectPost(newPost)          // new data
                             navController.navigate(Route.PostDetails(newPost.id)) {
-                                popUpTo<Route.PostDetails> { inclusive = true }   // remove current
+                                popUpTo<Route.PostDetails> { inclusive = true }
                                 launchSingleTop =
-                                    true                              // forbid duplicates
+                                    true
                             }
                         },
                         onLabelClick = {label->
-                            navController.navigate(Route.LabeledPosts(label))
+                            navController.navigate(Route.LabeledPosts(label)){
+                                popUpTo<Route.PostDetails> { inclusive = true }
+                                launchSingleTop =
+                                    true
+                            }
                         }
                     )
                 }
                 composable<Route.LabeledPosts>(
-                    exitTransition = { slideOutHorizontally() },
-                    popEnterTransition = { slideInHorizontally() }
+                    enterTransition = { fadeIn(tween( 800)) },
+                    exitTransition  = { fadeOut(tween( 800)) },
+                    popEnterTransition = { fadeIn(tween( 800)) },
+                    popExitTransition  = { fadeOut(tween( 800)) }
                 ) {
                     val viewModel = koinViewModel<LabeledPostsViewModel>()
                     val sharedViewModel =
@@ -116,7 +126,11 @@ fun App() {
                             sharedViewModel.selectPost(post)
                             navController.navigate(
                                 Route.PostDetails(post.id)
-                            )
+                            ){
+                                popUpTo<Route.PostDetails> { inclusive = true }
+                                launchSingleTop =
+                                    true
+                            }
                         }
                     )
                 }

@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- paper-plane / Telegram icon -->
+    <path
+        android:fillColor="#0088CC"
+        android:pathData="M9.78,18.65 L9.78,18.65 L10.08,20.87 C10.54,20.87 10.74,20.67 10.98,20.43 L12.04,19.4 L14.24,21.02 C14.64,21.24 14.94,21.12 15.04,20.67 L19.2,6.48 C19.35,5.88 18.97,5.64 18.58,5.8 L4.4,10.08 C3.82,10.28 3.82,10.62 4.3,10.76 L7.8,11.84 L15.9,6.74 C16.28,6.5 16.63,6.64 16.34,6.88 L9.74,12.98 L9.78,18.65 Z" />
+</vector>
