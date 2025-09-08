@@ -1,5 +1,6 @@
 package com.example.sarkarisnap.bloger.data.mappers
 
+import com.example.sarkarisnap.bloger.data.database.PostEntity
 import com.example.sarkarisnap.bloger.data.dto.PostDto
 import com.example.sarkarisnap.bloger.domain.Post
 import org.jsoup.Jsoup
@@ -47,3 +48,24 @@ private fun extractAllImages(html: String): List<String> =
             .select("img[src]")
             .mapNotNull { it.attr("abs:src") }   // ← every img
     }.getOrDefault(emptyList())
+
+fun Post.toPostEntity() = PostEntity(
+    id = this.id,
+    title = this.title,
+    description = this.description,
+    content = this.content,
+    date = this.date,
+    url = this.url,
+    imageUrls = this.imageUrls,
+    labels = this.labels
+)
+fun PostEntity.toPost() = Post(
+    id = this.id,
+    title = this.title,
+    description = this.description,
+    content = this.content,
+    date = this.date,
+    url = this.url,
+    imageUrls = this.imageUrls,
+    labels = this.labels
+)

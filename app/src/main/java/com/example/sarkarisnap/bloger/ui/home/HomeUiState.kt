@@ -4,7 +4,8 @@ import com.example.sarkarisnap.bloger.domain.Post
 import com.plcoding.bookpedia.core.presentation.UiText
 
 data class HomeUiState(
-    val searchQuery: String = "",
+    val labels: List<String> = emptyList(),
+    val selectedLabel: String? = null,
     val posts: List<Post> = emptyList(),
     val favoritePosts: List<Post> = emptyList(),
     val isLoading: Boolean = false,

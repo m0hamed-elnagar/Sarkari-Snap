@@ -1,21 +1,115 @@
 package com.example.sarkarisnap.bloger.ui.postDetails.componentes
 
+import android.content.Context
+import android.graphics.Color.TRANSPARENT
+import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.viewinterop.AndroidView
+@Composable
+fun HtmlContent2(html: String,
+                onLinkClicked: (String) -> Unit,
+                modifier: Modifier = Modifier) {
+    Text(
+        AnnotatedString.fromHtml(
+            html,
+            linkStyles = TextLinkStyles(
+                style = SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    fontStyle = FontStyle.Italic,
+                    color = Color.Blue
+                )
+            ),
+            linkInteractionListener = {
+                val url :String? = (it as LinkAnnotation.Url).url
+               url?.let { uri ->
+                    onLinkClicked(uri.toString())
+                }
+                // e.g., open in CustomTab
+            }
+        )
+    )
 
+}
+@Composable
+fun StableHtmlContent(
+    html: String,
+    onLinkClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    // Use remember to store the WebView instance permanently
+    val webView = remember {
+        WebView(context).apply {
+            setBackgroundColor(TRANSPARENT)
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+
+            settings.apply {
+                javaScriptEnabled = false
+                loadsImagesAutomatically = true
+                useWideViewPort = true
+                loadWithOverviewMode = true
+                setSupportZoom(false)
+                builtInZoomControls = false
+                displayZoomControls = false
+            }
+
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    request?.url?.let { uri ->
+                        onLinkClicked(uri.toString())
+                    }
+                    return true
+                }
+            }
+
+            // Load content immediately during creation
+//            LoadHtmlContent(html, context)
+        }
+    }
+
+    // This will never update after initial composition
+    AndroidView(
+        modifier = modifier.fillMaxWidth(),
+        factory = { webView }
+        // No update block needed - it will never update
+    )
+}
 
 @Composable
- fun HtmlContent(html: String,
-                         onLinkClicked: (String) -> Unit,
-                         modifier: Modifier = Modifier) {
+fun HtmlContent(
+    html: String,
+    onLinkClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
     val textColorArgb = MaterialTheme.colorScheme.onSurface.toArgb()
     val linkColorArgb = MaterialTheme.colorScheme.primary.toArgb()
 
@@ -24,7 +118,7 @@ import androidx.compose.ui.viewinterop.AndroidView
         return String.format("#%06X", 0xFFFFFF and argb)
     }
 
-    // FIX 1: Create stable references to prevent unnecessary updates
+    // Clean & simplify Blogger HTML
     val cleanedHtml = remember(html) {
         html
             .replace(Regex("background-color:[^;]+;?"), "") // remove inline bg
@@ -32,10 +126,9 @@ import androidx.compose.ui.viewinterop.AndroidView
             .replace(Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"), "")
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
-
-
     }
 
+    // Build final styled HTML
     val fullHtml = remember(cleanedHtml, textColorArgb, linkColorArgb) {
         """
         <html>
@@ -49,7 +142,6 @@ import androidx.compose.ui.viewinterop.AndroidView
                     color: ${toCssColor(textColorArgb)};
                     margin: 0 10px;
                     background-color: transparent;
-                    /* FIX 2: Prevent layout shifts */
                     word-wrap: break-word;
                     overflow-wrap: break-word;
                 }
@@ -61,7 +153,6 @@ import androidx.compose.ui.viewinterop.AndroidView
                     max-width: 100%;
                     height: auto;
                 }
-                /* FIX 3: Prevent unwanted margins/padding */
                 * {
                     max-width: 100%;
                 }
@@ -72,56 +163,49 @@ import androidx.compose.ui.viewinterop.AndroidView
         """.trimIndent()
     }
 
-    // FIX 4: Track if content has been loaded to prevent unnecessary reloads
+    // Keep WebView alive across recompositions
+    val webView = remember {
+        WebView(context).apply {
+            setBackgroundColor(TRANSPARENT)
+
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+
+            settings.apply {
+                javaScriptEnabled = false
+                loadsImagesAutomatically = true
+                useWideViewPort = true
+                loadWithOverviewMode = true
+                setSupportZoom(false)
+                builtInZoomControls = false
+                displayZoomControls = false
+            }
+
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    request?.url?.let { uri ->
+                        onLinkClicked(uri.toString())
+                    }
+                    return true
+                }
+
+            }
+        }
+    }
+
     var hasLoaded by remember { mutableStateOf(false) }
 
     AndroidView(
         modifier = modifier.fillMaxWidth(),
-        factory = { ctx ->
-            android.webkit.WebView(ctx).apply {
-                setBackgroundColor(android.graphics.Color.TRANSPARENT)
-
-                // FIX 5: Disable scrolling in WebView to prevent interference
-                isVerticalScrollBarEnabled = false
-                isHorizontalScrollBarEnabled = false
-                overScrollMode = android.view.View.OVER_SCROLL_NEVER
-
-                // FIX 6: Configure WebView settings to prevent layout issues
-                settings.apply {
-                    javaScriptEnabled = false
-                    loadsImagesAutomatically = true
-                    useWideViewPort = true
-                    loadWithOverviewMode = true
-                    setSupportZoom(false)
-                    builtInZoomControls = false
-                    displayZoomControls = false
-                }
-
-                webViewClient = object : android.webkit.WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: android.webkit.WebView?,
-                        request: android.webkit.WebResourceRequest?
-                    ): Boolean {
-                        request?.url?.let { uri ->
-                            onLinkClicked(uri.toString())
-                        }
-                        return true
-                    }
-
-                    // FIX 7: Track when page finishes loading
-                    override fun onPageFinished(view: android.webkit.WebView?, url: String?) {
-                        super.onPageFinished(view, url)
-                        hasLoaded = true
-                    }
-                }
-
-                loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
-            }
-        },
-        update = { webView ->
-            // FIX 8: Only reload if HTML actually changed, not on every recomposition
-            if (!hasLoaded || webView.url != "about:blank") {
-                webView.loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
+        factory = { webView },
+        update = {
+            if (!hasLoaded) {
+                it.loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
+                hasLoaded = true
             }
         }
     )

@@ -5,12 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -35,16 +32,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,14 +48,13 @@ import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.FavoriteToggleIcon
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.ChipSize
-import com.example.sarkarisnap.bloger.ui.postDetails.componentes.HtmlContent
+import com.example.sarkarisnap.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.PostChip
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.RelatedPostsSection
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.ShareExpandableFab
 import com.example.sarkarisnap.bloger.ui.postDetails.componentes.ShareTarget
 import com.example.sarkarisnap.core.ui.theme.SandYellow
 import com.example.sarkarisnap.core.utils.openUrlInCustomTab
-import com.example.sarkarisnap.core.utils.shareViaFacebook
 import com.example.sarkarisnap.core.utils.shareViaMessenger
 import com.example.sarkarisnap.core.utils.shareViaMore
 import com.example.sarkarisnap.core.utils.shareViaTelegram
@@ -102,17 +96,12 @@ fun PostDetailsScreenRoot(
 ) {
     val scrollState = rememberLazyListState()
     var contentHeight by remember { mutableStateOf(0) }
-    val reservedDp = 100.dp          // how far before the bottom you want to stop
-    val density = LocalDensity.current
-    val context = LocalContext.current // Added LocalContext
-    val reservedPx = with(density) { reservedDp.roundToPx()
-//    var lastStableScroll by remember { mutableStateOf(0 to 0) }
+    val stableOnLinkClicked by rememberUpdatedState { url: String ->
+        onAction(PostDetailsActions.OnLinkClicked(url))
+    }
 
-//    LaunchedEffect(scrollState.isScrollInProgress) {
-//        if (scrollState.isScrollInProgress) {
-//            Log.d("SCROLL_DEBUG", "First visible item: ${scrollState.firstVisibleItemIndex}, offset: ${scrollState.firstVisibleItemScrollOffset}")
-//        }
-//    }
+    val context = LocalContext.current // Added LocalContext
+
     LaunchedEffect(scrollState) {
         snapshotFlow { scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }
             .collect { (index, offset) ->
@@ -122,23 +111,6 @@ fun PostDetailsScreenRoot(
                 }
             }
     }
-//    LaunchedEffect(scrollState.firstVisibleItemIndex, scrollState.firstVisibleItemScrollOffset) {
-//        if (!scrollState.isScrollInProgress) {
-//            lastStableScroll = scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset
-//        }
-//    }
-//    LaunchedEffect(Unit) {
-//        snapshotFlow { scrollState.firstVisibleItemIndex }
-//            .collect { index ->
-//                if (index == 0 && scrollState.firstVisibleItemScrollOffset > 1000) {
-//                    // Scroll jumped unexpectedly, restore position
-//                    scrollState.scrollToItem(
-//                        lastStableScroll.first,
-//                        lastStableScroll.second
-//                    )
-//                }
-//            }
-//    }
     Scaffold(
     topBar = {
         TopAppBar(
@@ -180,7 +152,7 @@ fun PostDetailsScreenRoot(
         floatingActionButtonPosition = FabPosition.End
 ) { padding ->
 
-
+        Box(modifier = Modifier.fillMaxSize()) {
         val post = state.post
         if (post == null) {
             // Full-screen loading
@@ -265,15 +237,16 @@ fun PostDetailsScreenRoot(
             }
 
             // --- Post body ---
+
             item(key = "content_${post.id}") {
                 Box(modifier = Modifier.heightIn(min = 1000.dp)) { // Set minimum height
-                    HtmlContent(
+                    PermanentHtmlContent2(
                     html = post.content,
-                    onLinkClicked = { url ->
-                        onAction(PostDetailsActions.OnLinkClicked(url))
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )}
+                        onLinkClicked = stableOnLinkClicked,
+
+                        modifier = Modifier.fillMaxWidth()
+                )
+                }
             }
 
             // --- Latest Articles ---

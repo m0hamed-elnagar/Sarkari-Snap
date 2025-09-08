@@ -7,5 +7,6 @@ sealed interface HomeActions {
     data class OnTabSelected(val index: Int) :HomeActions
     data class OnPostClick(val post: Post) : HomeActions
     data class OnPostFavoriteClick(val post: Post) : HomeActions
+    data class OnLabelSelected(val label: String) : HomeActions
     object OnRefresh : HomeActions
 }

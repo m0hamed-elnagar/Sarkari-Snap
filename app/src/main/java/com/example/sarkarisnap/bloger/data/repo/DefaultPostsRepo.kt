@@ -1,15 +1,24 @@
 package com.example.sarkarisnap.bloger.data.repo
 
+import androidx.sqlite.SQLiteException
+import com.example.sarkarisnap.bloger.data.database.FavoritePostDao
+import com.example.sarkarisnap.bloger.data.database.PostEntity
 import com.example.sarkarisnap.bloger.data.mappers.toDomain
+import com.example.sarkarisnap.bloger.data.mappers.toPost
+import com.example.sarkarisnap.bloger.data.mappers.toPostEntity
 import com.example.sarkarisnap.bloger.data.network.RemotePostDataSource
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.core.domain.DataError
+import com.plcoding.bookpedia.core.domain.EmptyResult
 import com.plcoding.bookpedia.core.domain.Result
 import com.plcoding.bookpedia.core.domain.map
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DefaultPostsRepo(
-    private val remoteBookDataSource: RemotePostDataSource
+    private val remoteBookDataSource: RemotePostDataSource,
+    private val dao: FavoritePostDao
 ) : PostsRepo {
 
 
@@ -23,13 +32,49 @@ class DefaultPostsRepo(
     }
 
     override suspend fun getRelatedPosts(
-        limit: Int,label:String
+        limit: Int, label: String
     ): Result<List<Post>, DataError.Remote> {
         return remoteBookDataSource.getRelatedPosts(limit, label)
             .map { dto ->
                 dto.items.map {
                     toDomain(it)
                 }
-            }    }
+            }
+    }
+override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
+    return remoteBookDataSource.getUniqueLabels().map { dto ->
+        listOf("All") + dto.items
+            .flatMap { it.labels }
+            .distinct()
+    }
+}
+
+
+    override suspend fun getFavoritePosts(): Flow<List<Post>> {
+        return dao.getAllFavoriteBook().map { entities ->
+            entities.map { it.toPost() }
+        }
+    }
+
+    override fun isPostFavorite(postId: String): Flow<Boolean> {
+        return dao.getAllFavoriteBook().map { entities ->
+            entities.any { it.id == postId }
+        }
+    }
+
+    override suspend fun markPostAsFavorite(post: Post): EmptyResult<DataError.Local> {
+        return try {
+
+            dao.upsert(post.toPostEntity())
+            Result.Success(Unit)
+        } catch (e: SQLiteException) {
+            Result.Error(DataError.Local.DISK_FULL)
+        }
+    }
+
+    override suspend fun removePostFromFavorites(postId: String) {
+        return dao.deleteFavoriteBook(postId)
+    }
+
 
 }

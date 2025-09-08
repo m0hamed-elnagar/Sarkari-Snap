@@ -2,6 +2,7 @@ package com.example.sarkarisnap.bloger.data.network
 
 import com.example.sarkarisnap.BuildConfig
 import com.example.sarkarisnap.bloger.data.dto.BloggerResponse
+import com.example.sarkarisnap.bloger.data.dto.LabelsResponse
 import com.plcoding.bookpedia.core.data.safeCall
 import com.plcoding.bookpedia.core.domain.DataError
 import com.plcoding.bookpedia.core.domain.Error
@@ -10,6 +11,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,7 +27,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
 
-    override suspend fun getHomePosts(limit: Int ): Result<BloggerResponse, DataError.Remote> {
+    override suspend fun getHomePosts(limit: Int): Result<BloggerResponse, DataError.Remote> {
         return safeCall<BloggerResponse> {
 
             httpClient
@@ -39,7 +41,20 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
         }
     }
 
-    override suspend fun getRelatedPosts(limit: Int,label:String): Result<BloggerResponse, DataError.Remote> {
+    override suspend fun getUniqueLabels(limit: Int): Result<LabelsResponse, DataError.Remote> {
+        return safeCall<LabelsResponse> {
+         httpClient.get("$BASE_URL/posts") {
+                parameter("key", apiKey)
+                parameter("maxResults", limit)
+                parameter("fields", "nextPageToken,items(labels)")
+            }.body()
+        }
+    }
+
+    override suspend fun getRelatedPosts(
+        limit: Int,
+        label: String
+    ): Result<BloggerResponse, DataError.Remote> {
         return safeCall<BloggerResponse> {
 
             httpClient
@@ -51,5 +66,6 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
                     parameter("fields", "items(id,updated,url,title,content,labels)")
                 }
                 .body()
-        }    }
+        }
+    }
 }

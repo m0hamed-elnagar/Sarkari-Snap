@@ -14,6 +14,15 @@ android {
     namespace = "com.example.sarkarisnap"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("key/blogger-release-key.jks")
+            storePassword = "Blogger101"
+            keyAlias = "key0"
+            keyPassword = "android101"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.example.sarkarisnap"
         minSdk = 26
@@ -27,18 +36,22 @@ android {
         }
         val apiKey = localProps.getProperty("BLOGGER_API_KEY") ?: ""
         buildConfigField("String", "BLOGGER_API_KEY", "\"$apiKey\"")
-
     }
+
     buildFeatures {
-        buildConfig = true // ✅ enable BuildConfig generation
+        buildConfig = true
+        compose = true
     }
     buildTypes {
+
         release {
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             // custom debug options if needed
@@ -49,9 +62,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    buildFeatures {
-        compose = true
-    }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
     }
@@ -97,6 +107,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.ui.text)
+    implementation(libs.androidx.compose.material3)
     testImplementation(libs.koin.test)
 
     // Ktor

@@ -1,6 +1,8 @@
 package com.plcoding.bookpedia.di
 
 
+import androidx.room.Room
+import com.example.sarkarisnap.bloger.data.database.FavoritePostDataBase
 import com.example.sarkarisnap.bloger.data.network.KtorRemoteBlogDataSource
 import com.example.sarkarisnap.bloger.data.network.RemotePostDataSource
 import com.example.sarkarisnap.bloger.data.repo.DefaultPostsRepo
@@ -24,12 +26,15 @@ val sharedModule = module {
         .bind<RemotePostDataSource>()
     singleOf(::DefaultPostsRepo)
         .bind<PostsRepo>()
-//    single{
-//        get<DatabaseFactory>().create()
-//            .setDriver(BundledSQLiteDriver())
-//            .build()
-//    }
-//    single{ get<FavoriteBookDataBase>().favoriteBookDao }
+        single {
+            Room.databaseBuilder(
+                get(),
+                FavoritePostDataBase::class.java,
+                "Posts_db"
+            ).fallbackToDestructiveMigration(false)
+                .build()
+        }
+    single { get<FavoritePostDataBase>().favoritePostDao }
     viewModelOf(::HomeViewModel)
     viewModelOf(::PostDetailsViewModel)
     viewModelOf(::SelectedPostViewModel)

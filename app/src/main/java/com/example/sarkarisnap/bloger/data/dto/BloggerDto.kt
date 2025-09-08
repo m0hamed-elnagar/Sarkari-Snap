@@ -17,3 +17,12 @@ data class PostDto(
     val labels : List<String> = emptyList(),
 )
 
+@kotlinx.serialization.Serializable
+data class LabelsResponse(
+    val items: List<LabelItem> = emptyList()
+)
+
+@kotlinx.serialization.Serializable
+data class LabelItem(
+    val labels: List<String> = emptyList()
+)

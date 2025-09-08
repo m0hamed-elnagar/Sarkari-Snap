@@ -3,7 +3,9 @@ package com.example.sarkarisnap.bloger.ui.postDetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.sarkarisnap.bloger.domain.PostsRepo
+import com.plcoding.bookpedia.app.Route
 import com.plcoding.bookpedia.core.domain.onError
 import com.plcoding.bookpedia.core.domain.onSuccess
 import com.plcoding.bookpedia.core.presentation.toUiText
@@ -13,6 +15,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -23,8 +27,11 @@ class PostDetailsViewModel(
     private val postsRepo: PostsRepo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    val postId = savedStateHandle.toRoute<Route.PostDetails>().postId
+
     private val _state = MutableStateFlow(PostDetailsState())
     val state: StateFlow<PostDetailsState> = _state.onStart {
+        observeFavoriteStatus()
 
     }.stateIn(
         viewModelScope,
@@ -35,20 +42,40 @@ class PostDetailsViewModel(
     fun onAction(action: PostDetailsActions) {
         when (action) {
             PostDetailsActions.OnBackClick -> {}
-            is PostDetailsActions.OnPostFavoriteClick -> {
-                _state.value = _state.value.copy(isFavorite = !_state.value.isFavorite)
 
-            }
             is PostDetailsActions.OnSelectedPostChange -> {
                 _state.value = _state.value.copy(post = action.post)
-                loadPostDataSequentially(2, action.post.labels)
+                loadPostDataSequentially(3, action.post.labels)
 
+            }
+            is PostDetailsActions.OnPostFavoriteClick -> {
+                viewModelScope.launch {
+                    if (state.value.isFavorite) {
+                        postsRepo.removePostFromFavorites(postId)
+                    } else {
+                        state.value.post?.let { postsRepo.markPostAsFavorite(it) }
+                    }
+                }
+                _state.value = _state.value.copy(isFavorite = !_state.value.isFavorite)
             }
 
 
            else -> {}
         }
     }
+    fun observeFavoriteStatus() {
+        postsRepo.isPostFavorite(postId )
+
+            .onEach { isFavorite ->
+                _state.update {
+                    it.copy(
+                        isFavorite = isFavorite,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun loadPostDataSequentially(limit: Int, labels: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             loadRelatedPosts(limit, labels)

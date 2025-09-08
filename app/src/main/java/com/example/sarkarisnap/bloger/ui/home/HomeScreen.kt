@@ -1,41 +1,50 @@
 package com.example.sarkarisnap.bloger.ui.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.PostList
-import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsActions
-import com.example.sarkarisnap.core.ui.theme.LightOrange
+import com.example.sarkarisnap.bloger.ui.home.components.BottomTabRow
+import com.example.sarkarisnap.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.example.sarkarisnap.core.ui.theme.SandYellow
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -61,8 +70,24 @@ fun HomeScreenRoot(
 fun HomeScreen(
     state: HomeUiState,
     onAction: (HomeActions) -> Unit,
-    title: String = "Latest articles",
 ) {
+    val title = when (state.selectedTabIndex) {
+        0 -> stringResource(R.string.home)
+        1 -> stringResource(R.string.favorites)
+        else -> ""
+    }
+
+    val pagerState = rememberPagerState { 2 }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(state.selectedTabIndex) {
+        if (pagerState.currentPage != state.selectedTabIndex)
+            pagerState.animateScrollToPage(state.selectedTabIndex)
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        if (state.selectedTabIndex != pagerState.currentPage)
+            onAction(HomeActions.OnTabSelected(pagerState.currentPage))
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,49 +96,62 @@ fun HomeScreen(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
-                    )},
-                        colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = SandYellow,
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SandYellow)
             )
-                )
-        }
+        },
+        bottomBar = { BottomTabRow(state, onAction,pagerState = pagerState,
+            scope = scope) }
     ) { padding ->
-        val listState = rememberLazyListState()
-
-        val pullRefreshState = rememberPullRefreshState(
-            refreshing = state.isRefreshing,
-            onRefresh = { onAction(HomeActions.OnRefresh) }
-        )
-
-        Box(
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .pullRefresh(pullRefreshState)
-        ) {
-            when {
-                // Initial load, no posts yet -> show centered loader only
-                state.isLoading && state.posts.isEmpty() -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-
-                // Otherwise show post list
-                else -> {
-                    PostList(
-                        posts = state.posts,
-                        onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
-                        modifier = Modifier.fillMaxSize(),
-                        scrollState = listState
-                    )
-                }
+        ) { page ->
+            when (page) {
+                0 -> HomeTabWithPullRefresh(state, onAction)
+                1 -> FavoriteTabContent(state, onAction)
             }
+        }
+    }
+}
 
-            // Pull-to-refresh indicator (always shown above)
-            PullRefreshIndicator(
-                refreshing = state.isRefreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
+@Composable
+private fun FavoriteTabContent(
+    state: HomeUiState,
+    onAction: (HomeActions) -> Unit,
+) {
+    val listState = rememberLazyListState()
+
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        when {
+            state.favoritePosts.isEmpty() -> Text(
+                text = "No favorites yet",
+                style = MaterialTheme.typography.bodyLarge,
+                color  = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            else -> PostList(
+                posts = state.favoritePosts,
+                onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
+                modifier = Modifier.fillMaxSize(),
+                scrollState = listState
             )
         }
+    }
+}
+
+@Composable
+private fun PagesTabContent() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Pages screen – coming soon", style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+private fun CategoriesTabContent() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Categories screen – coming soon", style = MaterialTheme.typography.bodyLarge)
     }
 }
