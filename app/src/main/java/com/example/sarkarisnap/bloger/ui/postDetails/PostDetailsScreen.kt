@@ -38,12 +38,18 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.size.Scale
+import coil3.size.Size
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.FavoriteToggleIcon
@@ -278,8 +284,14 @@ fun PostDetailsScreenRoot(
 }
 
 @Composable
-fun postImagePainter(imageUrl: String) = rememberAsyncImagePainter(
-    model = imageUrl,
-    placeholder = painterResource(R.drawable.news_placeholder),
-    error = painterResource(R.drawable.news_placeholder),
-)
+fun postImagePainter(imageUrl: String): Painter {
+    val context = LocalContext.current
+    val request = ImageRequest.Builder(context)
+        .data(imageUrl)
+        .size(Size(1024, 1024))          // max 1024 px in either dimension
+        .scale(Scale.FILL)               // down-scale if larger
+        .placeholder(R.drawable.news_placeholder)
+        .error(R.drawable.news_placeholder)
+        .build()
+    return rememberAsyncImagePainter(request)
+}

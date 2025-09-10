@@ -15,31 +15,32 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private const val BASE_URL =
+private const val BASE_URL4 =
     "https://www.googleapis.com/blogger/v3/blogs/190535731829050983"
-private const val BASE_URL2 =
+private const val BASE_URL =
     "https://www.googleapis.com/blogger/v3/blogs/3213900"
-private const val BASE_URL3 =
+private const val BASE_URL2 =
     "https://www.googleapis.com/blogger/v3/blogs/2399953"
 
 class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostDataSource {
 
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
-
-    override suspend fun getHomePosts(limit: Int): Result<BloggerResponse, DataError.Remote> {
-        return safeCall<BloggerResponse> {
-
-            httpClient
-                .get("$BASE_URL/posts")
-                {
-                    parameter("key", apiKey)
-                    parameter("maxResults", limit)
-                    parameter("fields", "items(id,updated,url,title,content,labels)")
-                }
-                .body()
-        }
+override suspend fun getHomePosts(
+    limit: Int,
+    pageToken: String?
+): Result<BloggerResponse, DataError.Remote> {
+    return safeCall<BloggerResponse> {
+        httpClient.get("$BASE_URL/posts") {
+            parameter("key", apiKey)
+            parameter("maxResults", limit)
+            if (pageToken != null) {
+                parameter("pageToken", pageToken)
+            }
+            parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
+        }.body()
     }
+}
 
     override suspend fun getUniqueLabels(limit: Int): Result<LabelsResponse, DataError.Remote> {
         return safeCall<LabelsResponse> {

@@ -1,5 +1,6 @@
 package com.example.sarkarisnap.bloger.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sarkarisnap.bloger.domain.Post
@@ -11,135 +12,131 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.addAll
-import kotlin.onFailure
-import kotlin.text.clear
 
 class HomeViewModel(
     private val repo: PostsRepo
 ) : ViewModel() {
-
-    private var cachedPosts = emptyList<Post>()
-    private var observeFavoritesJob: Job? = null
 
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state
         .onStart {
             fetchLabels()
             observeFavoriteStatus()
-            if (cachedPosts.isEmpty()) {
-                loadPosts()
-            }
+            fetchPosts(isRefresh = true)
         }
         .stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = _state.value
+            SharingStarted.WhileSubscribed(5_000L),
+            _state.value
         )
 
+    private data class PagingInfo(
+        var nextPageToken: String? = null,
+        var isLastPage: Boolean = false
+    )
+
+    private val pageInfoMap = mutableMapOf<String, PagingInfo>()
+    private var currentJob: Job? = null
+
+    private fun infoFor(label: String) =
+        pageInfoMap.getOrPut(label) { PagingInfo() }
+
+    private var observeFavoritesJob: Job? = null
 
     fun onAction(action: HomeActions) {
         when (action) {
-            is HomeActions.OnTabSelected -> {
+            is HomeActions.OnTabSelected ->
                 _state.update { it.copy(selectedTabIndex = action.index) }
-            }
 
-            HomeActions.OnRefresh -> fetchPosts(isRefresh = true)
-            is HomeActions.OnLabelSelected -> fetchPostsByLabel(action.label)
+            HomeActions.OnRefresh ->
+                fetchPosts(isRefresh = true)
+
+            is HomeActions.OnLabelSelected ->
+                viewModelScope.launch {
+                   pageInfoMap[action.label] = PagingInfo()
+                    _state.update { it.copy(selectedLabel = action.label, posts = emptyList()) }
+                    fetchPosts(isRefresh = true)
+                }
+
+            HomeActions.OnNextPage -> {
+                Log.d("nextpage", "onAction:${infoFor(state.value.selectedLabel).nextPageToken} ")
+                fetchPosts(isRefresh = false)
+            }
             else -> Unit
-        }
-    }
-    private fun fetchPostsByLabel(label: String) =
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-
-            if (label == "All") {
-                // same as initial load
-                repo.getHomePosts(20)
-            } else {
-                repo.getRelatedPosts(20, label)
-            }
-                .onSuccess { posts ->
-                    cachedPosts = posts
-                    _state.update {
-                        it.copy(posts = posts, errorMessage = null, isLoading = false)
-                    }
-                }
-                .onError { error ->
-                    _state.update {
-                        it.copy(errorMessage = error.toUiText(), isLoading = false)
-                    }
-                }
-        }
-    private fun loadPosts() = fetchPosts(isRefresh = false)
-    fun observeFavoriteStatus() {
-        observeFavoritesJob?.cancel()
-        observeFavoritesJob = viewModelScope.launch {
-            repo.getFavoritePosts()
-                .onEach { favoritePosts ->
-                    _state.update {
-                        it.copy(
-                            favoritePosts = favoritePosts,
-                        )
-                    }
-                }
-                .launchIn(viewModelScope)
         }
     }
 
     private fun fetchPosts(isRefresh: Boolean) {
-        viewModelScope.launch {
+        if (currentJob?.isActive == true) return
 
+        val label = state.value.selectedLabel
+        val info = infoFor(label)
 
-            _state.update { it.copy(flag = true, isRefresh = isRefresh) }
-            repo.getHomePosts(20)
-                .onSuccess { posts ->
-                    cachedPosts = posts
-                    _state.update {
-                        it.copy(
-                            posts = posts,
-                            errorMessage = null
-                        ).copy(flag = false, isRefresh = isRefresh)
-                    }
+        if (!isRefresh && info.isLastPage) return          // nothing more
+
+        currentJob = viewModelScope.launch {
+            _state.update {
+                if (isRefresh) it.copy(isRefreshing = true)
+                else it.copy(isLoadingMore = true)
+            }
+
+            val token = if (isRefresh) null else info.nextPageToken
+
+            val result =
+                if (label == "All") repo.getHomePosts(6, token)
+                else repo.getRelatedPosts(6, label, token)
+
+            result.onSuccess { (posts, newToken) ->
+                Log.d("PAGING", "label=$label  posts=${posts.size}  newToken=$newToken")
+
+                info.nextPageToken = newToken
+                info.isLastPage = newToken == null
+
+            val merged = if (isRefresh) posts
+                         else (state.value.posts + posts).distinctBy(Post::id)
+
+                _state.update {
+                    it.copy(
+                        posts = merged,
+                        errorMessage = null,
+                        isRefreshing = false,
+                        isLoadingMore = false
+                    )
                 }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            errorMessage = error.toUiText(),
-                        ).copy(flag = false, isRefresh = isRefresh)
-                    }
+            }.onError { err ->
+                _state.update {
+                    it.copy(
+                        errorMessage = err.toUiText(),
+                        isRefreshing = false,
+                        isLoadingMore = false
+                    )
                 }
+            }
         }
     }
-    private fun fetchLabels() {
-        viewModelScope.launch {
-            repo.getLabels()
-                .onSuccess { labels ->
-                    _state.update {
-                        it.copy(
-                            labels = labels,
-                            errorMessage = null
-                        )
-                    }
-                }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            errorMessage = error.toUiText(),
-                        )
-                    }
-                }
+
+    private fun observeFavoriteStatus() {
+        observeFavoritesJob?.cancel()
+        observeFavoritesJob = viewModelScope.launch {
+            repo.getFavoritePosts()
+                .onEach { fav -> _state.update { it.copy(favoritePosts = fav) } }
+                .launchIn(viewModelScope)
         }
+    }
+
+    private fun fetchLabels() = viewModelScope.launch {
+        repo.getLabels()
+            .onSuccess { labels ->
+                _state.update { it.copy(labels = labels, errorMessage = null) }
+            }
+            .onError { error ->
+                _state.update { it.copy(errorMessage = error.toUiText()) }
+            }
     }
 }
-
-private fun HomeUiState.copy(flag: Boolean, isRefresh: Boolean): HomeUiState =
-    if (isRefresh) copy(isRefreshing = flag)
-    else copy(isLoading = flag)

@@ -2,7 +2,6 @@ package com.example.sarkarisnap.bloger.data.repo
 
 import androidx.sqlite.SQLiteException
 import com.example.sarkarisnap.bloger.data.database.FavoritePostDao
-import com.example.sarkarisnap.bloger.data.database.PostEntity
 import com.example.sarkarisnap.bloger.data.mappers.toDomain
 import com.example.sarkarisnap.bloger.data.mappers.toPost
 import com.example.sarkarisnap.bloger.data.mappers.toPostEntity
@@ -22,23 +21,25 @@ class DefaultPostsRepo(
 ) : PostsRepo {
 
 
-    override suspend fun getHomePosts(limit: Int): Result<List<Post>, DataError.Remote> {
-        return remoteBookDataSource.getHomePosts(limit)
-            .map { dto ->
-                dto.items.map {
-                    toDomain(it)
-                }
-            }
-    }
+   override suspend fun getHomePosts(
+    limit: Int,
+    pageToken: String?
+): Result<Pair<List<Post>, String?>, DataError.Remote> {   // ← return token too
+    return remoteBookDataSource
+        .getHomePosts(limit, pageToken)
+        .map { dto ->
+            dto.items.map { toDomain(it) } to dto.nextPageToken   // token exposed
+        }
+}
 
     override suspend fun getRelatedPosts(
-        limit: Int, label: String
-    ): Result<List<Post>, DataError.Remote> {
+        limit: Int, label: String, pageToken: String?
+    ): Result<Pair<List<Post>, String?>, DataError.Remote> {
         return remoteBookDataSource.getRelatedPosts(limit, label)
             .map { dto ->
                 dto.items.map {
                     toDomain(it)
-                }
+                } to dto.nextPageToken
             }
     }
 override suspend fun getLabels(): Result<List<String>, DataError.Remote> {

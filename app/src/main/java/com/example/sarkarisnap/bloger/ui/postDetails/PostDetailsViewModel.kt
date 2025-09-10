@@ -10,7 +10,6 @@ import com.plcoding.bookpedia.core.domain.onError
 import com.plcoding.bookpedia.core.domain.onSuccess
 import com.plcoding.bookpedia.core.presentation.toUiText
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.getOrElse
 
 class PostDetailsViewModel(
     private val postsRepo: PostsRepo,
@@ -88,7 +86,8 @@ class PostDetailsViewModel(
             _state.update { it.copy(isLoadingRelated = true, relatedError = null, relatedFetched = true) }
 
             postsRepo.getRelatedPosts(limit, labels.firstOrNull().orEmpty())
-                .onSuccess { list ->
+                .onSuccess { pair ->
+                    val list = pair.first
                     _state.update { currentState ->
                         // FIX: Only update if list actually changed
                         if (currentState.relatedPosts != list) {
@@ -117,7 +116,8 @@ class PostDetailsViewModel(
             _state.update { it.copy(isLoadingLatestArticles = true, latestArticlesError = null) }
 
             postsRepo.getHomePosts(limit)
-                .onSuccess { list ->
+                .onSuccess { pair ->
+                    val list = pair.first
                     _state.update { currentState ->      if (currentState.latestArticlesPosts != list) {
                         currentState.copy(
                             latestArticlesPosts = list,

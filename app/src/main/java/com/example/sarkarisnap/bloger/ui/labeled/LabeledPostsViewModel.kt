@@ -52,7 +52,8 @@ class LabeledPostsViewModel(
 
             _state.update { it.copy(flag = true, isRefresh = isRefresh) }
             repo.getRelatedPosts(20, label)
-                .onSuccess { posts ->
+                .onSuccess { pair ->
+                    val posts = pair.first
                     cachedPosts = posts
                     _state.update {
                         it.copy(

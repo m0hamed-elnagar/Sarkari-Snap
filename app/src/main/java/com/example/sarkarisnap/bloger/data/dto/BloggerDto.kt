@@ -1,9 +1,13 @@
 package com.example.sarkarisnap.bloger.data.dto
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class BloggerResponse(
+    @SerialName("nextPageToken")
+    val nextPageToken: String? = null,   // ← optional
+    @SerialName("items")
     val items: List<PostDto> = emptyList()
 )
 

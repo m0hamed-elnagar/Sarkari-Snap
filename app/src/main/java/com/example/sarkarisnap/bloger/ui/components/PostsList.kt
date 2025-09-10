@@ -25,10 +25,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -42,20 +45,34 @@ import coil3.size.Size
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.core.ui.theme.LightOrange
-
-
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.unit.Velocity
 @Composable
 fun PostList(
     posts: List<Post>,
     onPostClick: (Post) -> Unit,
     modifier: Modifier = Modifier,
-    scrollState: LazyListState = rememberLazyListState()
+    scrollState: LazyListState
 ) {
+    val noOpConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: androidx.compose.ui.geometry.Offset, source: NestedScrollSource) = androidx.compose.ui.geometry.Offset.Zero
+            override fun onPostScroll(consumed: androidx.compose.ui.geometry.Offset, available: androidx.compose.ui.geometry.Offset, source: NestedScrollSource) = androidx.compose.ui.geometry.Offset.Zero
+            override suspend fun onPreFling(available: Velocity) = Velocity.Zero
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity) = Velocity.Zero
+        }
+    }
+
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        state = scrollState) {
+        state = scrollState,
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(noOpConnection)   // no stretch, no crash
+            .clipToBounds(),
+        contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         itemsIndexed(posts, key = { _, post -> post.id }) { index, post ->
             Log.d("imgs", "PostList $index"+post.imageUrls)
                 if (index == 0) {

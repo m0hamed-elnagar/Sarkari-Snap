@@ -1,7 +1,6 @@
 package com.example.sarkarisnap.bloger.ui.home
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
@@ -9,34 +8,21 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
@@ -44,7 +30,6 @@ import com.example.sarkarisnap.bloger.ui.components.PostList
 import com.example.sarkarisnap.bloger.ui.home.components.BottomTabRow
 import com.example.sarkarisnap.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.example.sarkarisnap.core.ui.theme.SandYellow
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -79,6 +64,8 @@ fun HomeScreen(
 
     val pagerState = rememberPagerState { 2 }
     val scope = rememberCoroutineScope()
+    val homeListState = remember { LazyListState() }   // ← single instance
+    val chipListState = remember { LazyListState() }
 
     LaunchedEffect(state.selectedTabIndex) {
         if (pagerState.currentPage != state.selectedTabIndex)
@@ -111,7 +98,7 @@ fun HomeScreen(
                 .padding(padding)
         ) { page ->
             when (page) {
-                0 -> HomeTabWithPullRefresh(state, onAction)
+                0 -> HomeTabWithPullRefresh(state, onAction,homeListState,chipListState)
                 1 -> FavoriteTabContent(state, onAction)
             }
         }
