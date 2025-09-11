@@ -4,12 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import androidx.paging.PagingData
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.app.Route
-import com.plcoding.bookpedia.core.domain.onError
-import com.plcoding.bookpedia.core.domain.onSuccess
-import com.plcoding.bookpedia.core.presentation.toUiText
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,56 +21,37 @@ import kotlinx.coroutines.launch
 class LabeledPostsViewModel(
     private val repo: PostsRepo,
     private val savedStateHandle: SavedStateHandle
-
 ) : ViewModel() {
-
-    private var cachedPosts = emptyList<Post>()
     val label = savedStateHandle.toRoute<Route.LabeledPosts>().label
+
+    // Paging 3: Expose paged posts for the label
+    val pagedPosts: Flow<PagingData<Post>> = repo.getPagedPosts(label)
 
     private val _state = MutableStateFlow(LabeledPostsUiState())
     val state: StateFlow<LabeledPostsUiState> = _state
         .onStart {
             _state.update { it.copy(title = label) }
-            if (cachedPosts.isEmpty()) loadPosts() }
+        }
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = _state.value
         )
 
-
-    fun onAction(action: LabeledPostsActions){
-        when(action){
-            LabeledPostsActions.OnRefresh -> fetchPosts(isRefresh = true)
+    fun onAction(action: LabeledPostsActions) {
+        when (action) {
+            LabeledPostsActions.OnRefresh -> triggerRefresh()
             else -> Unit
-        }}
-    private fun loadPosts() = fetchPosts(isRefresh = false)
-
-    private fun fetchPosts(isRefresh: Boolean) {
-        viewModelScope.launch {
-
-
-            _state.update { it.copy(flag = true, isRefresh = isRefresh) }
-            repo.getRelatedPosts(20, label)
-                .onSuccess { pair ->
-                    val posts = pair.first
-                    cachedPosts = posts
-                    _state.update {
-                        it.copy(
-                            posts        = posts,
-                            errorMessage = null
-                        ).copy(flag = false, isRefresh = isRefresh)
-                    }
-                }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            errorMessage = error.toUiText(),
-                               ).copy(flag = false, isRefresh = isRefresh)
-                    }}
         }
-    }}
+    }
 
-private fun LabeledPostsUiState.copy(flag: Boolean, isRefresh: Boolean): LabeledPostsUiState =
-    if (isRefresh) copy(isRefreshing = flag)
-    else           copy(isLoading   = flag)
+    // For pull-to-refresh: update isRefreshing in state
+    private fun triggerRefresh() {
+        _state.update { it.copy(isRefreshing = true) }
+        // Simulate refresh completion after a short delay
+        viewModelScope.launch {
+           delay(800)
+            _state.update { it.copy(isRefreshing = false) }
+        }
+    }
+}

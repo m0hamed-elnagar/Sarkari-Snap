@@ -1,10 +1,5 @@
 package com.example.sarkarisnap.bloger.ui.components
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.sarkarisnap.bloger.domain.Post
 
 val samplePosts = listOf(
@@ -34,15 +29,15 @@ val samplePosts = listOf(
         url = "")
 )
 
-@Preview(showBackground = true)
-@Composable
-fun PostListPreview() {
-
-    val postsListState = rememberLazyListState()
-
-    PostList(posts = samplePosts,
-        onPostClick = {},
-        modifier = Modifier.fillMaxSize(),
-        scrollState =postsListState
-        )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PostListPreview() {
+//
+//    val postsListState = rememberLazyListState()
+//
+//    PostList(posts = samplePosts,
+//        onPostClick = {},
+//        modifier = Modifier.fillMaxSize(),
+//        scrollState =postsListState
+//        )
+//}

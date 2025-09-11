@@ -7,15 +7,12 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.sarkarisnap.R
-import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsActions
-import com.example.sarkarisnap.core.ui.theme.LightOrange
 import com.example.sarkarisnap.core.ui.theme.SandYellow
 
 @Composable

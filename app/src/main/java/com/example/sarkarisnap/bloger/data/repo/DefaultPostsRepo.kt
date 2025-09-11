@@ -1,11 +1,16 @@
 package com.example.sarkarisnap.bloger.data.repo
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.sqlite.SQLiteException
 import com.example.sarkarisnap.bloger.data.database.FavoritePostDao
+import com.example.sarkarisnap.bloger.data.dto.BloggerResponse
 import com.example.sarkarisnap.bloger.data.mappers.toDomain
 import com.example.sarkarisnap.bloger.data.mappers.toPost
 import com.example.sarkarisnap.bloger.data.mappers.toPostEntity
 import com.example.sarkarisnap.bloger.data.network.RemotePostDataSource
+import com.example.sarkarisnap.bloger.data.paging.PostsPagingSource
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.core.domain.DataError
@@ -16,39 +21,28 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DefaultPostsRepo(
-    private val remoteBookDataSource: RemotePostDataSource,
+    private val remotePostDataSource: RemotePostDataSource,
     private val dao: FavoritePostDao
 ) : PostsRepo {
 
-
-   override suspend fun getHomePosts(
-    limit: Int,
-    pageToken: String?
-): Result<Pair<List<Post>, String?>, DataError.Remote> {   // ← return token too
-    return remoteBookDataSource
-        .getHomePosts(limit, pageToken)
-        .map { dto ->
-            dto.items.map { toDomain(it) } to dto.nextPageToken   // token exposed
-        }
-}
-
-    override suspend fun getRelatedPosts(
-        limit: Int, label: String, pageToken: String?
+    override suspend fun getPosts(
+        limit: Int,
+        label: String?,
+        pageToken: String?
     ): Result<Pair<List<Post>, String?>, DataError.Remote> {
-        return remoteBookDataSource.getRelatedPosts(limit, label)
-            .map { dto ->
-                dto.items.map {
-                    toDomain(it)
-                } to dto.nextPageToken
+        return remotePostDataSource.getPosts(limit, label, pageToken)
+            .map { dto: BloggerResponse ->
+                dto.items.map { toDomain(it) } to dto.nextPageToken
             }
     }
-override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
-    return remoteBookDataSource.getUniqueLabels().map { dto ->
-        listOf("All") + dto.items
-            .flatMap { it.labels }
-            .distinct()
+
+    override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
+        return remotePostDataSource.getUniqueLabels().map { dto ->
+            listOf("All") + dto.items
+                .flatMap { it.labels }
+                .distinct()
+        }
     }
-}
 
 
     override suspend fun getFavoritePosts(): Flow<List<Post>> {
@@ -75,6 +69,13 @@ override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
 
     override suspend fun removePostFromFavorites(postId: String) {
         return dao.deleteFavoriteBook(postId)
+    }
+
+    override fun getPagedPosts(label: String?): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 4, enablePlaceholders = false),
+            pagingSourceFactory = { PostsPagingSource(remotePostDataSource, if (label == "All") null else label) }
+        ).flow
     }
 
 

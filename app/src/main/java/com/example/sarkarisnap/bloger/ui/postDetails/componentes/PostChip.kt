@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.example.sarkarisnap.core.ui.theme.LightBlue
 import com.example.sarkarisnap.core.ui.theme.LightOrange
 
 enum class ChipSize {

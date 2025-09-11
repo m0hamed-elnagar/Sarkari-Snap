@@ -9,13 +9,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,12 +21,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.PostList
-import com.example.sarkarisnap.bloger.ui.postDetails.PostDetailsActions
 import com.example.sarkarisnap.core.ui.theme.SandYellow
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,8 +40,10 @@ fun LabeledScreenRoot(
     onPostClick: (Post) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     LabeledScreen(
         state = state,
+        pagedPosts = pagedPosts,
         onAction = { action ->
             when (action) {
                 is LabeledPostsActions.OnBackClick -> onBackClick()
@@ -57,6 +59,7 @@ fun LabeledScreenRoot(
 @Composable
 fun LabeledScreen(
     state: LabeledPostsUiState,
+    pagedPosts: androidx.paging.compose.LazyPagingItems<Post>,
     onAction: (LabeledPostsActions) -> Unit,
 ) {
     Scaffold(
@@ -83,12 +86,10 @@ fun LabeledScreen(
         }
     ) { padding ->
         val listState = rememberLazyListState()
-
         val pullRefreshState = rememberPullRefreshState(
             refreshing = state.isRefreshing,
             onRefresh = { onAction(LabeledPostsActions.OnRefresh) }
         )
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,23 +97,16 @@ fun LabeledScreen(
                 .pullRefresh(pullRefreshState)
         ) {
             when {
-                // Initial load, no posts yet -> show centered loader only
-                state.isLoading && state.posts.isEmpty() -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-
-                // Otherwise show post list
-                else -> {
-                    PostList(
-                        posts = state.posts,
-                        onPostClick = { post -> onAction(LabeledPostsActions.OnPostClick(post)) },
-                        modifier = Modifier.fillMaxSize(),
-                        scrollState = listState
-                    )
-                }
+                pagedPosts.loadState.refresh is androidx.paging.LoadState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                pagedPosts.itemCount > 0 -> PostList(
+                    posts = pagedPosts,
+                    onPostClick = { post -> onAction(LabeledPostsActions.OnPostClick(post)) },
+                    modifier = Modifier.fillMaxSize(),
+                    scrollState = listState
+                )
+                pagedPosts.loadState.refresh is androidx.paging.LoadState.Error -> Text("Failed to load posts", modifier = Modifier.align(Alignment.Center))
+                else -> Text("No posts available", modifier = Modifier.align(Alignment.Center))
             }
-
-            // Pull-to-refresh indicator (always shown above)
             PullRefreshIndicator(
                 refreshing = state.isRefreshing,
                 state = pullRefreshState,

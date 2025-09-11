@@ -1,6 +1,5 @@
 package com.example.sarkarisnap.bloger.ui.postDetails.componentes
 
-import android.content.Context
 import android.graphics.Color.TRANSPARENT
 import android.view.View
 import android.webkit.WebResourceRequest
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.viewinterop.AndroidView
+
 @Composable
 fun HtmlContent2(html: String,
                 onLinkClicked: (String) -> Unit,

@@ -27,8 +27,8 @@ private fun PostDetailsScreenPreview() {
         relatedPosts = emptyList()
     )
 
-    PostDetailsScreen(
-        state = fakeState,
-        onAction = {}
-    )
+//    PostDetailsScreen(
+//        state = fakeState,
+//        onAction = {}
+//    )
 }

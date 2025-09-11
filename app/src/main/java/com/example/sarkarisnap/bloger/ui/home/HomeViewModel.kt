@@ -1,17 +1,20 @@
 package com.example.sarkarisnap.bloger.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.core.domain.onError
 import com.plcoding.bookpedia.core.domain.onSuccess
 import com.plcoding.bookpedia.core.presentation.toUiText
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val repo: PostsRepo
 ) : ViewModel() {
@@ -28,7 +32,6 @@ class HomeViewModel(
         .onStart {
             fetchLabels()
             observeFavoriteStatus()
-            fetchPosts(isRefresh = true)
         }
         .stateIn(
             viewModelScope,
@@ -36,16 +39,11 @@ class HomeViewModel(
             _state.value
         )
 
-    private data class PagingInfo(
-        var nextPageToken: String? = null,
-        var isLastPage: Boolean = false
-    )
-
-    private val pageInfoMap = mutableMapOf<String, PagingInfo>()
-    private var currentJob: Job? = null
-
-    private fun infoFor(label: String) =
-        pageInfoMap.getOrPut(label) { PagingInfo() }
+    // Paging 3: Expose paged posts for the current label
+    private val _currentLabel = MutableStateFlow(_state.value.selectedLabel)
+    val pagedPosts: Flow<PagingData<Post>> = _currentLabel.flatMapLatest { label ->
+        repo.getPagedPosts(if (label == "All") null else label)
+    }
 
     private var observeFavoritesJob: Job? = null
 
@@ -55,71 +53,22 @@ class HomeViewModel(
                 _state.update { it.copy(selectedTabIndex = action.index) }
 
             HomeActions.OnRefresh ->
-                fetchPosts(isRefresh = true)
+                _currentLabel.value = _state.value.selectedLabel // Triggers refresh
 
-            is HomeActions.OnLabelSelected ->
-                viewModelScope.launch {
-                   pageInfoMap[action.label] = PagingInfo()
-                    _state.update { it.copy(selectedLabel = action.label, posts = emptyList()) }
-                    fetchPosts(isRefresh = true)
+            is HomeActions.OnLabelSelected -> {
+                _state.update {
+                    it.copy(
+                        selectedLabel = action.label,
+                        isLoading = true
+                    )
                 }
-
-            HomeActions.OnNextPage -> {
-                Log.d("nextpage", "onAction:${infoFor(state.value.selectedLabel).nextPageToken} ")
-                fetchPosts(isRefresh = false)
+                _currentLabel.value = action.label
             }
+            // Remove OnNextPage logic (Paging 3 handles this)
             else -> Unit
         }
     }
 
-    private fun fetchPosts(isRefresh: Boolean) {
-        if (currentJob?.isActive == true) return
-
-        val label = state.value.selectedLabel
-        val info = infoFor(label)
-
-        if (!isRefresh && info.isLastPage) return          // nothing more
-
-        currentJob = viewModelScope.launch {
-            _state.update {
-                if (isRefresh) it.copy(isRefreshing = true)
-                else it.copy(isLoadingMore = true)
-            }
-
-            val token = if (isRefresh) null else info.nextPageToken
-
-            val result =
-                if (label == "All") repo.getHomePosts(6, token)
-                else repo.getRelatedPosts(6, label, token)
-
-            result.onSuccess { (posts, newToken) ->
-                Log.d("PAGING", "label=$label  posts=${posts.size}  newToken=$newToken")
-
-                info.nextPageToken = newToken
-                info.isLastPage = newToken == null
-
-            val merged = if (isRefresh) posts
-                         else (state.value.posts + posts).distinctBy(Post::id)
-
-                _state.update {
-                    it.copy(
-                        posts = merged,
-                        errorMessage = null,
-                        isRefreshing = false,
-                        isLoadingMore = false
-                    )
-                }
-            }.onError { err ->
-                _state.update {
-                    it.copy(
-                        errorMessage = err.toUiText(),
-                        isRefreshing = false,
-                        isLoadingMore = false
-                    )
-                }
-            }
-        }
-    }
 
     private fun observeFavoriteStatus() {
         observeFavoritesJob?.cancel()

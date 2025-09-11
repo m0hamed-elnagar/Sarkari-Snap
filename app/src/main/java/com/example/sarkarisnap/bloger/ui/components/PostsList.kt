@@ -1,6 +1,5 @@
 package com.example.sarkarisnap.bloger.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,14 +10,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,25 +28,84 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.compose.LazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.request.allowHardware
-import coil3.size.Size
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.core.ui.theme.LightOrange
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.unit.Velocity
+
 @Composable
 fun PostList(
+    posts: LazyPagingItems<Post>,
+    onPostClick: (Post) -> Unit,
+    modifier: Modifier = Modifier,
+    scrollState: LazyListState
+) {
+    val noOpConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(
+                available: androidx.compose.ui.geometry.Offset,
+                source: NestedScrollSource
+            ) = androidx.compose.ui.geometry.Offset.Zero
+
+            override fun onPostScroll(
+                consumed: androidx.compose.ui.geometry.Offset,
+                available: androidx.compose.ui.geometry.Offset,
+                source: NestedScrollSource
+            ) = androidx.compose.ui.geometry.Offset.Zero
+
+            override suspend fun onPreFling(available: Velocity) = Velocity.Zero
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity) =
+                Velocity.Zero
+        }
+    }
+
+    LazyColumn(
+        state = scrollState,
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(noOpConnection)
+            .clipToBounds(),
+        contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(count = posts.itemCount, key = { idx -> posts[idx]?.id ?: "" }) { index ->
+            val post = posts[index]
+            if (post != null) {
+                if (index == 0) {
+                    FeaturedPost(post, onClick = { onPostClick(post) })
+                } else {
+                    NormalPost(post, onClick = { onPostClick(post) })
+                }
+            }
+        }
+        // Pagination loading indicator
+        item {
+            if (posts.loadState.append.endOfPaginationReached.not() && posts.itemCount > 0) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    androidx.compose.material3.CircularProgressIndicator()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PostListStatic(
     posts: List<Post>,
     onPostClick: (Post) -> Unit,
     modifier: Modifier = Modifier,
@@ -68,19 +124,17 @@ fun PostList(
         state = scrollState,
         modifier = modifier
             .fillMaxSize()
-            .nestedScroll(noOpConnection)   // no stretch, no crash
+            .nestedScroll(noOpConnection)
             .clipToBounds(),
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(posts, key = { _, post -> post.id }) { index, post ->
-            Log.d("imgs", "PostList $index"+post.imageUrls)
-                if (index == 0) {
-                    FeaturedPost(post, onClick = { onPostClick(post) })
-                } else {
-                    NormalPost(post, onClick = { onPostClick(post) })
-                }
-
+            if (index == 0) {
+                FeaturedPost(post, onClick = { onPostClick(post) })
+            } else {
+                NormalPost(post, onClick = { onPostClick(post) })
+            }
         }
     }
 }
@@ -150,7 +204,7 @@ fun NormalPost(post: Post, onClick: () -> Unit) {
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(2.dp),
 
-    ) {
+        ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

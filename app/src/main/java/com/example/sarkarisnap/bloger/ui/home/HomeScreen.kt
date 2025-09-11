@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,10 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.sarkarisnap.R
 import com.example.sarkarisnap.bloger.domain.Post
-import com.example.sarkarisnap.bloger.ui.components.PostList
+import com.example.sarkarisnap.bloger.ui.components.PostListStatic
 import com.example.sarkarisnap.bloger.ui.home.components.BottomTabRow
 import com.example.sarkarisnap.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.example.sarkarisnap.core.ui.theme.SandYellow
@@ -37,9 +39,11 @@ fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onPostClick: (Post) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsState()
+    val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     HomeScreen(
-        state = state,
+        state = state, // Pass state argument
+        pagedPosts = pagedPosts,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
@@ -54,6 +58,7 @@ fun HomeScreenRoot(
 @Composable
 fun HomeScreen(
     state: HomeUiState,
+    pagedPosts: LazyPagingItems<Post>,
     onAction: (HomeActions) -> Unit,
 ) {
     val title = when (state.selectedTabIndex) {
@@ -64,8 +69,10 @@ fun HomeScreen(
 
     val pagerState = rememberPagerState { 2 }
     val scope = rememberCoroutineScope()
-    val homeListState = remember { LazyListState() }   // ← single instance
     val chipListState = remember { LazyListState() }
+    // --- Per-label LazyListState map ---
+    val labelListStates = remember { mutableMapOf<String, LazyListState>() }
+    val currentListState = labelListStates.getOrPut(state.selectedLabel) { LazyListState() }
 
     LaunchedEffect(state.selectedTabIndex) {
         if (pagerState.currentPage != state.selectedTabIndex)
@@ -98,7 +105,7 @@ fun HomeScreen(
                 .padding(padding)
         ) { page ->
             when (page) {
-                0 -> HomeTabWithPullRefresh(state, onAction,homeListState,chipListState)
+                0 -> HomeTabWithPullRefresh(state, pagedPosts, onAction, chipListState, currentListState)
                 1 -> FavoriteTabContent(state, onAction)
             }
         }
@@ -119,7 +126,7 @@ private fun FavoriteTabContent(
                 style = MaterialTheme.typography.bodyLarge,
                 color  = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
-            else -> PostList(
+            else -> PostListStatic(
                 posts = state.favoritePosts,
                 onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
                 modifier = Modifier.fillMaxSize(),

@@ -15,68 +15,37 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
+import com.example.sarkarisnap.bloger.domain.Post
 import com.example.sarkarisnap.bloger.ui.components.PostList
 import com.example.sarkarisnap.bloger.ui.home.HomeActions
 import com.example.sarkarisnap.bloger.ui.home.HomeUiState
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeTabWithPullRefresh(
     state: HomeUiState,
+    pagedPosts: LazyPagingItems<Post>,
     onAction: (HomeActions) -> Unit,
-    listState: LazyListState,
-    chipListState: LazyListState
+    chipListState: LazyListState,
+    listState: LazyListState
 ) {
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
         onRefresh = { onAction(HomeActions.OnRefresh) }
     )
 
-//    /* auto-load – unchanged */
-//LaunchedEffect(listState, state.selectedLabel) {
-//    snapshotFlow {
-//        val info = listState.layoutInfo
-//        val total = info.totalItemsCount
-//        val last = info.visibleItemsInfo.lastOrNull()
-//        val condition = total > 0 &&
-//                last != null &&
-//                last.index >= total - 3 &&
-//                !state.isLoadingMore &&
-//                !state.isRefreshing
-//        Log.d("PAGINATION_DEBUG", "total=$total, lastIndex=${last?.index}, condition=$condition")
-//        condition
-//    }
-//    .distinctUntilChanged()
-//    .filter { it }
-//    .collect {
-//        Log.d("PAGINATION_TRIGGER", "label=${state.selectedLabel}  posts=${state.posts.size}")
-//        onAction(HomeActions.OnNextPage)
-//    }
-//}
     Box(
         Modifier
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
         HomeTabContent(
-            state, onAction, listState,  chipListState
+            state, pagedPosts, onAction, listState, chipListState
         )
-
-        if (state.isLoadingMore) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(8.dp)
-            )
-        }
-
         PullRefreshIndicator(
             refreshing = state.isRefreshing,
             state = pullRefreshState,
@@ -88,42 +57,23 @@ fun HomeTabWithPullRefresh(
 @Composable
 private fun HomeTabContent(
     state: HomeUiState,
+    pagedPosts: LazyPagingItems<Post>,
     onAction: (HomeActions) -> Unit,
     listState: LazyListState,
     chipsListState: LazyListState
 ) {
-
     val selectedLabel = state.selectedLabel
     LaunchedEffect(selectedLabel) {
+        Log.d("debug", "HomeTabContent: Label changed to $selectedLabel, scrolling to top")
         listState.animateScrollToItem(0)
         chipsListState.animateScrollToItem(0)
-    }
-
-    LaunchedEffect(listState,selectedLabel) {
-        snapshotFlow {
-            val info = listState.layoutInfo
-            val total = info.totalItemsCount
-            val last = info.visibleItemsInfo.lastOrNull()
-            val condition = total > 0 &&
-                    last != null &&
-                    last.index >= total - 3 &&
-                    !state.isLoadingMore &&
-                    !state.isRefreshing
-            Log.d("PAGINATION_DEBUG", "total=$total, lastIndex=${last?.index}, condition=$condition")
-            condition
-        }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect {
-                Log.d("PAGINATION_TRIGGER", "label=${state.selectedLabel}  posts=${state.posts.size}")
-                onAction(HomeActions.OnNextPage)
-            }
     }
     Column(Modifier.fillMaxSize()) {
         AnimatedChipBar(
             labels = state.labels,
-            selectedLabel = selectedLabel,
+            selectedLabel = state.selectedLabel,
             onLabelSelected = { label ->
+                Log.d("debug", "AnimatedChipBar: Label selected $label")
                 onAction(HomeActions.OnLabelSelected(label))
             },
             modifier = Modifier
@@ -139,14 +89,14 @@ private fun HomeTabContent(
             contentAlignment = Alignment.Center
         ) {
             when {
-                state.isLoading -> CircularProgressIndicator()
-                state.posts.isNotEmpty() -> PostList(
-                    posts = state.posts,
+                pagedPosts.loadState.refresh is androidx.paging.LoadState.Loading -> CircularProgressIndicator()
+                pagedPosts.itemCount > 0 -> PostList(
+                    posts = pagedPosts,
                     onPostClick = { onAction(HomeActions.OnPostClick(it)) },
                     modifier = Modifier.fillMaxSize(),
                     scrollState = listState
                 )
-
+                pagedPosts.loadState.refresh is androidx.paging.LoadState.Error -> Text("Failed to load posts")
                 else -> Text("No posts available")
             }
         }

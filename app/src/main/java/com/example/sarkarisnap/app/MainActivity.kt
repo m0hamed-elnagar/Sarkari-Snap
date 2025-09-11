@@ -7,10 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.sarkarisnap.BuildConfig
-import com.example.sarkarisnap.bloger.ui.home.HomeScreenRoot
-import com.example.sarkarisnap.bloger.ui.home.HomeViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

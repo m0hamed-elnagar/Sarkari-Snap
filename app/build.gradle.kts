@@ -153,4 +153,8 @@ dependencies {
 //    swipe to refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
     implementation("androidx.compose.material:material:1.6.8")
+    // build.gradle (:app)  or (:feature)
+    implementation("androidx.paging:paging-compose:3.3.6")
+// latest stable
+    implementation("androidx.paging:paging-runtime-ktx:3.3.6")
 }
