@@ -8,10 +8,13 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.gms.google.services)
+    id("com.google.firebase.crashlytics")
+
 }
 
 android {
-    namespace = "com.example.sarkarisnap"
+    namespace = "com.example.taaza.today"
     compileSdk = 36
 
     signingConfigs {
@@ -24,7 +27,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.sarkarisnap"
+        applicationId = "com.example.taaza.today"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -110,6 +113,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     testImplementation(libs.koin.test)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.config)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     // Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)

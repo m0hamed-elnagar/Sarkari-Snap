@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168264790372",
+    "project_id": "taaza-today",
+    "storage_bucket": "taaza-today.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168264790372:android:ed03d72a413ec042d90a71",
+        "android_client_info": {
+          "package_name": "com.example.taaza.today"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEY2ngf686-afhk3Phzaq6EuCQSnp2Ow8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
