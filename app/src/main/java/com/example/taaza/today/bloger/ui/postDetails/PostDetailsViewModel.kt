@@ -41,7 +41,11 @@ class PostDetailsViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val relatedPostsPaged: Flow<PagingData<Post>> = _relatedLabel.flatMapLatest { label ->
         postsRepo.getPagedPosts(label)
-    }
+    }.stateIn(
+        viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = PagingData.empty()
+    )
     val latestArticlesPaged: Flow<PagingData<Post>> = postsRepo.getPagedPosts()
 
     fun onAction(action: PostDetailsActions) {

@@ -1,6 +1,7 @@
 package com.example.taaza.today.bloger.ui.postDetails.componentes
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -20,19 +21,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.taaza.today.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun ShareExpandableFab(
@@ -40,7 +46,15 @@ fun ShareExpandableFab(
     onShareClick: (ShareTarget) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val transition = updateTransition(targetState = expanded, label = "expand")
+    var clickLocked by remember { mutableStateOf(false) }
 
+    LaunchedEffect(expanded) {
+        clickLocked = true
+        delay(250)
+        clickLocked = false
+    }
+    val isAnimating = transition.currentState != transition.targetState
     // Box keeps the main FAB in its original spot
     Box(
         modifier = modifier,
@@ -64,32 +78,52 @@ fun ShareExpandableFab(
                 MiniFab(
                     icon = painterResource(R.drawable.ic_whatsapp),
                     cd = "Share on WhatsApp",
+                    isAnimating=isAnimating,
                     iconSize = 32.dp
-                ) { onShareClick(ShareTarget.WHATSAPP); expanded = false }
+                ) {  if (!clickLocked) {
+                    onShareClick(ShareTarget.WHATSAPP)
+                    expanded = false
+                } }
 
                 // 2. Facebook
                 MiniFab(
                     icon = painterResource(R.drawable.ic_facebook),
+                    isAnimating=isAnimating,
                     cd = "Share on Facebook"
-                ) { onShareClick(ShareTarget.FACEBOOK); expanded = false }
+                ) {  if (!clickLocked) {
+                    onShareClick(ShareTarget.FACEBOOK)
+                    expanded = false
+                } }
 
                 // 3. Telegram
                 MiniFab(
                     icon = painterResource(R.drawable.ic_telegram),
+                    isAnimating=isAnimating,
                     cd = "Share on Telegram"
-                ) { onShareClick(ShareTarget.TELEGRAM); expanded = false }
+                ) {  if (!clickLocked) {
+                    onShareClick(ShareTarget.TELEGRAM)
+                    expanded = false
+                } }
 
                 // 4. X / Twitter
                 MiniFab(
                     icon = painterResource(R.drawable.ic_twitter),
+                    isAnimating=isAnimating,
                     cd = "Share on X"
-                ) { onShareClick(ShareTarget.X); expanded = false }
+                ) {  if (!clickLocked) {
+                    onShareClick(ShareTarget.X)
+                    expanded = false
+                } }
 
                 // 5. Generic share (Share via / More)
                 MiniFab(
                     icon = painterResource(R.drawable.ic_share),
+                    isAnimating=isAnimating,
                     cd = "Share via"
-                ) { onShareClick(ShareTarget.MORE); expanded = false }
+                ) {  if (!clickLocked) {
+                    onShareClick(ShareTarget.MORE)
+                    expanded = false
+                } }
             }
         }
 
@@ -111,17 +145,18 @@ private fun MiniFab(
     icon: Painter,
     cd: String,
     iconSize: Dp = 24.dp,
+    isAnimating: Boolean = false,
     onClick: () -> Unit
 ) {
     SmallFloatingActionButton(
-        onClick = onClick,
+        onClick = { if (!isAnimating) onClick() },
         containerColor = MaterialTheme.colorScheme.secondaryContainer
     ) {
-        CompositionLocalProvider(
-            LocalContentColor provides Color.Unspecified   // <- no tint
-        ) {
+        CompositionLocalProvider(LocalContentColor provides Color.Unspecified) {
             Icon(
-                painter = icon, contentDescription = cd, modifier = Modifier.size(iconSize)
+                painter = icon,
+                contentDescription = cd,
+                modifier = Modifier.size(iconSize)
             )
         }
     }

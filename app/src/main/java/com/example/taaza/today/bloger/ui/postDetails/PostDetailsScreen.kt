@@ -201,12 +201,26 @@ fun PostDetailsScreen(
                 }
 
                 // ----- title -----
-                item { Text(post.title, style = MaterialTheme.typography.headlineSmall) }
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp) ,
+
+                    ) {
+                        Text(
+                            text = post.title,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+                }
 
                 // ----- date -----
                 item {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding( 12.dp)
+                            ,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -221,8 +235,8 @@ fun PostDetailsScreen(
                 if (post.labels.isNotEmpty()) {
                     item {
                         FlowRow(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier.fillMaxWidth().padding(start = 12.dp)
                         ) {
                             post.labels.forEach { label ->
                                 PostChip(
@@ -245,6 +259,8 @@ fun PostDetailsScreen(
                         html = post.content,
                         onLinkClicked = stableOnLinkClicked.value,
                         modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .padding(top = 24.dp)
                     )
                 }
 

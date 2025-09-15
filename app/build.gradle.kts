@@ -48,7 +48,7 @@ android {
     buildTypes {
 
         release {
-
+            isCrunchPngs = false
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -57,6 +57,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
         debug {
+            isCrunchPngs = false
             // custom debug options if needed
         }
     }
@@ -165,4 +166,5 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.3.6")
 // latest stable
     implementation("androidx.paging:paging-runtime-ktx:3.3.6")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

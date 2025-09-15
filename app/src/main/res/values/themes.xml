@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.taazaToday" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- الثيم الأساسي بتاع التطبيق -->
+    <style name="Theme.taazaToday" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- هنا هتحط الألوان والستايل العادي بتاعك -->
+    </style>
+
+    <style name="Theme.MyApp.Splash" parent="Theme.SplashScreen">
+        <!-- background colour -->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <!-- icon (vector or png) -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.taazaToday</item>
+    </style>
+
+
 </resources>

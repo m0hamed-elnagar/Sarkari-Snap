@@ -1,31 +1,33 @@
 package com.example.taaza.today.bloger.ui.home.components
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.ui.components.PostList
 import com.example.taaza.today.bloger.ui.home.HomeActions
 import com.example.taaza.today.bloger.ui.home.HomeUiState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -39,7 +41,7 @@ fun HomeTabWithPullRefresh(
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
-        onRefresh = { onAction(HomeActions.OnRefresh) }
+        onRefresh = { pagedPosts.refresh() }
     )
 
     Box(
@@ -93,7 +95,17 @@ private fun HomeTabContent(
             contentAlignment = Alignment.Center
         ) {
             when {
-                pagedPosts.loadState.refresh is androidx.paging.LoadState.Loading -> CircularProgressIndicator()
+                pagedPosts.loadState.refresh is LoadState.Loading ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()), // only here
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+
                 pagedPosts.itemCount > 0 -> PostList(
                     posts = pagedPosts,
                     onPostClick = { onAction(HomeActions.OnPostClick(it)) },
@@ -101,8 +113,29 @@ private fun HomeTabContent(
                     scrollState = listState
                 )
 
-                pagedPosts.loadState.refresh is androidx.paging.LoadState.Error -> Text("Failed to load posts")
-                else -> Text("No posts available")
+                pagedPosts.loadState.refresh is LoadState.Error ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()), // only here
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Failed to load posts")
+                        Button(onClick = { pagedPosts.refresh() }) {
+                            Text("Retry")
+                        }
+                    }
+
+                else -> Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()), // only here
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("No posts available")
+                }
             }
         }
     }

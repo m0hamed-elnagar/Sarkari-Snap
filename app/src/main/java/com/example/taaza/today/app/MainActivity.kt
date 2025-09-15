@@ -7,15 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.taaza.today.core.ui.theme.taazaToday
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
 
-            DebugComposable("MyScreen") {
                 App()
-            }
+
 
         }
     }

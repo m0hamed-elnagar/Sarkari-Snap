@@ -14,10 +14,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -52,8 +54,6 @@ class HomeViewModel(
             is HomeActions.OnTabSelected ->
                 _state.update { it.copy(selectedTabIndex = action.index) }
 
-            HomeActions.OnRefresh ->
-                _currentLabel.value = _state.value.selectedLabel // Triggers refresh
 
             is HomeActions.OnLabelSelected -> {
                 _state.update {
