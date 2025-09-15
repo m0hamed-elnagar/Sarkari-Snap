@@ -79,9 +79,11 @@ fun HomeScreen(
     // --- Per-label LazyListState map ---
     val labelListStates = remember { mutableMapOf<String, LazyListState>() }
     val currentListState = labelListStates.getOrPut(state.selectedLabel) { LazyListState() }
-    LaunchedEffect(pagerState.currentPage) {
-        if (state.selectedTabIndex != pagerState.currentPage) {
-            onAction(HomeActions.OnTabSelected(pagerState.currentPage))
+
+    val settledPage = pagerState.targetPage
+    LaunchedEffect(settledPage) {
+        if (state.selectedTabIndex != settledPage) {
+            onAction(HomeActions.OnTabSelected(settledPage))
         }
     }
     Scaffold(
