@@ -31,8 +31,10 @@ import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.ui.components.PostListStatic
 import com.example.taaza.today.bloger.ui.home.components.BottomTabRow
 import com.example.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
+import com.example.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.example.taaza.today.core.ui.theme.SandYellow
 import org.koin.compose.viewmodel.koinViewModel
+private const val TAB_COUNT = 3
 
 @Composable
 fun HomeScreenRoot(
@@ -41,9 +43,11 @@ fun HomeScreenRoot(
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
+    val trendingPosts = viewModel.trendingPosts.collectAsLazyPagingItems()
     HomeScreen(
         state = state, // Pass state argument
         pagedPosts = pagedPosts,
+        trendingPosts = trendingPosts,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
@@ -59,28 +63,26 @@ fun HomeScreenRoot(
 fun HomeScreen(
     state: HomeUiState,
     pagedPosts: LazyPagingItems<Post>,
+    trendingPosts: LazyPagingItems<Post>,
     onAction: (HomeActions) -> Unit,
 ) {
     val title = when (state.selectedTabIndex) {
         0 -> stringResource(R.string.home)
-        1 -> stringResource(R.string.favorites)
+        1 -> stringResource(R.string.trending)
+        2 -> stringResource(R.string.favorites)
         else -> ""
     }
 
-    val pagerState = rememberPagerState { 2 }
+    val pagerState = rememberPagerState { TAB_COUNT}
     val scope = rememberCoroutineScope()
     val chipListState = remember { LazyListState() }
     // --- Per-label LazyListState map ---
     val labelListStates = remember { mutableMapOf<String, LazyListState>() }
     val currentListState = labelListStates.getOrPut(state.selectedLabel) { LazyListState() }
-
-    LaunchedEffect(state.selectedTabIndex) {
-        if (pagerState.currentPage != state.selectedTabIndex)
-            pagerState.animateScrollToPage(state.selectedTabIndex)
-    }
     LaunchedEffect(pagerState.currentPage) {
-        if (state.selectedTabIndex != pagerState.currentPage)
+        if (state.selectedTabIndex != pagerState.currentPage) {
             onAction(HomeActions.OnTabSelected(pagerState.currentPage))
+        }
     }
     Scaffold(
         topBar = {
@@ -117,7 +119,8 @@ fun HomeScreen(
                     currentListState
                 )
 
-                1 -> FavoriteTabContent(state, onAction)
+                1 -> TrendingTabContentPullRefresh(state,trendingPosts, onAction)
+                2->FavoriteTabContent(state, onAction)
             }
         }
     }

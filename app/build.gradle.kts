@@ -167,4 +167,5 @@ dependencies {
 // latest stable
     implementation("androidx.paging:paging-runtime-ktx:3.3.6")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.material.icons.extended)
 }

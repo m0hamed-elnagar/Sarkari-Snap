@@ -11,8 +11,9 @@
     <string name="error_serialization">Couldn\'t parse data.</string>
     <string name="mark_as_favorite">Mark as favorite</string>
     <string name="remove_from_favorites">Remove from favorites</string>
-    <string name="home">home </string>
-    <string name="favorites">favorites</string>
+    <string name="home">Home </string>
+    <string name="favorites">Favorites</string>
+    <string name="trending">Trending</string>
     <string name="categories">categories</string>
     <string name="pages">pages</string>
 </resources>

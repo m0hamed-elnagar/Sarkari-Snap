@@ -46,7 +46,12 @@ class HomeViewModel(
     val pagedPosts: Flow<PagingData<Post>> = _currentLabel.flatMapLatest { label ->
         repo.getPagedPosts(if (label == "All") null else label)
     }
-
+val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
+    .stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000L),
+        PagingData.empty()
+    )
     private var observeFavoritesJob: Job? = null
 
     fun onAction(action: HomeActions) {
@@ -82,7 +87,7 @@ class HomeViewModel(
     private fun fetchLabels() = viewModelScope.launch {
         repo.getLabels()
             .onSuccess { labels ->
-                _state.update { it.copy(labels = labels, errorMessage = null) }
+                _state.update { it.copy(labels = labels.filter { label->label  !="Trending" }, errorMessage = null) }
             }
             .onError { error ->
                 _state.update { it.copy(errorMessage = error.toUiText()) }

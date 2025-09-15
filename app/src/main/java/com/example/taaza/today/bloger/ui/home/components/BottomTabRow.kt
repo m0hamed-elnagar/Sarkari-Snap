@@ -1,5 +1,6 @@
 package com.example.taaza.today.bloger.ui.home.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -13,6 +14,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.taaza.today.R
@@ -74,15 +76,36 @@ fun BottomTabRow(
             },
             icon = {
                 Icon(
+                    painterResource(R.drawable.ic_trending),
+                    contentDescription = "Trending",
+                    tint = if (state.selectedTabIndex == 1) selectedColor else unselectedColor,
+                    modifier = Modifier.size(24.dp)
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.trending),
+                    color = if (state.selectedTabIndex == 1) selectedColor else unselectedColor
+                )
+            }
+        )
+        Tab(
+            selected = state.selectedTabIndex == 2,
+            onClick = {
+                onAction(HomeActions.OnTabSelected(2))
+                scope.launch { pagerState.animateScrollToPage(2) }
+            },
+            icon = {
+                Icon(
                     Icons.Default.Favorite,
                     contentDescription = "Favorites",
-                    tint = if (state.selectedTabIndex == 1) selectedColor else unselectedColor
+                    tint = if (state.selectedTabIndex == 2) selectedColor else unselectedColor
                 )
             },
             text = {
                 Text(
                     text = stringResource(R.string.favorites),
-                    color = if (state.selectedTabIndex == 1) selectedColor else unselectedColor
+                    color = if (state.selectedTabIndex == 2) selectedColor else unselectedColor
                 )
             }
         )
