@@ -34,6 +34,7 @@ class HomeViewModel(
     val state: StateFlow<HomeUiState> = _state
         .onStart {
             fetchLabels()
+            fetchPages() // Fetch pages on start
             observeFavoriteStatus()
         }
         .stateIn(
@@ -52,13 +53,13 @@ class HomeViewModel(
         SharingStarted.WhileSubscribed(5_000L),
         PagingData.empty()
     )
-val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
-    .cachedIn(viewModelScope)
-    .stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000L),
-        PagingData.empty()
-    )
+    val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
+        .cachedIn(viewModelScope)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            PagingData.empty()
+        )
     private var observeFavoritesJob: Job? = null
 
     fun onAction(action: HomeActions) {
@@ -76,14 +77,16 @@ val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
                 }
                 _currentLabel.value = action.label
             }
-          is  HomeActions.OnRefresh ->refreshAll()
+            is HomeActions.OnRefresh -> refreshAll()
             // Remove OnNextPage logic (Paging 3 handles this)
             else -> Unit
         }
     }
+
     fun refreshAll() {
         viewModelScope.launch {
             fetchLabels()
+            fetchPages() // Fetch pages on refresh
             _currentLabel.value = _currentLabel.value
         }
     }
@@ -100,10 +103,19 @@ val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
     private fun fetchLabels() = viewModelScope.launch {
         repo.getLabels()
             .onSuccess { labels ->
-                _state.update { it.copy(labels = labels.filter { label->label  !="Trending" }, errorMessage = null) }
+                _state.update { it.copy(labels = labels.filter { label -> label != "Trending" }, errorMessage = null) }
             }
             .onError { error ->
                 _state.update { it.copy(errorMessage = error.toUiText()) }
+            }
+    }
+
+    private fun fetchPages() = viewModelScope.launch {
+        repo.getPages()
+            .onSuccess { pages ->
+                _state.update { it.copy(pages = pages) }
+            }
+            .onError { error ->
             }
     }
 }

@@ -131,7 +131,7 @@ fun HomeScreen(
 
                 1 -> TrendingTabContentPullRefresh(state,trendingPosts, onAction)
                 2->FavoriteTabContent(state, onAction)
-                3 -> MoreTabScreen()
+                3 -> MoreTabScreen(pages = state.pages)
             }
         }
     }

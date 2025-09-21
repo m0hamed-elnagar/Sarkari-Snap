@@ -30,3 +30,16 @@ data class LabelsResponse(
 data class LabelItem(
     val labels: List<String> = emptyList()
 )
+
+@kotlinx.serialization.Serializable
+data class PageDto(
+    val id: String,
+    val title: String,
+    val content: String,
+    val url: String
+)
+
+@kotlinx.serialization.Serializable
+data class PagesResponse(
+    val items: List<PageDto> = emptyList()
+)

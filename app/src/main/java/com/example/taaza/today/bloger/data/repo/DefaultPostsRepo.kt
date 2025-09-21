@@ -11,6 +11,7 @@ import com.example.taaza.today.bloger.data.mappers.toPost
 import com.example.taaza.today.bloger.data.mappers.toPostEntity
 import com.example.taaza.today.bloger.data.network.RemotePostDataSource
 import com.example.taaza.today.bloger.data.paging.PostsPagingSource
+import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.core.domain.DataError
@@ -81,6 +82,17 @@ class DefaultPostsRepo(
                 )
             }
         ).flow
+    }
+
+    override suspend fun getPages(): Result<List<Page>, DataError.Remote> {
+        return remotePostDataSource.getPages().map { response ->
+            response.items.map { Page(
+                id = it.id,
+                title = it.title,
+                content = it.content,
+                url = it.url
+            ) }
+        }
     }
 
 

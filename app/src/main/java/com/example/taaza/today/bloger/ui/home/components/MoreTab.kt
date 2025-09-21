@@ -1,6 +1,8 @@
 package com.example.taaza.today.bloger.ui.home.components
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,10 +49,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taaza.today.R
+import com.example.taaza.today.bloger.domain.Page
 
 @Preview
 @Composable
 fun MoreTabScreen(
+    pages: List<Page> = emptyList(),
     onShareApp: () -> Unit = {},
     onMessengerClick: () -> Unit = {},
     onWhatsAppClick: () -> Unit = {},
@@ -58,6 +62,7 @@ fun MoreTabScreen(
     onTerms: () -> Unit = {},
     onContactUs: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,6 +85,7 @@ fun MoreTabScreen(
             title = "WhatsApp",
             color = R.color.whatsapp,
             textColor = Color.White,
+            iconColor = Color.White,
             alignment = Arrangement.Center,
             onClick = onWhatsAppClick
         )
@@ -88,6 +94,7 @@ fun MoreTabScreen(
             title = "Messenger",
             color = R.color.messenger,
             textColor = Color.White,
+            iconColor = Color.White,
             alignment = Arrangement.Center,
             onClick = onMessengerClick
         )
@@ -95,6 +102,7 @@ fun MoreTabScreen(
             imageVector = Icons.Default.Share,
             title = "Share",
             color = R.color.share,
+            iconColor = Color.White,
             textColor = Color.White,
             alignment = Arrangement.Center,
             onClick = onShareApp
@@ -102,6 +110,16 @@ fun MoreTabScreen(
 
         /* ---- Pages ---- */
         SectionTitle("Pages")
+        pages.forEach { page ->
+            CardRow(
+                imageVector = Icons.AutoMirrored.Filled.Article,
+                title = page.title,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(page.url))
+                    context.startActivity(intent)
+                },
+            )
+        }
         CardRow(Icons.Default.PrivacyTip, "Privacy Policy", onClick = onPrivacyPolicy)
         CardRow(Icons.AutoMirrored.Filled.Article, "Terms & Conditions", onClick = onTerms)
         CardRow(Icons.Default.Email, "Contact Us", onClick = onContactUs)
@@ -128,6 +146,7 @@ private fun CardRow(
     title: String,
     color: Int = android.R.color.white,
     textColor: Color = Color.Black,
+    iconColor: Color = Color.Black,
     subtitle: String? = null,
     alignment: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit
@@ -150,7 +169,7 @@ private fun CardRow(
                 painter = icon,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = Color.White
+                tint = iconColor
             )
             Spacer(Modifier.width(12.dp))
             Text(title, fontWeight = FontWeight.Medium, color = textColor)
@@ -164,6 +183,7 @@ private fun CardRow(
     title: String,
     color: Int = android.R.color.white,
     textColor: Color = Color.Black,
+    iconColor: Color = Color.Black,
     subtitle: String? = null,
     alignment: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit
@@ -172,6 +192,7 @@ private fun CardRow(
     title = title,
     color = color,
     textColor = textColor,
+    iconColor = iconColor,
     subtitle = subtitle,
     alignment = alignment,
     onClick = onClick

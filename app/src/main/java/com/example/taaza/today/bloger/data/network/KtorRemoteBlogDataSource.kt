@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.taaza.today.BuildConfig
 import com.example.taaza.today.bloger.data.dto.BloggerResponse
 import com.example.taaza.today.bloger.data.dto.LabelsResponse
+import com.example.taaza.today.bloger.data.dto.PagesResponse
 import com.plcoding.bookpedia.core.data.safeCall
 import com.plcoding.bookpedia.core.domain.DataError
 import com.plcoding.bookpedia.core.domain.Result
@@ -55,6 +56,15 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 parameter("fields", "nextPageToken,items(labels)")
+            }.body()
+        }
+    }
+
+    override suspend fun getPages(): Result<PagesResponse, DataError.Remote> {
+        return safeCall<PagesResponse> {
+            httpClient.get("$BASE_URL/pages") {
+                parameter("key", apiKey)
+                parameter("fields", "items(id,title,content,url)")
             }.body()
         }
     }
