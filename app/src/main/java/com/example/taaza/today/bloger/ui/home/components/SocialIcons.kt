@@ -1,4 +1,8 @@
 package com.example.taaza.today.bloger.ui.home.components
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,82 +26,85 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.taaza.today.R
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+
+fun openLink(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
+}
+
 @Preview(showBackground = true)
 @Composable
-fun SocialIconRow(
-    onInstagram: () -> Unit = {},
-    onWhatsApp: () -> Unit = {},
-    onFacebook: () -> Unit = {},
-    onTelegram: () -> Unit = {},
-    onX: () -> Unit = {}
-) {
-    Row(
+fun SocialIconRow() {
+    val context = LocalContext.current
+    val instagramLink = stringResource(id = R.string.instagram_link)
+    val whatsappLink = stringResource(id = R.string.whatsapp_link)
+    val facebookLink = stringResource(id = R.string.facebook_link)
+    val telegramLink = stringResource(id = R.string.telegram_link)
+    val xLink = stringResource(id = R.string.x_link)
+         Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding( vertical = 12.dp,),
+            .padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         SocialIcon(
             iconRes = R.drawable.instagram,
             background = Color(0xFFE1306C),
-            iconTint = Color.White,          // you had Unspecified
+            iconTint = Color.White,
             circleSize = 48.dp,
-            iconSize = 55.dp,                      // you had 55
+            iconSize = 55.dp,
             elevation = 4.dp,
-            onClick = onInstagram,
+            onClick =  {openLink(context, instagramLink) },
             modifier = Modifier.weight(1f)
         )
-
         SocialIcon(
             iconRes = R.drawable.ic_whatsapp,
             background = Color(0xFF25D366),
             iconTint = Color.White,
             circleSize = 48.dp,
-            iconSize = 75.dp,                      // you had 55
+            iconSize = 75.dp,
             elevation = 4.dp,
-            onClick = onWhatsApp,
+            onClick = {openLink(context, whatsappLink) },
             modifier = Modifier.weight(1f)
         )
-
         SocialIcon(
             iconRes = R.drawable.ic_facebook,
             background = Color(0xFF1877F2),
             iconTint = Color.White,
             circleSize = 48.dp,
-            iconSize = 80.dp,                      // you had 50
+            iconSize = 80.dp,
             elevation = 4.dp,
-            onClick = onFacebook,
+            onClick = {openLink(context, facebookLink) },
             modifier = Modifier.weight(1f)
         )
-
         SocialIcon(
             iconRes = R.drawable.telegram_desktop_svgrepo_com,
             background = Color.White,
-            iconTint = Color(0xFF0088CC),          // you had this tint
+            iconTint = Color(0xFF0088CC),
             circleSize = 48.dp,
-            iconSize = 90.dp,                      // you had 55
+            iconSize = 90.dp,
             elevation = 4.dp,
-            onClick = onTelegram,
+            onClick = {openLink(context, telegramLink) },
             modifier = Modifier.weight(1f)
         )
-
         SocialIcon(
             iconRes = R.drawable.ic_twitter,
             background = Color.Black,
             iconTint = Color.White,
             circleSize = 48.dp,
-            iconSize = 48.dp,                      // you had 32
+            iconSize = 48.dp,
             elevation = 4.dp,
-            onClick = onX,
+            onClick = {openLink(context, xLink) },
             modifier = Modifier.weight(1f)
         )
     }
 }
 
 @Composable
-private fun RowScope.SocialIcon(   // <- note RowScope
+private fun RowScope.SocialIcon(
     @DrawableRes iconRes: Int,
     background: Color,
     iconTint: Color,
@@ -112,8 +119,8 @@ private fun RowScope.SocialIcon(   // <- note RowScope
         color = background,
         modifier = modifier
             .padding(horizontal = 4.dp)
-            .weight(1f)                     // take equal horizontal space
-            .aspectRatio(1f)                // ⬅️ force 1:1, so height == width
+            .weight(1f)
+            .aspectRatio(1f)
             .clickable { onClick() },
         shadowElevation = elevation
     ) {

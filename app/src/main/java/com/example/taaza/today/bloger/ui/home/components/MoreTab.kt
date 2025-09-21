@@ -70,10 +70,7 @@ fun MoreTabScreen(
 
         /* ---- Social Media ---- */
         SectionTitle("Follow us on")
-        SocialIconRow(
-            onWhatsApp = onWhatsAppClick,
-
-        )
+        SocialIconRow()
 
         /* ---- Share App ---- */
         SectionTitle("Share App")
