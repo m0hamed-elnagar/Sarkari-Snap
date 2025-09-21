@@ -41,7 +41,10 @@ fun HomeTabWithPullRefresh(
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
-        onRefresh = { pagedPosts.refresh() }
+        onRefresh = {
+            onAction(HomeActions.OnRefresh)
+            pagedPosts.refresh()
+        }
     )
 
     Box(
@@ -122,7 +125,9 @@ private fun HomeTabContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text("Failed to load posts")
-                        Button(onClick = { pagedPosts.refresh() }) {
+                        Button(onClick = {
+                            onAction(HomeActions.OnRefresh)
+                            pagedPosts.refresh() }) {
                             Text("Retry")
                         }
                     }

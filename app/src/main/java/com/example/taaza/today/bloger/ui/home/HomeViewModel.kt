@@ -76,11 +76,17 @@ val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
                 }
                 _currentLabel.value = action.label
             }
+          is  HomeActions.OnRefresh ->refreshAll()
             // Remove OnNextPage logic (Paging 3 handles this)
             else -> Unit
         }
     }
-
+    fun refreshAll() {
+        viewModelScope.launch {
+            fetchLabels()
+            _currentLabel.value = _currentLabel.value
+        }
+    }
 
     private fun observeFavoriteStatus() {
         observeFavoritesJob?.cancel()
