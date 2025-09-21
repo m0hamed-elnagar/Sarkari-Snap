@@ -3,6 +3,7 @@ package com.example.taaza.today.bloger.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.core.domain.onError
@@ -45,8 +46,14 @@ class HomeViewModel(
     private val _currentLabel = MutableStateFlow(_state.value.selectedLabel)
     val pagedPosts: Flow<PagingData<Post>> = _currentLabel.flatMapLatest { label ->
         repo.getPagedPosts(if (label == "All") null else label)
-    }
+            .cachedIn(viewModelScope)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000L),
+        PagingData.empty()
+    )
 val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
+    .cachedIn(viewModelScope)
     .stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000L),

@@ -1,8 +1,14 @@
 package com.example.taaza.today.bloger.ui.home.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
@@ -13,103 +19,78 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.taaza.today.R
-import com.example.taaza.today.bloger.ui.home.HomeActions
-import com.example.taaza.today.bloger.ui.home.HomeUiState
+import com.example.taaza.today.bloger.ui.home.TAB_COUNT
 import com.example.taaza.today.core.ui.theme.LightOrange
 import com.example.taaza.today.core.ui.theme.SandYellow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun BottomTabRow(
-    state: HomeUiState,
-    onAction: (HomeActions) -> Unit,
     pagerState: PagerState,
     scope: CoroutineScope
 ) {
-    val barBackgroundColor = SandYellow
+    val barBackground = SandYellow
     val selectedColor = LightOrange
-    val unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    val unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f)
 
     TabRow(
-        selectedTabIndex = state.selectedTabIndex,
-        containerColor = barBackgroundColor,
-        indicator = { tabPositions ->
+        selectedTabIndex = pagerState.currentPage,              // ← single source
+        containerColor   = barBackground,
+        indicator = { positions ->
             TabRowDefaults.PrimaryIndicator(
-                modifier = Modifier.tabIndicatorOffset(tabPositions[state.selectedTabIndex]),
+                Modifier.tabIndicatorOffset(positions[pagerState.currentPage]), // ← same source
                 height = 3.dp,
-                color = selectedColor
+                color  = selectedColor
             )
         }
     ) {
-        Tab(
-            selected = state.selectedTabIndex == 0,
-            onClick = {
-                onAction(HomeActions.OnTabSelected(0))
-                scope.launch { pagerState.animateScrollToPage(0) }   // ← animate
-            }, icon = {
-                Icon(
-                    Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = if (state.selectedTabIndex == 0) selectedColor else unselectedColor
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(R.string.home),
-                    color = if (state.selectedTabIndex == 0) selectedColor else unselectedColor
-                )
-            }
+        val labels = listOf(
+            stringResource(R.string.home),
+            stringResource(R.string.trending),
+            stringResource(R.string.favorites),
+            stringResource(R.string.more)
+        )
+        val icons = listOf(
+            rememberVectorPainter(Icons.Default.Home),
+            painterResource(R.drawable.ic_trending),
+            rememberVectorPainter(Icons.Default.Favorite),
+            rememberVectorPainter(Icons.AutoMirrored.Filled.More)
         )
 
-        Tab(
-            selected = state.selectedTabIndex == 1,
-            onClick = {
-                onAction(HomeActions.OnTabSelected(1))
-                scope.launch { pagerState.animateScrollToPage(1) }
-            },
-            icon = {
-                Icon(
-                    painterResource(R.drawable.ic_trending),
-                    contentDescription = "Trending",
-                    tint = if (state.selectedTabIndex == 1) selectedColor else unselectedColor,
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(R.string.trending),
-                    color = if (state.selectedTabIndex == 1) selectedColor else unselectedColor
-                )
-            }
-        )
-        Tab(
-            selected = state.selectedTabIndex == 2,
-            onClick = {
-                onAction(HomeActions.OnTabSelected(2))
-                scope.launch { pagerState.animateScrollToPage(2) }
-            },
-            icon = {
-                Icon(
-                    Icons.Default.Favorite,
-                    contentDescription = "Favorites",
-                    tint = if (state.selectedTabIndex == 2) selectedColor else unselectedColor
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(R.string.favorites),
-                    color = if (state.selectedTabIndex == 2) selectedColor else unselectedColor
-                )
-            }
-        )
-
-
+        repeat(TAB_COUNT) { index ->
+            val selected = pagerState.currentPage == index
+            Tab(
+                selected = selected,
+                onClick  = { scope.launch { pagerState.scrollToPage(index) } },
+                content  = {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    ) {
+                        Box(Modifier.size(24.dp).wrapContentSize(Alignment.Center)) {
+                            Icon(
+                                painter = icons[index],
+                                contentDescription = null,
+                                tint = if (selected) selectedColor else unselectedColor
+                            )
+                        }
+                        Text(
+                            text  = labels[index],
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (selected) selectedColor else unselectedColor
+                        )
+                    }
+                }
+            )
+        }
     }
 }

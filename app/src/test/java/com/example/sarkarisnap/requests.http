@@ -19,6 +19,11 @@ Accept: application/json
 ### Retrieve list of posts for this blog (using the obtained blog ID)
 GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
+#retrieve list of pages
+### Retrieve list of pages for this blog
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+
 ### Retrieve a single post (replace POST_ID with a real post ID)
 # GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/POST_ID?key=YOUR_API_KEY
 # Accept: application/json

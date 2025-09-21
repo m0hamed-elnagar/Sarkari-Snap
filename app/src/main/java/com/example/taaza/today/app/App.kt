@@ -9,8 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.taaza.today.app.AppChecker.*
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -20,6 +24,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.taaza.today.app.BloggerApplication.Companion.isWorking
+import com.example.taaza.today.app.components.LoadingScreen
+import com.example.taaza.today.app.components.NoInternetScreen
+import com.example.taaza.today.app.components.TemporarilyStoppedScreen
 import com.example.taaza.today.bloger.ui.SelectedPostViewModel
 import com.example.taaza.today.bloger.ui.home.HomeScreenRoot
 import com.example.taaza.today.bloger.ui.home.HomeViewModel
@@ -28,134 +35,115 @@ import com.example.taaza.today.bloger.ui.labeled.LabeledScreenRoot
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsActions
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsScreenRoot
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
+import com.example.taaza.today.core.utils.checkInternet
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+
 
 @Composable
 fun App() {
     MaterialTheme {
         val navController = rememberNavController()
-        val value = Firebase.remoteConfig.getBoolean("isWorking")
-        /* ----------  NEW: global on/off switch  ---------- */
-        val isWorking by isWorking.collectAsState()
-        Log.d("RemoteConfig", "working: $value")
-        when (isWorking) {
-            true  -> AppNavigation(navController)          // normal graph
-            false -> TemporarilyStoppedScreen()            // flag = false
-            null -> LoadingScreen()
-        }
-    }
+        val context = LocalContext.current
+
+        /* --------- single state-flow for whole check --------- */
+        val checker = remember { AppChecker(context) }
+        val uiState by checker.uiState.collectAsState()
+        LaunchedEffect(Unit) { checker.check() }
+
+        /* --------- retry from any error screen --------- */
+        val scope = rememberCoroutineScope()
+        val onRetry: () -> Unit = { scope.launch { checker.check() } }
+
+when (uiState) {
+    UiState.Checking, UiState.Loading -> LoadingScreen()
+    UiState.NoInternet -> NoInternetScreen(onRetry = onRetry)
+    UiState.Stopped    -> TemporarilyStoppedScreen(onRetry =onRetry)
+    UiState.GaveUp     -> NoInternetScreen(                           // same UI, different text
+        msg = "Still can’t connect after several tries.",
+        onRetry = onRetry
+    )
+    UiState.Working    -> AppNavigation(navController)
+}    }
 }
+
 @Composable
 private fun AppNavigation(navController: NavHostController) {
     NavHost(
-            navController = navController,
-            startDestination = Route.BlogGraph
-        ) {
-            navigation<Route.BlogGraph>(
-                startDestination = Route.BlogHome
-            ) {
-                // Define the book list screen
-                composable<Route.BlogHome>(
-                    enterTransition = { fadeIn(tween( 800)) },
-                    exitTransition  = { fadeOut(tween( 800)) },
-                    popEnterTransition = { fadeIn(tween( 800)) },
-                    popExitTransition  = { fadeOut(tween( 800)) }
-                ) {
-                    val viewModel = koinViewModel<HomeViewModel>()
-                    val sharedViewModel =
-                        it.sharedKoinViewModel<SelectedPostViewModel>(navController)
+        navController = navController,
+        startDestination = Route.BlogGraph,
+        enterTransition = { fadeIn(tween(800)) },
+        exitTransition = { fadeOut(tween(800)) },
+        popEnterTransition = { fadeIn(tween(800)) },
+        popExitTransition = { fadeOut(tween(800)) }
+    ) {
+        navigation<Route.BlogGraph>(startDestination = Route.BlogHome) {
+            composable<Route.BlogHome> { entry ->
+                val homeVM = koinViewModel<HomeViewModel>()
+                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
+                LaunchedEffect(Unit) { sharedVM.selectPost(null) }
 
-                    LaunchedEffect(true) {
-                        // Reset the selected book when navigating to the book list
-                        sharedViewModel.selectPost(null)
-                    }
-                    HomeScreenRoot(
-                        viewModel = viewModel,
-                        onPostClick = { post ->
-                            sharedViewModel.selectPost(post)
-                            navController.navigate(
-                                Route.PostDetails(post.id)
-                            ){ launchSingleTop = true}
-                        }
-                    )
-                }
-
-                composable<Route.PostDetails>(
-
-                        enterTransition = { fadeIn(tween( 800)) },
-                        exitTransition  = { fadeOut(tween( 800)) },
-                        popEnterTransition = { fadeIn(tween( 800)) },
-                        popExitTransition  = { fadeOut(tween( 800)) }
-
-                        ) {
-                    val sharedViewModel =
-                        it.sharedKoinViewModel<SelectedPostViewModel>(navController)
-                    val viewModel = koinViewModel<PostDetailsViewModel>()
-                    val selectedBook by sharedViewModel.selectedPost.collectAsState()
-                    LaunchedEffect(selectedBook) {
-                        selectedBook?.let {
-                            viewModel.onAction(
-                                PostDetailsActions.OnSelectedPostChange(it)
-                            )
+                HomeScreenRoot(
+                    viewModel = homeVM,
+                    onPostClick = { post ->
+                        sharedVM.selectPost(post)
+                        navController.navigate(Route.PostDetails(post.id)) {
+                            launchSingleTop = true
                         }
                     }
-                    PostDetailsScreenRoot(
-                        viewModel = viewModel,
-                        onBackClicked = {
-                            navController.navigateUp()
-                        },
-                        onOpenPost = { newPost ->
-                            sharedViewModel.selectPost(newPost)          // new data
-                            navController.navigate(Route.PostDetails(newPost.id)) {
-                                popUpTo<Route.PostDetails> { inclusive = true }
-                                launchSingleTop =
-                                    true
-                            }
-                        },
-                        onLabelClick = {label->
-                            navController.navigate(Route.LabeledPosts(label)){
-                                popUpTo<Route.PostDetails> { inclusive = true }
-                                launchSingleTop =
-                                    true
-                            }
-                        }
-                    )
-                }
-                composable<Route.LabeledPosts>(
-                    enterTransition = { fadeIn(tween( 800)) },
-                    exitTransition  = { fadeOut(tween( 800)) },
-                    popEnterTransition = { fadeIn(tween( 800)) },
-                    popExitTransition  = { fadeOut(tween( 800)) }
-                ) {
-                    val viewModel = koinViewModel<LabeledPostsViewModel>()
-                    val sharedViewModel =
-                        it.sharedKoinViewModel<SelectedPostViewModel>(navController)
+                )
+            }
 
-                    LaunchedEffect(true) {
-                        // Reset the selected book when navigating to the book list
-                        sharedViewModel.selectPost(null)
+            composable<Route.PostDetails> { entry ->
+                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
+                val detailsVM = koinViewModel<PostDetailsViewModel>()
+                val selected by sharedVM.selectedPost.collectAsState()
+
+                LaunchedEffect(selected) {
+                    selected?.let { detailsVM.onAction(PostDetailsActions.OnSelectedPostChange(it)) }
+                }
+
+                PostDetailsScreenRoot(
+                    viewModel = detailsVM,
+                    onBackClicked = { navController.navigateUp() },
+                    onOpenPost = { newPost ->
+                        sharedVM.selectPost(newPost)
+                        navController.navigate(Route.PostDetails(newPost.id)) {
+                            popUpTo<Route.PostDetails> { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onLabelClick = { label ->
+                        navController.navigate(Route.LabeledPosts(label)) {
+                            popUpTo<Route.PostDetails> { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
-                    LabeledScreenRoot(
-                        viewModel = viewModel,
-                        onBackClick = { navController.navigateUp() },
-                        onPostClick = { post ->
-                            sharedViewModel.selectPost(post)
-                            navController.navigate(
-                                Route.PostDetails(post.id)
-                            ){
-                                popUpTo<Route.PostDetails> { inclusive = true }
-                                launchSingleTop =
-                                    true
-                            }
-                        }
-                    )
-                }
+                )
+            }
 
+            composable<Route.LabeledPosts> { entry ->
+                val labeledVM = koinViewModel<LabeledPostsViewModel>()
+                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
+                LaunchedEffect(Unit) { sharedVM.selectPost(null) }
+
+                LabeledScreenRoot(
+                    viewModel = labeledVM,
+                    onBackClick = { navController.navigateUp() },
+                    onPostClick = { post ->
+                        sharedVM.selectPost(post)
+                        navController.navigate(Route.PostDetails(post.id)) {
+                            popUpTo<Route.PostDetails> { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
         }
     }
+}
 
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.taaza.today.app
+package com.example.taaza.today.app.components
 
 
 import androidx.compose.foundation.layout.Arrangement

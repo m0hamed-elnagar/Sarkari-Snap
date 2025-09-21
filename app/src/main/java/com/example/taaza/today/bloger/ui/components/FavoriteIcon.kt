@@ -39,7 +39,7 @@ fun FavoriteToggleIcon(
         Icon(
             imageVector = if (isFavorite) Icons.Filled.Favorite
             else Icons.Outlined.FavoriteBorder,
-            tint = Color.Red,
+            tint = Color.White,
             contentDescription = stringResource(
                 if (isFavorite) R.string.remove_from_favorites
                 else R.string.mark_as_favorite

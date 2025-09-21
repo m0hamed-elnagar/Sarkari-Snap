@@ -1,11 +1,15 @@
 package com.example.taaza.today.bloger.ui.home
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,10 +35,11 @@ import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.ui.components.PostListStatic
 import com.example.taaza.today.bloger.ui.home.components.BottomTabRow
 import com.example.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
+import com.example.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.example.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.example.taaza.today.core.ui.theme.SandYellow
 import org.koin.compose.viewmodel.koinViewModel
-private const val TAB_COUNT = 3
+ const val TAB_COUNT = 4
 
 @Composable
 fun HomeScreenRoot(
@@ -47,6 +52,7 @@ fun HomeScreenRoot(
     HomeScreen(
         state = state, // Pass state argument
         pagedPosts = pagedPosts,
+
         trendingPosts = trendingPosts,
         onAction = { action ->
             when (action) {
@@ -70,6 +76,7 @@ fun HomeScreen(
         0 -> stringResource(R.string.home)
         1 -> stringResource(R.string.trending)
         2 -> stringResource(R.string.favorites)
+        3 -> stringResource(R.string.more)
         else -> ""
     }
 
@@ -80,12 +87,13 @@ fun HomeScreen(
     val labelListStates = remember { mutableMapOf<String, LazyListState>() }
     val currentListState = labelListStates.getOrPut(state.selectedLabel) { LazyListState() }
 
-    val settledPage = pagerState.targetPage
+    val settledPage = pagerState.settledPage
     LaunchedEffect(settledPage) {
         if (state.selectedTabIndex != settledPage) {
             onAction(HomeActions.OnTabSelected(settledPage))
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,7 +109,7 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomTabRow(
-                state, onAction, pagerState = pagerState,
+                 pagerState = pagerState,
                 scope = scope
             )
         }
@@ -123,6 +131,7 @@ fun HomeScreen(
 
                 1 -> TrendingTabContentPullRefresh(state,trendingPosts, onAction)
                 2->FavoriteTabContent(state, onAction)
+                3 -> MoreTabScreen()
             }
         }
     }

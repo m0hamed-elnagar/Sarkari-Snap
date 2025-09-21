@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.domain.PostsRepo
 import com.example.taaza.today.app.Route
@@ -40,13 +41,18 @@ class PostDetailsViewModel(
     private val _relatedLabel = MutableStateFlow<String?>(null)
     @OptIn(ExperimentalCoroutinesApi::class)
     val relatedPostsPaged: Flow<PagingData<Post>> = _relatedLabel.flatMapLatest { label ->
-        postsRepo.getPagedPosts(label)
+        postsRepo.getPagedPosts(label) .cachedIn(viewModelScope)
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = PagingData.empty()
     )
     val latestArticlesPaged: Flow<PagingData<Post>> = postsRepo.getPagedPosts()
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = PagingData.empty()
+        )
 
     fun onAction(action: PostDetailsActions) {
         when (action) {

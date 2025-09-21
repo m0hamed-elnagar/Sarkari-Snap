@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="lightOrange">#FDF5E7</color>
     <color name="splash_background">#FFF34336</color>
+    <color name="messenger">#0084FF</color>
+    <color name="whatsapp">#1A8518</color>
+    <color name="share">#04162c</color>
 </resources>
