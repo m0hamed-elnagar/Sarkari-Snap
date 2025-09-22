@@ -21,25 +21,27 @@ data class PostDto(
     val labels: List<String> = emptyList(),
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class LabelsResponse(
     val items: List<LabelItem> = emptyList()
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class LabelItem(
     val labels: List<String> = emptyList()
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class PageDto(
     val id: String,
     val title: String,
     val content: String,
-    val url: String
-)
+    val url: String,
+    val updated: String="",
 
-@kotlinx.serialization.Serializable
+    )
+
+@Serializable
 data class PagesResponse(
     val items: List<PageDto> = emptyList()
 )

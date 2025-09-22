@@ -13,6 +13,10 @@ sealed interface Route {
     data class PostDetails(val postId: String) : Route
 
     @Serializable
+    data class PageDetails(val pageId: String) : Route
+
+
+    @Serializable
     data class LabeledPosts(val label: String) : Route
 
 }

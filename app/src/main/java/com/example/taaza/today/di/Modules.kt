@@ -10,6 +10,7 @@ import com.example.taaza.today.bloger.domain.PostsRepo
 import com.example.taaza.today.bloger.ui.SelectedPostViewModel
 import com.example.taaza.today.bloger.ui.home.HomeViewModel
 import com.example.taaza.today.bloger.ui.labeled.LabeledPostsViewModel
+import com.example.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
 import com.plcoding.bookpedia.core.data.HttpClientFactory
 import io.ktor.client.engine.HttpClientEngine
@@ -37,6 +38,7 @@ val sharedModule = module {
     single { get<FavoritePostDataBase>().favoritePostDao }
     viewModelOf(::HomeViewModel)
     viewModelOf(::PostDetailsViewModel)
+    viewModelOf(::PageDetailsViewModel)
     viewModelOf(::SelectedPostViewModel)
     viewModelOf(::LabeledPostsViewModel)
 

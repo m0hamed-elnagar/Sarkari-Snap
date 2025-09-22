@@ -1,17 +1,19 @@
 package com.example.taaza.today.bloger.ui.home
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.More
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,10 +29,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.taaza.today.R
+import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.ui.components.PostListStatic
 import com.example.taaza.today.bloger.ui.home.components.BottomTabRow
@@ -39,24 +43,26 @@ import com.example.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.example.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.example.taaza.today.core.ui.theme.SandYellow
 import org.koin.compose.viewmodel.koinViewModel
- const val TAB_COUNT = 4
 
 @Composable
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onPostClick: (Post) -> Unit,
+    onPagesClick: (Page) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     val trendingPosts = viewModel.trendingPosts.collectAsLazyPagingItems()
+    val pages = viewModel.pages.collectAsLazyPagingItems()
     HomeScreen(
         state = state, // Pass state argument
         pagedPosts = pagedPosts,
-
         trendingPosts = trendingPosts,
+        pages= pages,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
+                is HomeActions.OnPageClick -> onPagesClick(action.page)
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -70,8 +76,12 @@ fun HomeScreen(
     state: HomeUiState,
     pagedPosts: LazyPagingItems<Post>,
     trendingPosts: LazyPagingItems<Post>,
-    onAction: (HomeActions) -> Unit,
+    pages: LazyPagingItems<Page>,
+    onAction: (HomeActions) -> Unit
 ) {
+    val tabs = BottomTab.entries
+    val pagerState = rememberPagerState { tabs.size } // ← dynamic count
+
     val title = when (state.selectedTabIndex) {
         0 -> stringResource(R.string.home)
         1 -> stringResource(R.string.trending)
@@ -80,7 +90,6 @@ fun HomeScreen(
         else -> ""
     }
 
-    val pagerState = rememberPagerState { TAB_COUNT}
     val scope = rememberCoroutineScope()
     val chipListState = remember { LazyListState() }
     // --- Per-label LazyListState map ---
@@ -110,7 +119,8 @@ fun HomeScreen(
         bottomBar = {
             BottomTabRow(
                  pagerState = pagerState,
-                scope = scope
+                scope = scope,
+                 tabs = tabs
             )
         }
     ) { padding ->
@@ -120,8 +130,8 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) { page ->
-            when (page) {
-                0 -> HomeTabWithPullRefresh(
+    when (tabs[page]) {          // ← enum instead of int
+                BottomTab.HOME-> HomeTabWithPullRefresh(
                     state,
                     pagedPosts,
                     onAction,
@@ -129,9 +139,9 @@ fun HomeScreen(
                     currentListState
                 )
 
-                1 -> TrendingTabContentPullRefresh(state,trendingPosts, onAction)
-                2->FavoriteTabContent(state, onAction)
-                3 -> MoreTabScreen(pages = state.pages)
+                BottomTab.TRENDING -> TrendingTabContentPullRefresh(state,trendingPosts, pages,onAction)
+                BottomTab.FAVORITES->FavoriteTabContent(state, onAction)
+                BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
             }
         }
     }
@@ -174,4 +184,13 @@ private fun CategoriesTabContent() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text("Categories screen – coming soon", style = MaterialTheme.typography.bodyLarge)
     }
+}
+enum class BottomTab(
+    @StringRes val labelRes: Int,
+    val icon: ImageVector
+) {
+    HOME(R.string.home, Icons.Default.Home),
+    TRENDING(R.string.trending, Icons.AutoMirrored.Filled.TrendingUp), // use real icon
+    FAVORITES(R.string.favorites, Icons.Default.Favorite),
+    MORE(R.string.more, Icons.AutoMirrored.Filled.More)
 }

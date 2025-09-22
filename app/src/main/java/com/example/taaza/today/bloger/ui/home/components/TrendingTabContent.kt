@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.ui.components.PostList
 import com.example.taaza.today.bloger.ui.home.HomeActions
@@ -37,12 +38,14 @@ import kotlinx.coroutines.launch
 fun TrendingTabContentPullRefresh(
     state: HomeUiState,
     pagedPosts: LazyPagingItems<Post>,
+    pages : LazyPagingItems<Page>,
     onAction: (HomeActions) -> Unit,
 ) {
     val listState = rememberLazyListState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
-        onRefresh = { pagedPosts.refresh() }
+        onRefresh = { pagedPosts.refresh()
+            pages.refresh()}
     )
 
     Box(

@@ -4,6 +4,9 @@ data class Page(
     val id: String,
     val title: String,
     val content: String,
-    val url: String
+    val url: String,
+    val description: String,
+    val imageUrls: List<String>,
+    val date: String
 )
 

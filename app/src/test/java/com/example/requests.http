@@ -23,7 +23,20 @@ Accept: application/json
 ### Retrieve list of pages for this blog
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
-
+### Get page ID by URL 4565115267629106377
+#4812052307209681714
+#7099357402796700169
+#9009084679096542491
+#3968644153225120990
+#847919335082049403
+#6247905743648035844
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/4812052307209681714?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 ### Retrieve a single post (replace POST_ID with a real post ID)
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/6247905743648035844?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+### Retrieve a single post (replace POST_ID with a real post ID)
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/847919335082049403?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+### Retrieve a single post (replace POST_ID with a real post ID)
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/3968644153225120990?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+
 # GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/POST_ID?key=YOUR_API_KEY
 # Accept: application/json

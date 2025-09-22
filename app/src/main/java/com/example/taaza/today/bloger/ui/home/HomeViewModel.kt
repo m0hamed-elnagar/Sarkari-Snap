@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.domain.PostsRepo
 import com.plcoding.bookpedia.core.domain.onError
@@ -34,7 +36,6 @@ class HomeViewModel(
     val state: StateFlow<HomeUiState> = _state
         .onStart {
             fetchLabels()
-            fetchPages() // Fetch pages on start
             observeFavoriteStatus()
         }
         .stateIn(
@@ -54,6 +55,13 @@ class HomeViewModel(
         PagingData.empty()
     )
     val trendingPosts: Flow<PagingData<Post>> = repo.getPagedPosts("Trending")
+        .cachedIn(viewModelScope)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            PagingData.empty()
+        )
+    val pages: Flow<PagingData<Page>> = repo.getPages()
         .cachedIn(viewModelScope)
         .stateIn(
             viewModelScope,
@@ -86,7 +94,6 @@ class HomeViewModel(
     fun refreshAll() {
         viewModelScope.launch {
             fetchLabels()
-            fetchPages() // Fetch pages on refresh
             _currentLabel.value = _currentLabel.value
         }
     }
@@ -110,12 +117,5 @@ class HomeViewModel(
             }
     }
 
-    private fun fetchPages() = viewModelScope.launch {
-        repo.getPages()
-            .onSuccess { pages ->
-                _state.update { it.copy(pages = pages) }
-            }
-            .onError { error ->
-            }
-    }
+
 }

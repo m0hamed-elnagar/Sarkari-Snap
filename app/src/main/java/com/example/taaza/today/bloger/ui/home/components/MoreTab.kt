@@ -1,12 +1,11 @@
 package com.example.taaza.today.bloger.ui.home.components
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,16 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,88 +43,134 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.example.taaza.today.R
 import com.example.taaza.today.bloger.domain.Page
+import com.example.taaza.today.bloger.ui.home.HomeActions
 
-@Preview
 @Composable
 fun MoreTabScreen(
-    pages: List<Page> = emptyList(),
-    onShareApp: () -> Unit = {},
-    onMessengerClick: () -> Unit = {},
-    onWhatsAppClick: () -> Unit = {},
-    onPrivacyPolicy: () -> Unit = {},
-    onTerms: () -> Unit = {},
-    onContactUs: () -> Unit = {}
-) {
+    pages: LazyPagingItems<Page>,
+    onAction: (HomeActions) -> Unit,
+
+
+    ) {
     val context = LocalContext.current
-    Column(
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
+        item { SectionTitle("Follow us on") }
+        item { SocialIconRow() }
 
-
-        /* ---- Social Media ---- */
-        SectionTitle("Follow us on")
-        SocialIconRow()
-
-        /* ---- Share App ---- */
-        SectionTitle("Share App")
-        ShareAppLinkRow(link = "https://test.link/share")
-        CardRow(
-            icon = painterResource(R.drawable.ic_whatsapp),
-            title = "WhatsApp",
-            color = R.color.whatsapp,
-            textColor = Color.White,
-            iconColor = Color.White,
-            alignment = Arrangement.Center,
-            onClick = onWhatsAppClick
-        )
-        CardRow(
-            icon = painterResource(R.drawable.messenger),
-            title = "Messenger",
-            color = R.color.messenger,
-            textColor = Color.White,
-            iconColor = Color.White,
-            alignment = Arrangement.Center,
-            onClick = onMessengerClick
-        )
-        CardRow(
-            imageVector = Icons.Default.Share,
-            title = "Share",
-            color = R.color.share,
-            iconColor = Color.White,
-            textColor = Color.White,
-            alignment = Arrangement.Center,
-            onClick = onShareApp
-        )
-
-        /* ---- Pages ---- */
-        SectionTitle("Pages")
-        pages.forEach { page ->
+        item { SectionTitle("Share App") }
+        item { ShareAppLinkRow("https://test.link/share") }
+        item {
             CardRow(
-                imageVector = Icons.AutoMirrored.Filled.Article,
-                title = page.title,
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(page.url))
-                    context.startActivity(intent)
-                },
+                icon = painterResource(R.drawable.ic_whatsapp),
+                title = "WhatsApp",
+                color = R.color.whatsapp,
+                textColor = Color.White,
+                iconColor = Color.White,
+                alignment = Arrangement.Center,
+                onClick = {}
             )
         }
-        CardRow(Icons.Default.PrivacyTip, "Privacy Policy", onClick = onPrivacyPolicy)
-        CardRow(Icons.AutoMirrored.Filled.Article, "Terms & Conditions", onClick = onTerms)
-        CardRow(Icons.Default.Email, "Contact Us", onClick = onContactUs)
+        item {
+            CardRow(
+                icon = painterResource(R.drawable.messenger),
+                title = "Messenger",
+                color = R.color.messenger,
+                textColor = Color.White,
+                iconColor = Color.White,
+                alignment = Arrangement.Center,
+                onClick = {}
+            )
+        }
+        item {
+            CardRow(
+                imageVector = Icons.Default.Share,
+                title = "Share",
+                color = R.color.share,
+                iconColor = Color.White,
+                textColor = Color.White,
+                alignment = Arrangement.Center,
+                onClick = {}
+            )
+        }
 
-        Spacer(Modifier.height(24.dp))
+        // ---------  Paged Pages  ---------
+        item { SectionTitle("Pages") }
+
+        // loading first page
+        when (pages.loadState.refresh) {
+            is androidx.paging.LoadState.Loading -> {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
+            is androidx.paging.LoadState.Error -> {
+                item {
+                    Text(
+                        text = "Could not load pages",
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+            }
+     else -> { /* content below */ }
+        }
+
+        // actual pages
+        items(pages.itemCount) { index ->
+            val page = pages[index]
+            if (page != null) {
+                CardRow(
+                    imageVector = Icons.AutoMirrored.Filled.Article,
+                    title = page.title,
+                    onClick = {
+                        onAction(HomeActions.OnPageClick(page))
+                    }
+                )
+            }
+        }
+
+        // append loading / retry
+        if (pages.loadState.append is androidx.paging.LoadState.Loading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+//
+//        // static footer rows
+//        item { CardRow(Icons.Default.PrivacyTip, "Privacy Policy", onClick = {}) }
+//        item { CardRow(Icons.AutoMirrored.Filled.Article, "Terms & Conditions", onClick = {}) }
+//        item { CardRow(Icons.Default.Email, "Contact Us", onClick = {}) }
+
+        // bottom spacer
+        item { Spacer(modifier = Modifier.height(24.dp)) }
     }
 }
-
 /* -------------------- Re-usable components -------------------- */
 
 @Composable

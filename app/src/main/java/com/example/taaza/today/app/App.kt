@@ -32,6 +32,9 @@ import com.example.taaza.today.bloger.ui.home.HomeScreenRoot
 import com.example.taaza.today.bloger.ui.home.HomeViewModel
 import com.example.taaza.today.bloger.ui.labeled.LabeledPostsViewModel
 import com.example.taaza.today.bloger.ui.labeled.LabeledScreenRoot
+import com.example.taaza.today.bloger.ui.pageDetails.PageDetailsActions
+import com.example.taaza.today.bloger.ui.pageDetails.PageDetailsScreenRoot
+import com.example.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsActions
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsScreenRoot
 import com.example.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
@@ -57,16 +60,18 @@ fun App() {
         val scope = rememberCoroutineScope()
         val onRetry: () -> Unit = { scope.launch { checker.check() } }
 
-when (uiState) {
-    UiState.Checking, UiState.Loading -> LoadingScreen()
-    UiState.NoInternet -> NoInternetScreen(onRetry = onRetry)
-    UiState.Stopped    -> TemporarilyStoppedScreen(onRetry =onRetry)
-    UiState.GaveUp     -> NoInternetScreen(                           // same UI, different text
-        msg = "Still can’t connect after several tries.",
-        onRetry = onRetry
-    )
-    UiState.Working    -> AppNavigation(navController)
-}    }
+        when (uiState) {
+            UiState.Checking, UiState.Loading -> LoadingScreen()
+            UiState.NoInternet -> NoInternetScreen(onRetry = onRetry)
+            UiState.Stopped -> TemporarilyStoppedScreen(onRetry = onRetry)
+            UiState.GaveUp -> NoInternetScreen(                           // same UI, different text
+                msg = "Still can’t connect after several tries.",
+                onRetry = onRetry
+            )
+
+            UiState.Working -> AppNavigation(navController)
+        }
+    }
 }
 
 @Composable
@@ -90,6 +95,12 @@ private fun AppNavigation(navController: NavHostController) {
                     onPostClick = { post ->
                         sharedVM.selectPost(post)
                         navController.navigate(Route.PostDetails(post.id)) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onPagesClick = { page ->
+                        sharedVM.selectPage(page)
+                        navController.navigate(Route.PageDetails(page.id)) {
                             launchSingleTop = true
                         }
                     }
@@ -121,6 +132,21 @@ private fun AppNavigation(navController: NavHostController) {
                             launchSingleTop = true
                         }
                     }
+                )
+            }
+            composable<Route.PageDetails> { entry ->
+                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
+                val detailsVM = koinViewModel<PageDetailsViewModel>()
+                val selected by sharedVM.selectedPage.collectAsState()
+
+                LaunchedEffect(selected) {
+                    selected?.let { detailsVM.onAction(PageDetailsActions.OnSelectedPageChange(it)) }
+                }
+
+                PageDetailsScreenRoot(
+                    viewModel = detailsVM,
+                    onBackClicked = { navController.navigateUp() },
+
                 )
             }
 

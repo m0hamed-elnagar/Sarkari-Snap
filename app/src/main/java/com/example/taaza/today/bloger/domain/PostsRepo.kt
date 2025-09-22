@@ -19,5 +19,5 @@ interface PostsRepo {
     suspend fun removePostFromFavorites(postId: String)
     suspend fun getLabels(): Result<List<String>, DataError.Remote>
     fun getPagedPosts(label: String? = null): Flow<PagingData<Post>>
-    suspend fun getPages(): Result<List<Page>, DataError.Remote>
+     fun getPages(): Flow<PagingData<Page>>
 }

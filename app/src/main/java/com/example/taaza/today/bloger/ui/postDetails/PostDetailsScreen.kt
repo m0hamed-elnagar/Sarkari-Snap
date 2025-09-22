@@ -306,7 +306,6 @@ private fun SectionWithPaging(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
         )
-        val listState = rememberLazyListState()
         Box(
             Modifier
                 .fillMaxWidth()

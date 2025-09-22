@@ -1,7 +1,9 @@
 package com.example.taaza.today.bloger.data.mappers
 
 import com.example.taaza.today.bloger.data.database.PostEntity
+import com.example.taaza.today.bloger.data.dto.PageDto
 import com.example.taaza.today.bloger.data.dto.PostDto
+import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import org.jsoup.Jsoup
 import java.time.OffsetDateTime
@@ -73,3 +75,23 @@ fun PostEntity.toPost() = Post(
     imageUrls = this.imageUrls,
     labels = this.labels
 )
+fun PageDto.toPage(): Page {
+    val images = extractAllImages(content)
+    val plainText = parsePlainText(content)
+    val cleanHtml = runCatching {
+        val doc = Jsoup.parse(content)
+        doc.select("img").remove()          // drop images
+        doc.select("style, script").remove() // drop styles/scripts if any
+        doc.body().html()
+    }.getOrDefault("")
+
+    return Page(
+        id = id,
+        title = title,
+        url = url,
+        description = plainText,
+        content = cleanHtml,
+        imageUrls = images,
+        date = updated.toDateOnly()
+    )
+}

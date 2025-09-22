@@ -7,10 +7,12 @@ import androidx.sqlite.SQLiteException
 import com.example.taaza.today.bloger.data.database.FavoritePostDao
 import com.example.taaza.today.bloger.data.dto.BloggerResponse
 import com.example.taaza.today.bloger.data.mappers.toDomain
+import com.example.taaza.today.bloger.data.mappers.toPage
 import com.example.taaza.today.bloger.data.mappers.toPost
 import com.example.taaza.today.bloger.data.mappers.toPostEntity
 import com.example.taaza.today.bloger.data.network.RemotePostDataSource
-import com.example.taaza.today.bloger.data.paging.PostsPagingSource
+import com.example.taaza.today.bloger.data.paging.pagesPagingSource
+import com.example.taaza.today.bloger.data.paging.postsPagingSource
 import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.domain.PostsRepo
@@ -76,7 +78,7 @@ class DefaultPostsRepo(
         return Pager(
             config = PagingConfig(pageSize = 4, enablePlaceholders = false),
             pagingSourceFactory = {
-                PostsPagingSource(
+                postsPagingSource(
                     remotePostDataSource,
                     if (label == "All") null else label
                 )
@@ -84,15 +86,16 @@ class DefaultPostsRepo(
         ).flow
     }
 
-    override suspend fun getPages(): Result<List<Page>, DataError.Remote> {
-        return remotePostDataSource.getPages().map { response ->
-            response.items.map { Page(
-                id = it.id,
-                title = it.title,
-                content = it.content,
-                url = it.url
-            ) }
-        }
+    override  fun getPages(): Flow<PagingData<Page>> {
+     return   Pager(
+            config = PagingConfig(pageSize = 4, enablePlaceholders = false),
+            pagingSourceFactory = {
+                pagesPagingSource(
+                    remotePostDataSource
+                )
+            }
+        ).flow
+
     }
 
 
