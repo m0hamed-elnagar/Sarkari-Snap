@@ -212,120 +212,41 @@ fun PostDetailsScreen(
                     .padding(padding),
                 state = scrollState
             ) {
-    item(key = "main_post_${state.post.id}") {
+                item(key = "main_post_${state.post.id}") {
                     val post = state.post ?: return@item
                     /* everything you already had: hero, title, date, chips, body */
                     PostDetailContent(post = post, onAction = onAction)
                 }
-                itemsIndexed(
-  items = relatedPostsPaging.itemSnapshotList.items.filterNotNull(),
-        key = { index, post -> "related_${post.id}_$index" } // Add prefix and index for uniqueness
-    ) { index, relatedPost ->
-
-                // visual separator
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 24.dp),
-                        thickness = DividerDefaults.Thickness, color = colorScheme.outlineVariant
-                    )
-
-                    // same composable you used for the main post
-                PostDetailContent(post = relatedPost, onAction = onAction)
-            }
-    when (val append = relatedPostsPaging.loadState.append) {
-        is LoadState.Loading -> item(key = "loading_footer") { LoadingFooter() }
-        is LoadState.Error -> item(key = "error_footer") {
-            ErrorFooter(append.error) { relatedPostsPaging.retry() }
-        }
-        else                 -> Unit
-                }
-
-//                // --- Hero image(s) ---
-//                items(post.imageUrls.size) { idx ->
-//                    val url = post.imageUrls[idx]
-//                    val painter = postImagePainter(url)
-//                    Image(
-//                        painter = painter,
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
+//                itemsIndexed(
+//                    items = relatedPostsPaging.itemSnapshotList.items.filterNotNull(),
+//                    key = { index, post -> "related_${post.id}_$index" } // Add prefix and index for uniqueness
+//                ) { index, relatedPost ->
+//
+//                    // visual separator
+//                    HorizontalDivider(
 //                        modifier = Modifier
 //                            .fillMaxWidth()
-//                            .padding(top = 12.dp, bottom = 12.dp)
-//                            .clip(RoundedCornerShape(12.dp))
+//                            .padding(vertical = 24.dp),
+//                        thickness = DividerDefaults.Thickness, color = colorScheme.outlineVariant
 //                    )
+//
+//                    // same composable you used for the main post
+//                    PostDetailContent(post = relatedPost, onAction = onAction)
 //                }
-//
-//                // ----- title -----
-//                item {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(12.dp),
-//
-//                        ) {
-//                        Text(
-//                            text = post.title,
-//                            style = MaterialTheme.typography.headlineSmall
-//                        )
+//                when (val append = relatedPostsPaging.loadState.append) {
+//                    is LoadState.Loading -> item(key = "loading_footer") { LoadingFooter() }
+//                    is LoadState.Error -> item(key = "error_footer") {
+//                        ErrorFooter(append.error) { relatedPostsPaging.retry() }
 //                    }
-//                }
 //
-//                // ----- date -----
-//                item {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(12.dp),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Text(
-//                            text = "Updated: ${post.date}",
-//                            style = MaterialTheme.typography.labelMedium,
-//                            color = colorScheme.onSurfaceVariant
-//                        )
-//                    }
+//                    else -> Unit
 //                }
-//                // --- Chips / labels ---
-//                if (post.labels.isNotEmpty()) {
-//                    item {
-//                        FlowRow(
-//                            horizontalArrangement = Arrangement.Start,
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(start = 12.dp)
-//                        ) {
-//                            post.labels.forEach { label ->
-//                                PostChip(
-//                                    size = ChipSize.SMALL,
-//                                    onClick = { onAction(PostDetailsActions.OnLabelClick(label)) },
-//                                    modifier = Modifier.padding(2.dp)
-//                                ) {
-//                                    Text(
-//                                        text = label.uppercase(),
-//                                        style = MaterialTheme.typography.bodyMedium
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                // --- Post body ---
-//                item {
-//                    StableHtmlContent3(
-//                        html = post.content,
-//                        onLinkClicked = stableOnLinkClicked.value,
-//                        modifier = Modifier.fillMaxWidth()
-//                            .padding(horizontal = 12.dp)
-//                            .padding(top = 24.dp)
-//                    )
-//                }
-//
+
             }
         }
     }
 }
+
 @Composable
 private fun LazyItemScope.PostDetailContent(
     post: Post,
@@ -382,7 +303,7 @@ private fun LazyItemScope.PostDetailContent(
     }
 
     key("html_${post.id}") {
-        AnnotatedHtmlContent(
+        PermanentHtmlContent2(
             html = post.content,
             onLinkClicked = { url -> onAction(PostDetailsActions.OnLinkClicked(url)) },
             modifier = Modifier
@@ -392,6 +313,7 @@ private fun LazyItemScope.PostDetailContent(
         )
     }
 }
+
 @Composable
 private fun SectionWithPaging(
     title: String,
@@ -436,6 +358,7 @@ private fun SectionWithPaging(
         }
     }
 }
+
 @Composable
 private fun LazyItemScope.LoadingFooter() {
     Box(
