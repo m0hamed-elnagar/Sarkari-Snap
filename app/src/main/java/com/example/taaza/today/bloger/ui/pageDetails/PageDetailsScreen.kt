@@ -46,6 +46,8 @@ import coil3.size.Size
 import com.example.taaza.today.R
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
+import com.example.taaza.today.bloger.ui.postDetails.componentes.StableHtmlContent3
+import com.example.taaza.today.bloger.ui.postDetails.componentes.StableHtmlContent4
 import com.example.taaza.today.core.ui.theme.SandYellow
 import com.example.taaza.today.core.utils.openUrlInCustomTab
 import org.koin.compose.viewmodel.koinViewModel

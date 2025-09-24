@@ -7,11 +7,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.taaza.today.bloger.domain.PostsRepo
 import com.example.taaza.today.app.Route
+import com.plcoding.bookpedia.core.domain.onError
+import com.plcoding.bookpedia.core.domain.onSuccess
+import com.plcoding.bookpedia.core.presentation.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class PageDetailsViewModel(
     private val postsRepo: PostsRepo,
@@ -20,6 +24,7 @@ class PageDetailsViewModel(
     val pageId = savedStateHandle.toRoute<Route.PageDetails>().pageId
     private val _state = MutableStateFlow(PageDetailsState())
     val state: StateFlow<PageDetailsState> = _state.onStart {
+//        fetchPageDetails()
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -34,6 +39,28 @@ class PageDetailsViewModel(
             }
 
             else -> {}
+        }
+    }
+    init {          // ← always runs once
+        fetchPageDetails()
+    }
+    fun fetchPageDetails() {
+        if (pageId.isBlank()) return
+        _state.value = _state.value.copy(isLoading = true)
+        viewModelScope.launch {
+            postsRepo.getPage(pageId).onSuccess { result ->
+                _state.value = _state.value.copy(
+                    page = result,
+                    isLoading = false
+                )
+            }
+                .onError { error ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = error.toUiText()
+                    )
+                }
+
         }
     }
 }

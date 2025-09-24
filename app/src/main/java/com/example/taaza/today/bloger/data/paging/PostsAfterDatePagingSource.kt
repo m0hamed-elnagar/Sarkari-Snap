@@ -1,5 +1,6 @@
 package com.example.taaza.today.bloger.data.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import com.example.taaza.today.bloger.data.mappers.toDomain
 import com.example.taaza.today.bloger.data.network.RemotePostDataSource
@@ -18,13 +19,12 @@ fun postsAfterDatePagingSource(
         is Result.Success -> {
             val items     = res.data.items
             val nextToken = res.data.nextPageToken
-
+            Log.d("token", "postsAfterDatePagingSource: $nextToken")
             PagingSource.LoadResult.Page(
                 data    = items.map { toDomain(it) },
                 prevKey = null,
                 nextKey = nextToken?.let { tok ->
-                    // pack token + floor so the data-source can unpack it later
-                    "$tok|||$afterDate"
+                    "$tok|||${requireNotNull(afterDate)}"   // afterDate is never null here
                 }
             )
         }

@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.sqlite.SQLiteException
 import com.example.taaza.today.bloger.data.database.FavoritePostDao
+import com.example.taaza.today.bloger.data.mappers.toPage
 import com.example.taaza.today.bloger.data.mappers.toPost
 import com.example.taaza.today.bloger.data.mappers.toPostEntity
 import com.example.taaza.today.bloger.data.network.RemotePostDataSource
@@ -99,6 +100,9 @@ override  fun getPostsAfterDate(label: String?, afterDate: String?): Flow<Paging
         ).flow
 
     }
+
+    override suspend fun getPage(pageId: String): Result<Page, DataError.Remote> =
+        remotePostDataSource.getPage(pageId).map { it.toPage() }
 
 
 }

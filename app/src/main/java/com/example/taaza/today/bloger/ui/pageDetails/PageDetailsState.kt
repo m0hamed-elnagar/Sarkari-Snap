@@ -7,5 +7,6 @@ import com.plcoding.bookpedia.core.presentation.UiText
 data class PageDetailsState(
     val isLoading: Boolean = true,
     val page: Page? = null,
+    val error: UiText? = null,
 
     )

@@ -15,4 +15,5 @@ interface PostsRepo {
     fun getPagedPosts(label: String? = null): Flow<PagingData<Post>>
      fun getPages(): Flow<PagingData<Page>>
     fun getPostsAfterDate(label: String?, afterDate: String?): Flow<PagingData<Post>>
+    suspend fun getPage(pageId: String): Result<Page, DataError.Remote>
 }

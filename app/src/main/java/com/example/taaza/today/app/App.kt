@@ -61,7 +61,8 @@ fun App() {
         val onRetry: () -> Unit = { scope.launch { checker.check() } }
 
         when (uiState) {
-            UiState.Checking, UiState.Loading -> LoadingScreen()
+            UiState.Checking->AppNavigation(navController)
+            UiState.Loading -> LoadingScreen()
             UiState.NoInternet -> NoInternetScreen(onRetry = onRetry)
             UiState.Stopped -> TemporarilyStoppedScreen(onRetry = onRetry)
             UiState.GaveUp -> NoInternetScreen(                           // same UI, different text
@@ -135,13 +136,13 @@ private fun AppNavigation(navController: NavHostController) {
                 )
             }
             composable<Route.PageDetails> { entry ->
-                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
+//                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
                 val detailsVM = koinViewModel<PageDetailsViewModel>()
-                val selected by sharedVM.selectedPage.collectAsState()
-
-                LaunchedEffect(selected) {
-                    selected?.let { detailsVM.onAction(PageDetailsActions.OnSelectedPageChange(it)) }
-                }
+//                val selected by sharedVM.selectedPage.collectAsState()
+//
+//                LaunchedEffect(selected) {
+//                    selected?.let { detailsVM.onAction(PageDetailsActions.OnSelectedPageChange(it)) }
+//                }
 
                 PageDetailsScreenRoot(
                     viewModel = detailsVM,

@@ -74,6 +74,7 @@ import com.example.taaza.today.bloger.ui.postDetails.componentes.ShareExpandable
 import com.example.taaza.today.bloger.ui.postDetails.componentes.ShareTarget
 import com.example.taaza.today.bloger.ui.postDetails.componentes.StableHtmlContent
 import com.example.taaza.today.bloger.ui.postDetails.componentes.StableHtmlContent3
+import com.example.taaza.today.bloger.ui.postDetails.componentes.StableHtmlContentStatic
 import com.example.taaza.today.core.ui.theme.SandYellow
 import com.example.taaza.today.core.utils.openUrlInCustomTab
 import com.example.taaza.today.core.utils.shareViaMessenger
@@ -380,15 +381,16 @@ private fun LazyItemScope.PostDetailContent(
         }
     }
 
-    key("html_${post.id}") { StableHtmlContent(
-        html = post.content,
-        postId = post.id,
-        onLinkClicked = { url -> onAction(PostDetailsActions.OnLinkClicked(url)) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp)
-            .padding(top = 24.dp)
-    )}
+    key("html_${post.id}") {
+        AnnotatedHtmlContent(
+            html = post.content,
+            onLinkClicked = { url -> onAction(PostDetailsActions.OnLinkClicked(url)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+                .padding(top = 24.dp)
+        )
+    }
 }
 @Composable
 private fun SectionWithPaging(
