@@ -5,13 +5,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.sqlite.SQLiteException
 import com.example.taaza.today.bloger.data.database.FavoritePostDao
-import com.example.taaza.today.bloger.data.dto.BloggerResponse
-import com.example.taaza.today.bloger.data.mappers.toDomain
-import com.example.taaza.today.bloger.data.mappers.toPage
 import com.example.taaza.today.bloger.data.mappers.toPost
 import com.example.taaza.today.bloger.data.mappers.toPostEntity
 import com.example.taaza.today.bloger.data.network.RemotePostDataSource
 import com.example.taaza.today.bloger.data.paging.pagesPagingSource
+import com.example.taaza.today.bloger.data.paging.postsAfterDatePagingSource
 import com.example.taaza.today.bloger.data.paging.postsPagingSource
 import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
@@ -28,16 +26,7 @@ class DefaultPostsRepo(
     private val dao: FavoritePostDao
 ) : PostsRepo {
 
-    override suspend fun getPosts(
-        limit: Int,
-        label: String?,
-        pageToken: String?
-    ): Result<Pair<List<Post>, String?>, DataError.Remote> {
-        return remotePostDataSource.getPosts(limit, label, pageToken)
-            .map { dto: BloggerResponse ->
-                dto.items.map { toDomain(it) } to dto.nextPageToken
-            }
-    }
+
 
     override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
         return remotePostDataSource.getUniqueLabels().map { dto ->
@@ -92,6 +81,19 @@ class DefaultPostsRepo(
             pagingSourceFactory = {
                 pagesPagingSource(
                     remotePostDataSource
+                )
+            }
+        ).flow
+
+    }
+override  fun getPostsAfterDate(label: String?, afterDate: String?): Flow<PagingData<Post>> {
+     return   Pager(
+            config = PagingConfig(pageSize = 2, enablePlaceholders = false),
+            pagingSourceFactory = {
+                postsAfterDatePagingSource(
+                    remotePostDataSource,
+                    label,
+                    afterDate
                 )
             }
         ).flow

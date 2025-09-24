@@ -17,7 +17,7 @@ Accept: application/json
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 ### Retrieve list of posts for this blog (using the obtained blog ID)
-GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 #retrieve list of pages
 ### Retrieve list of pages for this blog
@@ -36,7 +36,13 @@ GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/6247905
 ### Retrieve a single post (replace POST_ID with a real post ID)
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/847919335082049403?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 ### Retrieve a single post (replace POST_ID with a real post ID)
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/3968644153225120990?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=5
+    &labels=Tech
+    &startDate=2025-09-11T11:07:24-07:00
+    &orderBy=updated
+    &fields=nextPageToken,items(id,updated,url,title,content,labels)
 
 # GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/POST_ID?key=YOUR_API_KEY
 # Accept: application/json

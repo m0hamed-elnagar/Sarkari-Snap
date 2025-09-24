@@ -66,7 +66,7 @@ fun PermanentHtmlContent(
                     }
                 }
 
-                loadHtmlContent(html, context, textColorArgb, linkColorArgb)
+                loadHtmlContent3(html, context, textColorArgb, linkColorArgb)
             }
         }
 
@@ -79,7 +79,7 @@ fun PermanentHtmlContent(
     }
 }
 
-private fun WebView.loadHtmlContent(
+private fun WebView.loadHtmlContent3(
     html: String,
     context: Context,
     textColorArgb: Int,

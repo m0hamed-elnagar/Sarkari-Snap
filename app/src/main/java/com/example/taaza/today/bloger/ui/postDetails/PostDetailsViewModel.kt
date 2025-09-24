@@ -39,9 +39,10 @@ class PostDetailsViewModel(
 
     // Paging 3: Related posts and latest articles
     private val _relatedLabel = MutableStateFlow<String?>(null)
+    private val _afterDate = MutableStateFlow<String?>(null)
     @OptIn(ExperimentalCoroutinesApi::class)
     val relatedPostsPaged: Flow<PagingData<Post>> = _relatedLabel.flatMapLatest { label ->
-        postsRepo.getPagedPosts(label) .cachedIn(viewModelScope)
+        postsRepo.getPostsAfterDate(label,_afterDate.value ) .cachedIn(viewModelScope)
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -61,6 +62,7 @@ class PostDetailsViewModel(
                 _state.value = _state.value.copy(post = action.post)
                 // Set label for related posts
                 _relatedLabel.value = action.post.labels.firstOrNull()
+                _afterDate.value = action.post.rowDate
             }
 
             is PostDetailsActions.OnPostFavoriteClick -> {

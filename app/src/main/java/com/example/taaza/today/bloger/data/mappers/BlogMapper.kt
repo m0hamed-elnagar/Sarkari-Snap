@@ -1,11 +1,13 @@
 package com.example.taaza.today.bloger.data.mappers
 
+import android.util.Log
 import com.example.taaza.today.bloger.data.database.PostEntity
 import com.example.taaza.today.bloger.data.dto.PageDto
 import com.example.taaza.today.bloger.data.dto.PostDto
 import com.example.taaza.today.bloger.domain.Page
 import com.example.taaza.today.bloger.domain.Post
 import org.jsoup.Jsoup
+import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -25,6 +27,7 @@ fun toDomain(dto: PostDto): Post {
         description = plainText,
         content = cleanHtml,
         date = dto.updated.toDateOnly(),
+        rowDate = dto.updated,
         url = dto.url,
         imageUrls = images,
         labels = dto.labels
@@ -32,12 +35,21 @@ fun toDomain(dto: PostDto): Post {
 }
 
 private fun String?.toDateOnly(): String {
+  this?.log()
     if (this.isNullOrBlank()) return ""
     return runCatching {
         val odt = OffsetDateTime.parse(this) // parse ISO-8601
         odt.format(DateTimeFormatter.ISO_LOCAL_DATE) // yyyy-MM-dd
     }.getOrDefault("")
 }
+fun String.log() {
+
+
+    Log.d("Date", "plusSeconds: $this")
+
+
+}
+
 
 private fun parsePlainText(html: String): String {
     return runCatching {
@@ -60,6 +72,7 @@ fun Post.toPostEntity() = PostEntity(
     description = this.description,
     content = this.content,
     date = this.date,
+    rowDate = this.rowDate,
     url = this.url,
     imageUrls = this.imageUrls,
     labels = this.labels
@@ -71,6 +84,7 @@ fun PostEntity.toPost() = Post(
     description = this.description,
     content = this.content,
     date = this.date,
+    rowDate = this.rowDate,
     url = this.url,
     imageUrls = this.imageUrls,
     labels = this.labels

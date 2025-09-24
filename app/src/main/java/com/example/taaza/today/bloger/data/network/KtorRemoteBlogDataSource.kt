@@ -1,10 +1,10 @@
 package com.example.taaza.today.bloger.data.network
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.example.taaza.today.BuildConfig
 import com.example.taaza.today.bloger.data.dto.BloggerResponse
 import com.example.taaza.today.bloger.data.dto.LabelsResponse
-import com.example.taaza.today.bloger.data.dto.PageDto
 import com.example.taaza.today.bloger.data.dto.PagesResponse
 import com.plcoding.bookpedia.core.data.safeCall
 import com.plcoding.bookpedia.core.domain.DataError
@@ -13,6 +13,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import java.time.OffsetDateTime
 
 private const val BASE_URL =
     "https://www.googleapis.com/blogger/v3/blogs/190535731829050983"
@@ -24,7 +25,43 @@ private const val BASE_URL2 =
 class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostDataSource {
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
+    @SuppressLint("LogNotTimber")
+    override suspend fun getPostsAfterDate(
+        limit: Int,
+        label: String?,
+        afterDate: String?,
+        pageToken: String?
+    ): Result<BloggerResponse, DataError.Remote> {
+        Log.d(
+            "KtorRemoteBlogDataSource",
+            "getPostsAfterDate: label=$label, afterDate=$afterDate, limit=$limit"
+        )
+        val (realToken, realAfterDate) = pageToken
+            ?.split("|||")
+            ?.let { it.getOrNull(0) to it.getOrNull(1) }   // convert to Pair
+            ?: (null to afterDate)
 
+        Log.d("KtorRemoteBlogDataSource",
+            "getPostsAfterDate: label=$label, afterDate=$afterDate, realToken=$realToken")
+        return safeCall<BloggerResponse> {
+            httpClient.get("$BASE_URL/posts") {
+                parameter("key", apiKey)
+                parameter("maxResults", limit)
+                if (!label.isNullOrEmpty() && label != "All") {
+                    parameter("labels", label)
+                }
+                if (pageToken == null && !afterDate.isNullOrEmpty()) {
+                    val inclusive = OffsetDateTime.parse(afterDate)
+                        .minusSeconds(1)
+                    parameter("endDate", inclusive)
+                }
+
+                parameter("orderBy", "updated") // Order by published date
+                realToken?.let { parameter("pageToken", it) }
+
+                parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
+            }.body()
+        }}
     override suspend fun getPosts(
         limit: Int,
         label: String?,
@@ -46,6 +83,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
                 if (pageToken != null) {
                     parameter("pageToken", pageToken)
                 }
+                parameter("orderBy", "updated") // Order by published date
                 parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
             }.body()
         }
@@ -69,11 +107,4 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
             }.body()
         }
     }
-
-    override suspend fun getPage(pageId: String): Result<PageDto, DataError.Remote> =
-        safeCall<PageDto> {
-            httpClient.get("$BASE_URL/pages/$pageId") {
-                parameter("key", apiKey)
-                parameter("fields", "id,title,content,url")
-            }.body()
-        }}
+}
