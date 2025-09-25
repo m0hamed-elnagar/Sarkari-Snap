@@ -7,6 +7,7 @@ import com.example.taaza.today.bloger.data.dto.BloggerResponse
 import com.example.taaza.today.bloger.data.dto.LabelsResponse
 import com.example.taaza.today.bloger.data.dto.PageDto
 import com.example.taaza.today.bloger.data.dto.PagesResponse
+import com.example.taaza.today.bloger.data.dto.PostDto
 import com.plcoding.bookpedia.core.data.safeCall
 import com.plcoding.bookpedia.core.domain.DataError
 import com.plcoding.bookpedia.core.domain.Result
@@ -38,14 +39,24 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
             "KtorRemoteBlogDataSource",
             "getPostsAfterDate: label=$label, =$afterDate, limit=$limit"
         )
+val (realToken, packedDate) = pageToken
+    ?.takeIf { it.contains("|||") }
+    ?.split("|||")
+    ?.let { it[0] to it[1] }
+    ?: (null to null)
 
-        val (realToken, packedDate) = pageToken
-            ?.takeIf { it.contains("|||") }
-            ?.split("|||")
-            ?.let { it[0] to it[1] }
-            ?: (null to afterDate)
-        val floorDate = requireNotNull(packedDate ?: afterDate)
-        val inclusive = OffsetDateTime.parse(floorDate)
+// Use a safe fallback date if both packedDate and afterDate are null/empty
+val safeAfterDate = packedDate.takeIf { !it.isNullOrEmpty() }
+    ?: afterDate.takeIf { !it.isNullOrEmpty() }
+    ?: "1970-01-01T00:00:00Z" // fallback default date
+
+val inclusive = try {
+    OffsetDateTime.parse(safeAfterDate)
+} catch (e: Exception) {
+    Log.w("KtorRemoteBlogDataSource", "Invalid date format: $safeAfterDate, using epoch")
+    OffsetDateTime.parse("1970-01-01T00:00:00Z")
+}
+
         // first page
         Log.d(
             "KtorRemoteBlogDataSource",
@@ -119,6 +130,13 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
             httpClient.get("$BASE_URL/pages/$pageId") {
                 parameter("key", apiKey)
                 parameter("fields", "id,title,content,url")
+            }.body()
+        }
+    override suspend fun getPost(postId: String): Result<PostDto, DataError.Remote> =
+        safeCall<PostDto> {
+            httpClient.get("$BASE_URL/posts/$postId") {
+                parameter("key", apiKey)
+                parameter("fields", "id,updated,url,title,content,labels")
             }.body()
         }
 }

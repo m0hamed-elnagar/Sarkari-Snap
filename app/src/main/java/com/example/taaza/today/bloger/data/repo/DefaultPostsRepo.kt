@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.sqlite.SQLiteException
 import com.example.taaza.today.bloger.data.database.FavoritePostDao
+import com.example.taaza.today.bloger.data.mappers.toDomain
 import com.example.taaza.today.bloger.data.mappers.toPage
 import com.example.taaza.today.bloger.data.mappers.toPost
 import com.example.taaza.today.bloger.data.mappers.toPostEntity
@@ -26,7 +27,6 @@ class DefaultPostsRepo(
     private val remotePostDataSource: RemotePostDataSource,
     private val dao: FavoritePostDao
 ) : PostsRepo {
-
 
 
     override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
@@ -76,8 +76,8 @@ class DefaultPostsRepo(
         ).flow
     }
 
-    override  fun getPages(): Flow<PagingData<Page>> {
-     return   Pager(
+    override fun getPages(): Flow<PagingData<Page>> {
+        return Pager(
             config = PagingConfig(pageSize = 4, enablePlaceholders = false),
             pagingSourceFactory = {
                 pagesPagingSource(
@@ -87,8 +87,9 @@ class DefaultPostsRepo(
         ).flow
 
     }
-override  fun getPostsAfterDate(label: String?, afterDate: String?): Flow<PagingData<Post>> {
-     return   Pager(
+
+    override fun getPostsAfterDate(label: String?, afterDate: String?): Flow<PagingData<Post>> {
+        return Pager(
             config = PagingConfig(pageSize = 2, enablePlaceholders = false),
             pagingSourceFactory = {
                 postsAfterDatePagingSource(
@@ -104,5 +105,9 @@ override  fun getPostsAfterDate(label: String?, afterDate: String?): Flow<Paging
     override suspend fun getPage(pageId: String): Result<Page, DataError.Remote> =
         remotePostDataSource.getPage(pageId).map { it.toPage() }
 
+    override suspend fun getPostById(postId: String): Result<Post, DataError.Remote> {
+       return remotePostDataSource.getPost(postId).map { toDomain(it) }
+
+    }
 
 }

@@ -11,40 +11,44 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.remoteconfig.ConfigUpdate
+import com.google.firebase.remoteconfig.ConfigUpdateListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 
 
 class BloggerApplication : Application() {
     companion object {
-        // Nullable: null = loading, false = error, true = working
-        private val _isWorking = MutableStateFlow<Boolean?>(null)
-        val isWorking: StateFlow<Boolean?> get() = _isWorking.asStateFlow()
+        private val _isWorking = MutableStateFlow(true)   // always true until we know better
+        val isWorking: StateFlow<Boolean> get() = _isWorking.asStateFlow()
     }
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private lateinit var remoteConfig: FirebaseRemoteConfig
 
     override fun onCreate() {
         super.onCreate()
 
-        // Start dependency injection
         initKoin { androidContext(this@BloggerApplication) }
-
-        // Initialize Firebase
         FirebaseApp.initializeApp(this)
 
         setupAnalytics()
         setupCrashlytics()
-        setupRemoteConfig()
+        keepTryingRemoteConfig()
+
     }
 
     private fun setupAnalytics() {
@@ -69,31 +73,38 @@ class BloggerApplication : Application() {
 
     }
 
-    private fun setupRemoteConfig() {
-        val config = FirebaseRemoteConfig.getInstance()
+    private fun keepTryingRemoteConfig() {
+        val config = Firebase.remoteConfig
+        config.setConfigSettingsAsync(
+            remoteConfigSettings {
+                minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
+            }
+        )
+        config.setDefaultsAsync(mapOf("isWorking" to true))
 
-        val settings = FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(if (BuildConfig.DEBUG) 0 else 3600)
-            .build()
+        // 1. fastest cached value
+        config.activate()
 
-        config.setConfigSettingsAsync(settings)
-
-        // Default values
-        config.setDefaultsAsync(mapOf("isWorking" to false))
-
-        // Fetch + Activate
-        config.fetchAndActivate()
-            .addOnCompleteListener { task ->
-                appScope.launch {
-                    if (task.isSuccessful) {
-                        val value = config.getBoolean("isWorking")
-                        _isWorking.value = value
-                        Log.d("RemoteConfig", "Fetch succeeded → isWorking=$value")
-                    } else {
-                        _isWorking.value = false
-                        Log.w("RemoteConfig", "Fetch failed → fallback to default")
-                    }
+        // 2. listen for *server* updates (no extra fetch calls)
+        config.addOnConfigUpdateListener(object : ConfigUpdateListener {
+            override fun onUpdate(update: ConfigUpdate) {
+                if ("isWorking" in update.updatedKeys) {
+                    config.activate().addOnCompleteListener { publish() }
                 }
             }
+
+            override fun onError(e: FirebaseRemoteConfigException) {
+                Log.e("RC", "real-time listener error", e)
+            }
+        })
+
+        // 3. single fetch (cold start) – exactly like the working code
+        config.fetchAndActivate().addOnCompleteListener { publish() }
+    }
+
+    private fun publish() {
+        val v = Firebase.remoteConfig.getBoolean("isWorking")
+        _isWorking.value = v
+        Log.d("RC", "activated isWorking=$v")
     }
 }

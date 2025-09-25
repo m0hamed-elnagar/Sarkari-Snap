@@ -7,6 +7,7 @@ data class PostDetailsState(
     val isLoading: Boolean = true,
     val isFavorite: Boolean = false,
     val post: Post? = null,
+    val error: UiText? = null,
     val isLoadingRelated: Boolean = false,
     val relatedPosts: List<Post> = emptyList(),
     val relatedFetched: Boolean = false,

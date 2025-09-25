@@ -1,3 +1,21 @@
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-09-25T180320.200.json
+
+###
+
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-09-25T180316.200.json
+
+###
+
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&startDate=2025-09-11T11:07:24-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
 User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
 Accept-Encoding: br, deflate, gzip, x-gzip
@@ -427,24 +445,6 @@ User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 
 Accept-Encoding: br, deflate, gzip, x-gzip
 
 <> 2025-08-31T143116.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 Patch 2
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-08-31T111248.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 Patch 2
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-08-30T204954.200.json
 
 ###
 

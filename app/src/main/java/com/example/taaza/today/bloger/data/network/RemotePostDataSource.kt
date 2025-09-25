@@ -5,6 +5,7 @@ import com.example.taaza.today.bloger.data.dto.BloggerResponse
 import com.example.taaza.today.bloger.data.dto.LabelsResponse
 import com.example.taaza.today.bloger.data.dto.PageDto
 import com.example.taaza.today.bloger.data.dto.PagesResponse
+import com.example.taaza.today.bloger.data.dto.PostDto
 import com.plcoding.bookpedia.core.domain.DataError
 import com.plcoding.bookpedia.core.domain.Result
 
@@ -19,6 +20,7 @@ interface RemotePostDataSource {
 
     suspend fun getPages(): Result<PagesResponse, DataError.Remote>
     suspend fun getPage(pageId: String): Result<PageDto, DataError.Remote>
+    suspend fun getPost(postId: String): Result<PostDto, DataError.Remote>
 
 
     suspend fun getPostsAfterDate(

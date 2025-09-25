@@ -22,4 +22,6 @@
     <string name="facebook_link">https://facebook.com/taazatodayhindi   </string>
     <string name="telegram_link">https://t.me/TaazaTodayHindi</string>
     <string name="x_link">https://x.com/taazatodayhindi</string>
+    <string name="app_url">https://taaza-today.web.app</string>
+    <string name="read_full_news">\nपूरी खबर पढ़ें 👇\n</string>
 </resources>

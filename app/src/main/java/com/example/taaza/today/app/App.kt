@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import com.example.taaza.today.app.AppChecker.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -22,7 +24,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
+import com.example.taaza.today.BuildConfig
+import com.example.taaza.today.R
 import com.example.taaza.today.app.BloggerApplication.Companion.isWorking
 import com.example.taaza.today.app.components.LoadingScreen
 import com.example.taaza.today.app.components.NoInternetScreen
@@ -46,37 +52,28 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun App() {
-    MaterialTheme {
-        val navController = rememberNavController()
-        val context = LocalContext.current
+fun App(navController:  NavHostController, startPostId: String?) {
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            background = Color.White,
+            surface = Color.White
+        )
+    ) {
+        val isWorking by isWorking.collectAsState()
 
-        /* --------- single state-flow for whole check --------- */
-        val checker = remember { AppChecker(context) }
-        val uiState by checker.uiState.collectAsState()
-        LaunchedEffect(Unit) { checker.check() }
-
-        /* --------- retry from any error screen --------- */
-        val scope = rememberCoroutineScope()
-        val onRetry: () -> Unit = { scope.launch { checker.check() } }
-
-        when (uiState) {
-            UiState.Checking->AppNavigation(navController)
-            UiState.Loading -> LoadingScreen()
-            UiState.NoInternet -> NoInternetScreen(onRetry = onRetry)
-            UiState.Stopped -> TemporarilyStoppedScreen(onRetry = onRetry)
-            UiState.GaveUp -> NoInternetScreen(                           // same UI, different text
-                msg = "Still can’t connect after several tries.",
-                onRetry = onRetry
-            )
-
-            UiState.Working -> AppNavigation(navController)
+        if (isWorking) {
+            AppNavigation(navController)
+        } else {
+                TemporarilyStoppedScreen(onRetry = {})
+            }
         }
-    }
 }
 
 @Composable
 private fun AppNavigation(navController: NavHostController) {
+    val context = LocalContext.current
+    val appUrl = context.getString(R.string.app_url) // get the string outside composable
+
     NavHost(
         navController = navController,
         startDestination = Route.BlogGraph,
@@ -85,6 +82,7 @@ private fun AppNavigation(navController: NavHostController) {
         popEnterTransition = { fadeIn(tween(800)) },
         popExitTransition = { fadeOut(tween(800)) }
     ) {
+
         navigation<Route.BlogGraph>(startDestination = Route.BlogHome) {
             composable<Route.BlogHome> { entry ->
                 val homeVM = koinViewModel<HomeViewModel>()
@@ -107,12 +105,21 @@ private fun AppNavigation(navController: NavHostController) {
                     }
                 )
             }
-
-            composable<Route.PostDetails> { entry ->
+             composable<Route.PostDetails>(
+                deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "$appUrl/post/{postId}"
+                        action = "android.intent.action.VIEW"
+                    }
+                )) { entry ->
+                val route = entry.toRoute<Route.PostDetails>()   // navigation-compose helper
+                val postId = route.postId
                 val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
                 val detailsVM = koinViewModel<PostDetailsViewModel>()
                 val selected by sharedVM.selectedPost.collectAsState()
-
+                LaunchedEffect(postId) {
+                    detailsVM.onAction(PostDetailsActions.OnDeepLinkArrived(postId))
+                }
                 LaunchedEffect(selected) {
                     selected?.let { detailsVM.onAction(PostDetailsActions.OnSelectedPostChange(it)) }
                 }
@@ -148,7 +155,7 @@ private fun AppNavigation(navController: NavHostController) {
                     viewModel = detailsVM,
                     onBackClicked = { navController.navigateUp() },
 
-                )
+                    )
             }
 
             composable<Route.LabeledPosts> { entry ->

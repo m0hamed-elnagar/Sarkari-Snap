@@ -9,6 +9,9 @@ import androidx.paging.cachedIn
 import com.example.taaza.today.bloger.domain.Post
 import com.example.taaza.today.bloger.domain.PostsRepo
 import com.example.taaza.today.app.Route
+import com.plcoding.bookpedia.core.domain.onError
+import com.plcoding.bookpedia.core.domain.onSuccess
+import com.plcoding.bookpedia.core.presentation.toUiText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,9 +43,10 @@ class PostDetailsViewModel(
     // Paging 3: Related posts and latest articles
     private val _relatedLabel = MutableStateFlow<String?>(null)
     private val _afterDate = MutableStateFlow<String?>(null)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val relatedPostsPaged: Flow<PagingData<Post>> = _relatedLabel.flatMapLatest { label ->
-        postsRepo.getPostsAfterDate(label,_afterDate.value ) .cachedIn(viewModelScope)
+        postsRepo.getPostsAfterDate(label, _afterDate.value).cachedIn(viewModelScope)
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -65,6 +69,12 @@ class PostDetailsViewModel(
                 _afterDate.value = action.post.rowDate
             }
 
+            is PostDetailsActions.OnDeepLinkArrived -> {
+                viewModelScope.launch {
+                    fetchPostDetails (action.postId)
+
+                }
+            }
             is PostDetailsActions.OnPostFavoriteClick -> {
                 viewModelScope.launch {
                     if (state.value.isFavorite) {
@@ -77,6 +87,25 @@ class PostDetailsViewModel(
             }
 
             else -> {}
+        }
+    }
+    fun fetchPostDetails(postId: String)  {
+        if (postId.isBlank()) return
+        _state.value = _state.value.copy(isLoading = true)
+        viewModelScope.launch {
+            postsRepo.getPostById(postId).onSuccess { result ->
+                _state.value = _state.value.copy(
+                    post = result,
+                    isLoading = false
+                )
+            }
+                .onError { error ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = error.toUiText()
+                    )
+                }
+
         }
     }
 

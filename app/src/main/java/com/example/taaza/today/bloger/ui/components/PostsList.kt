@@ -153,7 +153,7 @@ fun PostListStatic(
 fun FeaturedPost(post: Post, onClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = LightOrange
+            containerColor = Color.White
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -207,7 +207,7 @@ fun FeaturedPost(post: Post, onClick: () -> Unit) {
 fun NormalPost(post: Post, onClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = LightOrange
+            containerColor =Color.White
         ),
         modifier = Modifier
             .fillMaxWidth()

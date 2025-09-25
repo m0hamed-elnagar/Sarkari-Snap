@@ -75,6 +75,7 @@ import com.example.taaza.today.bloger.ui.postDetails.componentes.AnnotatedHtmlCo
 import com.example.taaza.today.bloger.ui.postDetails.componentes.ChipSize
 import com.example.taaza.today.bloger.ui.postDetails.componentes.HtmlWebView
 import com.example.taaza.today.bloger.ui.postDetails.componentes.HtmlWebView11
+import com.example.taaza.today.bloger.ui.postDetails.componentes.NoPostState
 import com.example.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.example.taaza.today.bloger.ui.postDetails.componentes.PostChip
 import com.example.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab
@@ -134,6 +135,8 @@ fun PostDetailsScreen(
         onAction(PostDetailsActions.OnLinkClicked(url))
     }
     val context = LocalContext.current
+    val appUrl = context.getString(R.string.app_url)
+    val readFullNews = context.getString(R.string.read_full_news)
     LaunchedEffect(scrollState) {
         var lastLogTime = 0L
         snapshotFlow {
@@ -187,8 +190,8 @@ fun PostDetailsScreen(
         floatingActionButton = {
             state.post?.let { postToShare ->
                 ShareExpandableFab(onShareClick = { target ->
-                    val postUrl = postToShare.url
-                    val postTitle = postToShare.title
+                    val postUrl ="$appUrl/post/"+ postToShare.id
+                    val postTitle = postToShare.title+ readFullNews
                     when (target) {
                         ShareTarget.WHATSAPP -> shareViaWhatsApp(context, postTitle, postUrl)
                         ShareTarget.TELEGRAM -> shareViaTelegram(context, postTitle, postUrl)
@@ -201,9 +204,11 @@ fun PostDetailsScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
+
         Box(modifier = Modifier.fillMaxSize()) {
             val post = state.post
-            if (post == null) {
+            when {
+                state.isLoading || post == null && state.error == null -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -212,6 +217,15 @@ fun PostDetailsScreen(
                 ) { CircularProgressIndicator() }
                 return@Scaffold
             }
+                post == null || state.error != null -> {
+                    /* we have nothing to show */
+                    NoPostState(
+                        modifier = Modifier.padding(padding),
+
+                        onBackClicked = { onAction(PostDetailsActions.OnBackClick) }
+                    )
+                }
+            else -> {
             // Use a single LazyColumn for the whole screen
             LazyColumn(
                 modifier = Modifier
@@ -251,7 +265,7 @@ fun PostDetailsScreen(
 
             }
         }
-    }
+    }}}
 }
 
 @Composable
