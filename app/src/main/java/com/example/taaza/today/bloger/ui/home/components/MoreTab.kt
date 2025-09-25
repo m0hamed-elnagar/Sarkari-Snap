@@ -69,41 +69,41 @@ fun MoreTabScreen(
         item { SectionTitle("Follow us on") }
         item { SocialIconRow() }
 
-        item { SectionTitle("Share App") }
-        item { ShareAppLinkRow("https://test.link/share") }
-        item {
-            CardRow(
-                icon = painterResource(R.drawable.ic_whatsapp),
-                title = "WhatsApp",
-                color = R.color.whatsapp,
-                textColor = Color.White,
-                iconColor = Color.White,
-                alignment = Arrangement.Center,
-                onClick = {}
-            )
-        }
-        item {
-            CardRow(
-                icon = painterResource(R.drawable.messenger),
-                title = "Messenger",
-                color = R.color.messenger,
-                textColor = Color.White,
-                iconColor = Color.White,
-                alignment = Arrangement.Center,
-                onClick = {}
-            )
-        }
-        item {
-            CardRow(
-                imageVector = Icons.Default.Share,
-                title = "Share",
-                color = R.color.share,
-                iconColor = Color.White,
-                textColor = Color.White,
-                alignment = Arrangement.Center,
-                onClick = {}
-            )
-        }
+//        item { SectionTitle("Share App") }
+//        item { ShareAppLinkRow("https://test.link/share") }
+//        item {
+//            CardRow(
+//                icon = painterResource(R.drawable.ic_whatsapp),
+//                title = "WhatsApp",
+//                color = R.color.whatsapp,
+//                textColor = Color.White,
+//                iconColor = Color.White,
+//                alignment = Arrangement.Center,
+//                onClick = {}
+//            )
+//        }
+//        item {
+//            CardRow(
+//                icon = painterResource(R.drawable.messenger),
+//                title = "Messenger",
+//                color = R.color.messenger,
+//                textColor = Color.White,
+//                iconColor = Color.White,
+//                alignment = Arrangement.Center,
+//                onClick = {}
+//            )
+//        }
+//        item {
+//            CardRow(
+//                imageVector = Icons.Default.Share,
+//                title = "Share",
+//                color = R.color.share,
+//                iconColor = Color.White,
+//                textColor = Color.White,
+//                alignment = Arrangement.Center,
+//                onClick = {}
+//            )
+//        }
 
         // ---------  Paged Pages  ---------
         item { SectionTitle("Pages") }

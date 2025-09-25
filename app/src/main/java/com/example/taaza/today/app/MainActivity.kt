@@ -1,5 +1,6 @@
 package com.example.taaza.today.app
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,14 +9,21 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        val uri: Uri? = intent?.data
+        if (uri != null && uri.pathSegments.size >= 2) {
+            val postId = uri.pathSegments[1] // e.g. "123" from /post/123
+            // Pass this ID down to Compose navigation
+        }
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
 
-                App()
+            val navController = rememberNavController()
+            App(navController, startPostId = postId)
 
 
         }

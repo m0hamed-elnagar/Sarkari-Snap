@@ -23,6 +23,8 @@ import android.text.style.ClickableSpan
 import android.text.style.URLSpan
 import android.view.View
 import android.widget.TextView
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import kotlin.collections.getOrPut
 
@@ -96,9 +98,10 @@ object WebViewCache {
                 Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"),
                 ""
             )
+
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
-
+            .replace(Regex("(?s)\\A\\s*(<p[^>]*>(&nbsp;|\\s)*</p>|<div[^>]*>(&nbsp;|\\s)*</div>|<br\\s*/?>)+"), "")
         val fullHtml = """
             <html>
             <head>
@@ -109,11 +112,12 @@ object WebViewCache {
                         font-size: 17px;
                         line-height: 1.7;
                         color: #333333;
-                        margin: 0 10px;
+                        margin: 0;
                         background-color: transparent;
                         word-wrap: break-word;
                         overflow-wrap: break-word;
                     }
+                      p { margin-top: 0; } 
                     a {
                         color: #1976d2;
                         text-decoration: none;
@@ -166,7 +170,8 @@ fun PermanentHtmlContent2(
     }
 
     AndroidView(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .heightIn(min = 120.dp) ,
         factory = { webView },
         update = { view ->
             // Save scroll position when the view is about to be detached

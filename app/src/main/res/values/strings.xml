@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sarkari Snap</string>
+    <string name="app_name">Taaza Today</string>
     <string name="close_hint">Clear search</string>
     <string name="search_hint">Search...</string>
     <string name="description_unavailable">Description not available.</string>

@@ -1,6 +1,7 @@
 package com.example.taaza.today.bloger.ui.postDetails
 
 import android.util.Log
+import androidx.annotation.ColorRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,6 +23,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -45,9 +49,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -152,10 +159,10 @@ fun PostDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Article") },
+                title = { Text("Article", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
                 actions = {
@@ -274,7 +281,7 @@ private fun LazyItemScope.PostDetailContent(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding( 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -291,13 +298,32 @@ private fun LazyItemScope.PostDetailContent(
                 .padding(start = 12.dp)
         ) {
             post.labels.forEach { label ->
-                PostChip(
-                    size = ChipSize.SMALL,
-                    onClick = { onAction(PostDetailsActions.OnLabelClick(label)) },
-                    modifier = Modifier.padding(2.dp)
-                ) {
-                    Text(label.uppercase(), style = MaterialTheme.typography.bodyMedium)
-                }
+                AssistChip(
+                    onClick = {onAction(PostDetailsActions.OnLabelClick(label)) },
+                    label = { Text(label.uppercase(), style = MaterialTheme.typography.bodyMedium) },
+                     modifier = Modifier.padding(top = 4.dp, end = 2.dp, start = 2.dp)
+                    ,
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor =colorResource(R.color.splash_background),
+                        labelColor = Color.White
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.search_list_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint =  Color.White
+                        )
+                    }
+                )
+
+//                PostChip(
+//                    size = ChipSize.SMALL,
+//                    onClick = { onAction(PostDetailsActions.OnLabelClick(label)) },
+//                    modifier = Modifier.padding(top = 4.dp, end = 2.dp, start = 2.dp)
+//                ) {
+//                    Text(label.uppercase(), style = MaterialTheme.typography.bodyMedium)
+//                }
             }
         }
     }
@@ -308,8 +334,10 @@ private fun LazyItemScope.PostDetailContent(
             onLinkClicked = { url -> onAction(PostDetailsActions.OnLinkClicked(url)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(horizontal = 12.dp)
                 .padding(top = 24.dp)
+
+
         )
     }
 }

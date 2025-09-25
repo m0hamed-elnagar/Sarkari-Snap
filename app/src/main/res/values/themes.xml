@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- الثيم الأساسي بتاع التطبيق -->
     <style name="Theme.taazaToday" parent="android:Theme.Material.Light.NoActionBar">
-        <!-- هنا هتحط الألوان والستايل العادي بتاعك -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/white</item>
+
     </style>
 
     <style name="Theme.MyApp.Splash" parent="Theme.SplashScreen">

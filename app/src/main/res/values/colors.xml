@@ -12,4 +12,6 @@
     <color name="messenger">#0084FF</color>
     <color name="whatsapp">#1A8518</color>
     <color name="share">#04162c</color>
+    <color name="chip_color">#1E88E5</color>
+
 </resources>
