@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:168264790372:android:ed03d72a413ec042d90a71",
+        "mobilesdk_app_id": "1:168264790372:android:bf688dd408d89f0ed90a71",
         "android_client_info": {
-          "package_name": "com.example.taaza.today"
+          "package_name": "com.rawderm.taaza.today"
         }
       },
       "oauth_client": [],

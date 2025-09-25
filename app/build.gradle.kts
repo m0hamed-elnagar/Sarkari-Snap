@@ -14,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.taaza.today"
+    namespace = "com.rawderm.taaza.today"
     compileSdk = 36
 
     signingConfigs {
@@ -27,11 +27,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.taaza.today"
+        applicationId = "com.rawderm.taaza.today"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val localProps = Properties().apply {
