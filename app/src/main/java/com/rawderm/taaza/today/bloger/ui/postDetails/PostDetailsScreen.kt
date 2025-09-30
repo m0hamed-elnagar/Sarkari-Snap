@@ -69,7 +69,7 @@ import com.rawderm.taaza.today.bloger.ui.components.FavoriteToggleIcon
 import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.bloger.ui.home.components.NativeBloggerVideo
 import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeCard
-import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeVideoPlayer
+import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeShortsPlayer
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.NoPostState
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab
@@ -224,15 +224,15 @@ fun PostDetailsScreen(
                 state = scrollState,
 
                 ) {
-                item(key = "shorts") {
-                    val shortIds = listOf("uCAHNFRTh3w")      // add more later
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        shortIds.forEach { id ->
-
-                            YouTubeVideoPlayer(videoId = id,autoPlay = true)
-                        }
-                    }
-                }
+//                item(key = "shorts") {
+//                    val shortIds = listOf("uCAHNFRTh3w")      // add more later
+//                    Column(modifier = Modifier.fillMaxWidth()) {
+//                        shortIds.forEach { id ->
+//
+//                            YouTubeShortsPlayer(videoId = id,autoPlay = true)
+//                        }
+//                    }
+//                }
 
                 item(key = "main_post_${state.post.id}") {
                     val post = state.post ?: return@item

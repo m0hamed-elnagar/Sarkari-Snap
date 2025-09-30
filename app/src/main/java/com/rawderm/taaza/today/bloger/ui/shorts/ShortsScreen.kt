@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeVideoPlayer
+import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeShortsPlayer
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -55,27 +55,18 @@ fun ShortsScreen(
     shortsPaging: LazyPagingItems<Post>,
     onAction: (ShortsActions) -> Unit,
 ) {
-    val pagerState = rememberPagerState(
-        initialPage = 0
-    ) {
-        shortsPaging.itemCount
-    }
+    val pagerState = rememberPagerState(initialPage = 0) { shortsPaging.itemCount }
 
-    // Track when page has settled after scroll
-    var settledPage by remember { mutableIntStateOf(pagerState.currentPage) }
+    /* we only treat a page as settled when paging *and* settle-animation are done */
+    var settledPage by remember { mutableIntStateOf(-1) }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress) {
-            // Wait for any final animations to complete
-            delay(100)
+            delay(100)                 // let animation finish
             settledPage = pagerState.currentPage
-        }
-    }
-
-    // Pre-load next pages when we're close to the end
-    LaunchedEffect(pagerState.currentPage) {
-        if (pagerState.currentPage + 3 >= shortsPaging.itemCount) {
-            shortsPaging.retry()
+            /* 3. pre-load next page */
+            val next = pagerState.currentPage + 1
+            if (next < shortsPaging.itemCount) shortsPaging.retry()
         }
     }
 
@@ -90,9 +81,11 @@ fun ShortsScreen(
         }
     ) { pageIndex ->
         val post = shortsPaging[pageIndex] ?: return@VerticalPager
+        val videoId = remember(post) { post.videoUrl.orEmpty().trim() }
 
         ShortsVideoPage(
             post = post,
+            videoId = videoId,
             isSelected = pageIndex == settledPage,
             pageIndex = pageIndex
         )
@@ -102,80 +95,55 @@ fun ShortsScreen(
 @Composable
 private fun ShortsVideoPage(
     post: Post,
+    videoId: String,          // non-null, already extracted
     isSelected: Boolean,
     pageIndex: Int
 ) {
     Box(
-        modifier = Modifier
+        Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(Modifier.fillMaxSize()) {
             Spacer(
-                modifier = Modifier
+                Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .background(Color.Black)
             )
 
-            if (!post.videoUrl.isNullOrBlank()) {
-                YouTubeVideoPlayer(
-                    videoId = post.videoUrl,
-                    autoPlay = isSelected,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                Box(
+            /* 1. decide what to draw */
+            when {
+                videoId.isBlank() -> PlaceholderBox("No video")
+                else              -> YouTubeShortsPlayer(
+                    videoIds = listOf(videoId),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(9f / 16f)
-                        .background(Color.DarkGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No video available",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-                }
+                        .aspectRatio(9f / 16f),
+                    onVideoEnd = { /* optional: scroll to next page */ }
+                )
             }
 
             /* Bottom black spacer - eats extra height */
             Spacer(
-                modifier = Modifier
+                Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .background(Color.Black)
             )
         }
-
+        post
         /* Text overlay at bottom */
         Column(
-            modifier = Modifier
+            Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
         ) {
-            Text(
-                text = post.title,
-                color = Color.White,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            post.description?.let { description ->
-                if (description.isNotBlank()) {
-                    Text(
-                        text = description,
-                        color = Color.White.copy(alpha = 0.8f),
-                        fontSize = 14.sp,
-                        maxLines = 2
-                    )
-                }
+            Text(post.title, color = Color.White, fontSize = 18.sp,modifier = Modifier.padding(bottom = 8.dp))
+            post.description?.takeIf { it.isNotBlank() }?.let {
+                Text(it, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, maxLines = 2)
             }
+
         }
 
         /* Optional: Page indicator at top */
@@ -190,3 +158,17 @@ private fun ShortsVideoPage(
     }
 }
 
+/* ----------  reusable placeholder  ---------- */
+@Composable
+private fun PlaceholderBox(text: String) {
+    /* swap with any shimmer / circular spinner you like */
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .aspectRatio(9f / 16f)
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = Color.White, fontSize = 16.sp)
+    }
+}
