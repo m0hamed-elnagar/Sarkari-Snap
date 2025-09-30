@@ -13,6 +13,7 @@ import com.rawderm.taaza.today.bloger.ui.labeled.LabeledPostsViewModel
 import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
 import com.plcoding.bookpedia.core.data.HttpClientFactory
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.module.dsl.singleOf
@@ -40,6 +41,7 @@ val sharedModule = module {
     viewModelOf(::PostDetailsViewModel)
     viewModelOf(::PageDetailsViewModel)
     viewModelOf(::SelectedPostViewModel)
+    viewModelOf(::ShortsViewModel)
     viewModelOf(::LabeledPostsViewModel)
 
 

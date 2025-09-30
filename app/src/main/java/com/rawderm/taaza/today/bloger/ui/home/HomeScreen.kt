@@ -1,8 +1,12 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
+import android.app.Activity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,6 +16,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,7 +35,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -49,6 +57,7 @@ fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onPostClick: (Post) -> Unit,
     onPagesClick: (Page) -> Unit,
+    onShortsClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
@@ -63,13 +72,17 @@ fun HomeScreenRoot(
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
                 is HomeActions.OnPageClick -> onPagesClick(action.page)
+                is HomeActions.OnShortsClick -> onShortsClick()
                 else -> Unit
             }
             viewModel.onAction(action)
         }
     )
 }
+ fun tabToPager(tabIndex: Int) = if (tabIndex > 2) tabIndex - 1 else tabIndex
 
+/* pager-index -> tab-index */
+ fun pagerToTab(pagerIndex: Int) = if (pagerIndex >= 2) pagerIndex + 1 else pagerIndex
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -80,13 +93,13 @@ fun HomeScreen(
     onAction: (HomeActions) -> Unit
 ) {
     val tabs = BottomTab.entries
-    val pagerState = rememberPagerState { tabs.size } // ← dynamic count
+    val pagerState = rememberPagerState { tabs.size-1 } // ← dynamic count
 
     val title = when (state.selectedTabIndex) {
         0 -> stringResource(R.string.home)
         1 -> stringResource(R.string.trending)
-        2 -> stringResource(R.string.favorites)
-        3 -> stringResource(R.string.more)
+        3 -> stringResource(R.string.favorites)
+        4 -> stringResource(R.string.more)
         else -> ""
     }
 
@@ -98,12 +111,16 @@ fun HomeScreen(
 
     val settledPage = pagerState.settledPage
     LaunchedEffect(settledPage) {
-        if (state.selectedTabIndex != settledPage) {
-            onAction(HomeActions.OnTabSelected(settledPage))
+        val tabIndex = pagerToTab(pagerState.settledPage)
+        if (state.selectedTabIndex != tabIndex) {
+            onAction(HomeActions.OnTabSelected(tabIndex))
         }
     }
 
-    Scaffold(
+
+
+
+      Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -118,9 +135,11 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomTabRow(
-                 pagerState = pagerState,
+                modifier = Modifier,
+                pagerState = pagerState,
                 scope = scope,
-                 tabs = tabs
+                tabs = tabs,
+                onShortsClick = { onAction(HomeActions.OnShortsClick) }
             )
         }
     ) { padding ->
@@ -130,7 +149,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) { page ->
-    when (tabs[page]) {          // ← enum instead of int
+    when (tabs[pagerToTab(page)]) {          // ← enum instead of int
                 BottomTab.HOME-> HomeTabWithPullRefresh(
                     state,
                     pagedPosts,
@@ -142,7 +161,7 @@ fun HomeScreen(
                 BottomTab.TRENDING -> TrendingTabContentPullRefresh(state,trendingPosts, pages,onAction)
                 BottomTab.FAVORITES->FavoriteTabContent(state, onAction)
                 BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
-            }
+           else -> {} }
         }
     }
 }
@@ -190,7 +209,11 @@ enum class BottomTab(
     val icon: ImageVector
 ) {
     HOME(R.string.home, Icons.Default.Home),
-    TRENDING(R.string.trending, Icons.AutoMirrored.Filled.TrendingUp), // use real icon
+    TRENDING(R.string.trending, Icons.AutoMirrored.Filled.TrendingUp),
+
+    // ----- middle gap -----
+    EMPTY(R.string.empty, Icons.Default.Add),
+
     FAVORITES(R.string.favorites, Icons.Default.Favorite),
     MORE(R.string.more, Icons.AutoMirrored.Filled.More)
 }

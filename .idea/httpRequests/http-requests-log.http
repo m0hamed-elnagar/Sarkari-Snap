@@ -3,6 +3,42 @@ Accept: application/json
 User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
 Accept-Encoding: br, deflate, gzip, x-gzip
 
+<> 2025-09-28T175157.200.json
+
+###
+
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-09-28T175138.200.json
+
+###
+
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-09-28T134232.200.json
+
+###
+
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-09-28T134224.200.json
+
+###
+
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+
 <> 2025-09-25T180320.200.json
 
 ###
@@ -409,42 +445,6 @@ User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 
 Accept-Encoding: br, deflate, gzip, x-gzip
 
 <> 2025-09-01T173305.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 Patch 2
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-01T172149.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 Patch 2
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-01T125937.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 Patch 2
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-01T125456.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal Feature Drop | 2025.1.2 Patch 2
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-08-31T143116.200.json
 
 ###
 

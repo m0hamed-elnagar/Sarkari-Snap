@@ -112,6 +112,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.ui.text)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.koin.test)
 
     // Firebase
@@ -169,4 +170,10 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.material.icons.extended)
     implementation("com.izettle:html2bitmap:1.10")
+    // ExoPlayer
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
+
 }

@@ -9,7 +9,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import com.rawderm.taaza.today.app.AppChecker.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
@@ -34,11 +33,13 @@ import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsActions
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun App(navController:  NavHostController, startPostId: String?) {
+fun App(navController:  NavHostController) {
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
             background = Color.White,
@@ -88,6 +89,11 @@ private fun AppNavigation(navController: NavHostController) {
                         navController.navigate(Route.PageDetails(page.id)) {
                             launchSingleTop = true
                         }
+                    },
+                    onShortsClick = {
+                        navController.navigate(Route.Shorts) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -129,19 +135,20 @@ private fun AppNavigation(navController: NavHostController) {
                 )
             }
             composable<Route.PageDetails> { entry ->
-//                val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
                 val detailsVM = koinViewModel<PageDetailsViewModel>()
-//                val selected by sharedVM.selectedPage.collectAsState()
-//
-//                LaunchedEffect(selected) {
-//                    selected?.let { detailsVM.onAction(PageDetailsActions.OnSelectedPageChange(it)) }
-//                }
 
                 PageDetailsScreenRoot(
                     viewModel = detailsVM,
                     onBackClicked = { navController.navigateUp() },
 
                     )
+            }
+            composable<Route.Shorts> { entry ->
+             val shortsViewModel = koinViewModel<ShortsViewModel>()
+                ShortsScreenRoot (
+                    viewModel = shortsViewModel,
+                    onBackClicked = { navController.navigateUp() },
+                )
             }
 
             composable<Route.LabeledPosts> { entry ->

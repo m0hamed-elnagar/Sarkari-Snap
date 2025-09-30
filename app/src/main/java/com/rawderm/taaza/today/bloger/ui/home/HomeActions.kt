@@ -12,5 +12,7 @@ sealed interface HomeActions {
     data class OnLabelSelected(val label: String) : HomeActions
     object OnRefresh : HomeActions
     object OnNextPage : HomeActions
+    object OnShortsClick : HomeActions
+
 
 }

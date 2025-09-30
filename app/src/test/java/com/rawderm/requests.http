@@ -43,6 +43,8 @@ GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts
     &startDate=2025-09-11T11:07:24-07:00
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
+### getting the vedio from the post content
+GET https://video.blogger.com/video-play.mp4?contentId=faeec605ecb48d94
 
 # GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/POST_ID?key=YOUR_API_KEY
 # Accept: application/json

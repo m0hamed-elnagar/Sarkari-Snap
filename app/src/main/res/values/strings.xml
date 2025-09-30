@@ -16,6 +16,7 @@
     <string name="trending">Trending</string>
     <string name="categories">categories</string>
     <string name="pages">pages</string>
+    <string name="empty" translatable="false"/>
     <string name="more">More</string>
     <string name="instagram_link">https://instagram.com/taazatodayhindi</string>
     <string name="whatsapp_link">https://whatsapp.com/channel/0029VbBVucL1iUxWkpLNuq0v</string>

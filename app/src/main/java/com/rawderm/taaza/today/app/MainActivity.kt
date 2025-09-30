@@ -11,21 +11,38 @@ import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import android.content.Intent
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.colorResource
+import androidx.core.content.ContextCompat
+import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.core.ui.theme.Transparent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val postId = mutableStateOf<String?>(null)
-        val uri: Uri? = intent?.data
-        if (uri != null && uri.pathSegments.size >= 2) {
-            postId.value = uri.pathSegments[1] // e.g. "123" from /post/123
-            // Pass this ID down to Compose navigation
-        }
+
         installSplashScreen()
+
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                lightScrim = Color.Black.toArgb(),
+                darkScrim = Color.Black.toArgb()
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = Color.Black.toArgb(),
+                darkScrim = Color.Black.toArgb()
+            )
+        )
+
         setContent {
 
+
             val navController = rememberNavController()
-            App(navController, startPostId = postId.value)
+            App(navController)
 
 
         }
