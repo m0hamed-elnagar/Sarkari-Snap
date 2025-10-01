@@ -34,11 +34,16 @@ fun toDomain(dto: PostDto): Post {
         rowDate = dto.updated,
         url = dto.url,
         imageUrls = images,
-        videoUrl = videoUrl,
+        videoIds = extractYouTubeIds(dto.content),
         labels = dto.labels
     )
 }
-
+private fun extractYouTubeIds(html: String): List<String> =
+    """/embed/([a-zA-Z0-9_-]{11})""".toRegex()
+        .findAll(html)
+        .map { it.groupValues[1] }
+        .distinct()
+        .toList()
 // Extract direct video URLs from embed codes or iframe sources
 fun extractDirectVideoUrl(postContent: String): String? {
     val doc = Jsoup.parse(postContent)
@@ -77,10 +82,21 @@ fun extractDirectVideoUrl(postContent: String): String? {
         }
     }
 
-    Log.d("VideoExtraction", "No direct video URL found in content")
+    val youTubeId = extractYouTubeId(postContent)
+    if (youTubeId != null) return youTubeId
+    Log.d("VideoExtraction", "No direct video URL found in content$youTubeId")
     return null
 }
-
+private fun extractYouTubeId(html: String): String? {
+    val patterns = listOf(
+        """(?:youtube\.com/watch\?v=|youtu\.be/|/embed/|/v/|/shorts/)([a-zA-Z0-9_-]{11})""",
+        """["']?videoId["']?\s*:\s*["']([a-zA-Z0-9_-]{11})["']""",
+        """data-video-id=["']([a-zA-Z0-9_-]{11})["']"""
+    )
+    return patterns.firstNotNullOfOrNull { p ->
+        p.toRegex().find(html)?.groupValues?.get(1)
+    }
+}
 // Check if URL is likely a video file
 private fun isVideoUrl(url: String): Boolean {
     val videoPatterns = listOf(

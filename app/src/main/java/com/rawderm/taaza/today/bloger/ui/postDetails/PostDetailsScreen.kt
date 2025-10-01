@@ -1,9 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.postDetails
 
 import android.util.Log
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -68,8 +64,6 @@ import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.FavoriteToggleIcon
 import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.bloger.ui.home.components.NativeBloggerVideo
-import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeCard
-import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeShortsPlayer
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.NoPostState
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab
@@ -273,11 +267,11 @@ private fun LazyItemScope.PostDetailContent(
     post: Post,
     onAction: (PostDetailsActions) -> Unit
 ) {
-    post.videoUrl?.let { videoUrl ->
-        if (videoUrl.isNotBlank()) {
-            NativeBloggerVideo(videoUrl = post.videoUrl, modifier = Modifier.fillMaxWidth())
-
-        }}
+//    post.videoIds?.let { videoUrl ->
+//        if (videoUrl.isNotBlank()) {
+//            NativeBloggerVideo(videoUrl = post.videoIds, modifier = Modifier.fillMaxWidth())
+//
+//        }}
 
     // hero images
     post.imageUrls.forEach { url ->

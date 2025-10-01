@@ -23,6 +23,8 @@ private const val BASE_URL3 =
     "https://www.googleapis.com/blogger/v3/blogs/3213900"
 private const val BASE_URL2 =
     "https://www.googleapis.com/blogger/v3/blogs/2399953"
+private const val BASE_URL_english =
+    "https://www.googleapis.com/blogger/v3/blogs/2640395952322331775"
 
 class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostDataSource {
 
@@ -39,23 +41,23 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
             "KtorRemoteBlogDataSource",
             "getPostsAfterDate: label=$label, =$afterDate, limit=$limit"
         )
-val (realToken, packedDate) = pageToken
-    ?.takeIf { it.contains("|||") }
-    ?.split("|||")
-    ?.let { it[0] to it[1] }
-    ?: (null to null)
+        val (realToken, packedDate) = pageToken
+            ?.takeIf { it.contains("|||") }
+            ?.split("|||")
+            ?.let { it[0] to it[1] }
+            ?: (null to null)
 
 // Use a safe fallback date if both packedDate and afterDate are null/empty
-val safeAfterDate = packedDate.takeIf { !it.isNullOrEmpty() }
-    ?: afterDate.takeIf { !it.isNullOrEmpty() }
-    ?: "1970-01-01T00:00:00Z" // fallback default date
+        val safeAfterDate = packedDate.takeIf { !it.isNullOrEmpty() }
+            ?: afterDate.takeIf { !it.isNullOrEmpty() }
+            ?: "1970-01-01T00:00:00Z" // fallback default date
 
-val inclusive = try {
-    OffsetDateTime.parse(safeAfterDate)
-} catch (e: Exception) {
-    Log.w("KtorRemoteBlogDataSource", "Invalid date format: $safeAfterDate, using epoch")
-    OffsetDateTime.parse("1970-01-01T00:00:00Z")
-}
+        val inclusive = try {
+            OffsetDateTime.parse(safeAfterDate)
+        } catch (e: Exception) {
+            Log.w("KtorRemoteBlogDataSource", "Invalid date format: $safeAfterDate, using epoch")
+            OffsetDateTime.parse("1970-01-01T00:00:00Z")
+        }
 
         // first page
         Log.d(
@@ -132,6 +134,7 @@ val inclusive = try {
                 parameter("fields", "id,title,content,url")
             }.body()
         }
+
     override suspend fun getPost(postId: String): Result<PostDto, DataError.Remote> =
         safeCall<PostDto> {
             httpClient.get("$BASE_URL/posts/$postId") {
@@ -139,4 +142,28 @@ val inclusive = try {
                 parameter("fields", "id,updated,url,title,content,labels")
             }.body()
         }
+
+    override suspend fun getShorts(
+        limit: Int,
+        pageToken: String?
+    ): Result<BloggerResponse, DataError.Remote> {
+        val tokenLog = pageToken ?: "<none>"
+        Log.d(
+            "KtorRemoteBlogDataSource",
+            "getPosts:, pageToken=$tokenLog, limit=$limit"
+        )
+        return safeCall<BloggerResponse> {
+            httpClient.get("$BASE_URL_english/posts") {
+                parameter("key", apiKey)
+                parameter("maxResults", limit)
+                parameter("labels", "Video")
+                if (pageToken != null) {
+                    parameter("pageToken", pageToken)
+                }
+                parameter("orderBy", "updated") // Order by published date
+                parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
+            }.body()
+        }
+    }
+
 }

@@ -29,4 +29,8 @@ interface RemotePostDataSource {
         afterDate: String?,
         pageToken: String?
     ): Result<BloggerResponse, DataError.Remote>
+
+
+
+    suspend fun getShorts(limit: Int, pageToken: String?): Result<BloggerResponse, DataError.Remote>
 }

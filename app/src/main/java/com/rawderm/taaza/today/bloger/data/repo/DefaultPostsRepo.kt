@@ -20,6 +20,7 @@ import com.plcoding.bookpedia.core.domain.DataError
 import com.plcoding.bookpedia.core.domain.EmptyResult
 import com.plcoding.bookpedia.core.domain.Result
 import com.plcoding.bookpedia.core.domain.map
+import com.rawderm.taaza.today.bloger.data.paging.ShortsPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -72,6 +73,15 @@ class DefaultPostsRepo(
                     remotePostDataSource,
                     if (label == "All") null else label
                 )
+            }
+        ).flow
+    }
+    override fun getPagedShorts(): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 2, enablePlaceholders = false),
+            pagingSourceFactory = {
+                ShortsPagingSource(
+                    remotePostDataSource)
             }
         ).flow
     }

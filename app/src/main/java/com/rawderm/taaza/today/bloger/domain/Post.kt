@@ -8,8 +8,8 @@ data class Post(
     val content: String = "",
     val labels: List<String> = emptyList(),
     val imageUrls: List<String>,
-    val videoUrl : String? = null,
+    val videoIds : List<String?> = listOf(null),
     val date: String,
     val rowDate:String = "",
 
-)
+    )

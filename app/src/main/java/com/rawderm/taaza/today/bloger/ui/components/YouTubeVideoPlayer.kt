@@ -1,17 +1,15 @@
-package com.rawderm.taaza.today.bloger.ui.home.components
+package com.rawderm.taaza.today.bloger.ui.components
 
 import android.util.Log
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,23 +27,30 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 fun YouTubeShortsPlayer(
     videoIds: List<String>,
     modifier: Modifier = Modifier,
+    autoPlay: Boolean = true,          // NEW
     onVideoEnd: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var currentIndex by remember { mutableIntStateOf(0) }
-    val listener = remember {
+
+    val listener = remember(autoPlay) {
         object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                try {
-                    youTubePlayer.loadVideo(videoIds[currentIndex], 0f)
-                } catch (e: Exception) {
-                    Log.e("YouTubeShorts", "Failed to load video: ${e.message}")
+                if (autoPlay) {          // <-- only load if we really want to play
+                    try {
+                        youTubePlayer.loadVideo(videoIds[currentIndex], 0f)
+                    } catch (e: Exception) {
+                        Log.e("YouTubeShorts", "Failed to load video: ${e.message}")
+                    }
                 }
             }
 
-            override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerConstants.PlayerState) {
+            override fun onStateChange(
+                youTubePlayer: YouTubePlayer,
+                state: PlayerConstants.PlayerState
+            ) {
                 if (state == PlayerConstants.PlayerState.ENDED) {
                     if (currentIndex < videoIds.size - 1) {
                         currentIndex++
@@ -64,9 +69,9 @@ fun YouTubeShortsPlayer(
             setPadding(0, 0, 0, 0)
 
             // Force the WebView to scale content to fit
-            layoutParams = android.view.ViewGroup.LayoutParams(
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
         }
     }
@@ -91,8 +96,9 @@ fun YouTubeShortsPlayer(
         }
     }
 
-    LaunchedEffect(currentIndex) {
-        if (currentIndex < videoIds.size) {
+    /* when this page becomes the settled one -> start playback */
+    LaunchedEffect(autoPlay) {
+        if (autoPlay && videoIds.isNotEmpty()) {
             playerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                 override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                     try {

@@ -5,6 +5,9 @@ Accept: application/json
 ### Retrieve blog metadata by URL
 GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=http://code.blogger.com/&key=YOUR_API_KEY
 Accept: application/json
+### Retrieve blog metadata by URL
+GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=https://taazatodayenglish.blogspot.com/2025/09/test-20.html/&key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
 
 ### Retrieve list of posts for this blog
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
@@ -20,6 +23,9 @@ Accept: application/json
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 #retrieve list of pages
+### Retrieve list of posts for the english blog (using the obtained blog ID)
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+Accept: application/json
 ### Retrieve list of pages for this blog
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json

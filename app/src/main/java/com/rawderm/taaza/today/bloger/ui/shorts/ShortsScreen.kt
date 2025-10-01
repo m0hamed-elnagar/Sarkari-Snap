@@ -2,7 +2,6 @@ package com.rawderm.taaza.today.bloger.ui.shorts
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,14 +9,23 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.IosShare
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,22 +36,27 @@ import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.rawderm.taaza.today.bloger.ui.home.components.YouTubeShortsPlayer
+import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.abs
 
 @Composable
 fun ShortsScreenRoot(
     viewModel: ShortsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
-    val testPosts = viewModel.testPosts.collectAsLazyPagingItems()
+    val testPosts = viewModel.shorts.collectAsLazyPagingItems()
     ShortsScreen(
 //        state = state,
         shortsPaging = testPosts,
         onAction = { action ->
             when (action) {
                 is ShortsActions.OnBackClick -> onBackClicked()
+               else -> {
+                    viewModel.onAction(action)
+                }
+
             }
         }
     )
@@ -62,9 +75,8 @@ fun ShortsScreen(
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress) {
-            delay(100)                 // let animation finish
+            delay(100)
             settledPage = pagerState.currentPage
-            /* 3. pre-load next page */
             val next = pagerState.currentPage + 1
             if (next < shortsPaging.itemCount) shortsPaging.retry()
         }
@@ -74,6 +86,7 @@ fun ShortsScreen(
         state = pagerState,
         modifier = Modifier.fillMaxSize(),
         pageSpacing = 0.dp,
+        beyondViewportPageCount = 2,
         userScrollEnabled = true,
         flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
         key = { pageIndex ->
@@ -81,13 +94,15 @@ fun ShortsScreen(
         }
     ) { pageIndex ->
         val post = shortsPaging[pageIndex] ?: return@VerticalPager
-        val videoId = remember(post) { post.videoUrl.orEmpty().trim() }
+        val videoId = remember(post) { post.videoIds.orEmpty().firstOrNull() }
 
         ShortsVideoPage(
             post = post,
             videoId = videoId,
             isSelected = pageIndex == settledPage,
-            pageIndex = pageIndex
+            settledPage = settledPage,
+            pageIndex = pageIndex,
+            onAction = onAction
         )
     }
 }
@@ -95,10 +110,15 @@ fun ShortsScreen(
 @Composable
 private fun ShortsVideoPage(
     post: Post,
-    videoId: String,          // non-null, already extracted
+    videoId: String?,
     isSelected: Boolean,
-    pageIndex: Int
+    settledPage: Int,
+    pageIndex: Int,
+    onAction: (ShortsActions) -> Unit
 ) {
+    // Local state for like (you might want to move this to ViewModel)
+    var isLiked by remember(post.id) { mutableStateOf(false) }
+
     Box(
         Modifier
             .fillMaxSize()
@@ -113,16 +133,21 @@ private fun ShortsVideoPage(
             )
 
             /* 1. decide what to draw */
-            when {
-                videoId.isBlank() -> PlaceholderBox("No video")
-                else              -> YouTubeShortsPlayer(
-                    videoIds = listOf(videoId),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(9f / 16f),
-                    onVideoEnd = { /* optional: scroll to next page */ }
-                )
+             when {
+                videoId.isNullOrBlank() -> PlaceholderBox("No video")
+                abs(pageIndex - settledPage) <= 2 -> {
+                    YouTubeShortsPlayer(
+                        videoIds = listOf(videoId),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .aspectRatio(9f / 16f),
+                        autoPlay = isSelected,   // NEW flag
+                        onVideoEnd = { /* optional scroll to next */ }
+                    )
+                }
+                else -> PlaceholderBox("Loading…")
             }
+
 
             /* Bottom black spacer - eats extra height */
             Spacer(
@@ -143,7 +168,54 @@ private fun ShortsVideoPage(
             post.description?.takeIf { it.isNotBlank() }?.let {
                 Text(it, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, maxLines = 2)
             }
+        }
 
+        /* Action buttons on the right side */
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Share button
+            IconButton(
+                onClick = {
+                    onAction(ShortsActions.OnShareClick(post.id))
+                },
+                modifier = Modifier.size(48.dp).padding(horizontal = 2.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            // Like button with count
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(
+                    onClick = {
+                        isLiked = !isLiked
+                        onAction(ShortsActions.OnPostFavoriteClick(post))
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Like",
+                        tint = if (isLiked) Color.White else Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            // You can add more action buttons here (comment, etc.)
         }
 
         /* Optional: Page indicator at top */
