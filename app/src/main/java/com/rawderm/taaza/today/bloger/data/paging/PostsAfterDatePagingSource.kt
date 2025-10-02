@@ -7,7 +7,7 @@ import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.plcoding.bookpedia.core.domain.Result
 
-fun postsAfterDatePagingSource(
+fun postsBeforeDatePagingSource(
     remote: RemotePostDataSource,
     label: String?,
     afterDate: String?

@@ -15,5 +15,6 @@ sealed interface Route {
     data class LabeledPosts(val label: String) : Route
     @Serializable
     data object Shorts : Route
-
+    @Serializable
+    data class LinkToShorts(val date :String) : Route
 }

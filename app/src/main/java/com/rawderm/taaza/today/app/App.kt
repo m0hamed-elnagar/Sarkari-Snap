@@ -1,5 +1,10 @@
 package com.rawderm.taaza.today.app
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.util.Log
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,13 +38,14 @@ import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsActions
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun App(navController:  NavHostController) {
+fun App(navController: NavHostController) {
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
             background = Color.White,
@@ -51,9 +57,9 @@ fun App(navController:  NavHostController) {
         if (isWorking) {
             AppNavigation(navController)
         } else {
-                TemporarilyStoppedScreen(onRetry = {})
-            }
+            TemporarilyStoppedScreen(onRetry = {})
         }
+    }
 }
 
 @Composable
@@ -97,7 +103,7 @@ private fun AppNavigation(navController: NavHostController) {
                     }
                 )
             }
-             composable<Route.PostDetails>(
+            composable<Route.PostDetails>(
                 deepLinks = listOf(
                     navDeepLink {
                         uriPattern = "$appUrl/post/{postId}"
@@ -143,9 +149,67 @@ private fun AppNavigation(navController: NavHostController) {
 
                     )
             }
-            composable<Route.Shorts> { entry ->
-             val shortsViewModel = koinViewModel<ShortsViewModel>()
-                ShortsScreenRoot (
+            composable<Route.Shorts>(
+
+                enterTransition = {
+                    // Bottom → Top animation
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Up,
+                        animationSpec = tween(100)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Down,
+                        animationSpec = tween(100)
+                    )
+                }
+            ) { entry ->
+
+
+                val shortsViewModel = koinViewModel<ShortsViewModel>()
+
+
+                ShortsScreenRoot(
+                    viewModel = shortsViewModel,
+                    onBackClicked = { navController.navigateUp() },
+                )
+            }
+            composable<Route.LinkToShorts>(
+                deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "$appUrl/shorts/{date}"
+                        action = "android.intent.action.VIEW"
+                    }
+                ),
+                enterTransition = {
+                    // Bottom → Top animation
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Up,
+                        animationSpec = tween(100)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Down,
+                        animationSpec = tween(100)
+                    )
+                }
+            ) { entry ->
+
+                val route = entry.toRoute<Route.LinkToShorts>()
+                val date = route.date
+
+                val shortsViewModel = koinViewModel<ShortsViewModel>()
+
+                LaunchedEffect(date) {
+                    if (date.isNotEmpty()) {
+                        shortsViewModel.onAction(ShortsActions.OnDeepLinkArrived(date))
+                        Log.d("Date", "AppNavigation: $date")
+                    }
+                }
+
+                ShortsScreenRoot(
                     viewModel = shortsViewModel,
                     onBackClicked = { navController.navigateUp() },
                 )

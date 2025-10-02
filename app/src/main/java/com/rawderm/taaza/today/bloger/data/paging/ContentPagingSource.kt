@@ -10,5 +10,11 @@ class ContentPagingSource<T : Any>(
     override suspend fun load(params: LoadParams<String>): LoadResult<String, T> =
         loader(params.key, params.loadSize)
 
-    override fun getRefreshKey(state: PagingState<String, T>): String? = null
-}
+    override val keyReuseSupported: Boolean
+        get() = true
+
+    override fun getRefreshKey(state: PagingState<String, T>): String? {
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey
+        }
+    }}

@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,17 +47,16 @@ fun ShortsScreenRoot(
     viewModel: ShortsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
-    val testPosts = viewModel.shorts.collectAsLazyPagingItems()
+    val state by viewModel.state.collectAsState()
+    val shortsPaging = viewModel.shorts.collectAsLazyPagingItems()
+
     ShortsScreen(
-//        state = state,
-        shortsPaging = testPosts,
+        singlePost = state.post,
+        shortsPaging = shortsPaging,
         onAction = { action ->
             when (action) {
                 is ShortsActions.OnBackClick -> onBackClicked()
-               else -> {
-                    viewModel.onAction(action)
-                }
-
+                else -> viewModel.onAction(action)
             }
         }
     )
@@ -65,6 +65,7 @@ fun ShortsScreenRoot(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShortsScreen(
+    singlePost: Post?,
     shortsPaging: LazyPagingItems<Post>,
     onAction: (ShortsActions) -> Unit,
 ) {
@@ -72,6 +73,18 @@ fun ShortsScreen(
 
     /* we only treat a page as settled when paging *and* settle-animation are done */
     var settledPage by remember { mutableIntStateOf(-1) }
+
+    // Auto-scroll to the single post when it loads in paging data
+//    LaunchedEffect(singlePost, shortsPaging.itemSnapshotList.items) {
+//        if (singlePost != null) {
+//            val targetIndex = shortsPaging.itemSnapshotList.items.indexOfFirst { it.id == singlePost.id }
+//            if (targetIndex >= 0) {
+//                // Found the post in the list - scroll to it
+//                pagerState.scrollToPage(targetIndex)
+//                settledPage = targetIndex
+//            }
+//        }
+//    }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress) {
@@ -90,8 +103,8 @@ fun ShortsScreen(
         userScrollEnabled = true,
         flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
         key = { pageIndex ->
-            shortsPaging.peek(pageIndex)?.id ?: pageIndex
-        }
+            val post = shortsPaging.peek(pageIndex)
+            "page_${pageIndex}_post_${post?.id ?: "null"}"        }
     ) { pageIndex ->
         val post = shortsPaging[pageIndex] ?: return@VerticalPager
         val videoId = remember(post) { post.videoIds.orEmpty().firstOrNull() }
@@ -157,7 +170,6 @@ private fun ShortsVideoPage(
                     .background(Color.Black)
             )
         }
-        post
         /* Text overlay at bottom */
         Column(
             Modifier

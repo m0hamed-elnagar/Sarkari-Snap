@@ -11,7 +11,7 @@ import com.rawderm.taaza.today.bloger.data.mappers.toPost
 import com.rawderm.taaza.today.bloger.data.mappers.toPostEntity
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
-import com.rawderm.taaza.today.bloger.data.paging.postsAfterDatePagingSource
+import com.rawderm.taaza.today.bloger.data.paging.postsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsPagingSource
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
@@ -20,6 +20,7 @@ import com.plcoding.bookpedia.core.domain.DataError
 import com.plcoding.bookpedia.core.domain.EmptyResult
 import com.plcoding.bookpedia.core.domain.Result
 import com.plcoding.bookpedia.core.domain.map
+import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.ShortsPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -102,9 +103,21 @@ class DefaultPostsRepo(
         return Pager(
             config = PagingConfig(pageSize = 2, enablePlaceholders = false),
             pagingSourceFactory = {
-                postsAfterDatePagingSource(
+                postsBeforeDatePagingSource(
                     remotePostDataSource,
                     label,
+                    afterDate
+                )
+            }
+        ).flow
+
+    }
+ override fun getShortsBeforeDate( afterDate: String?): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 2, enablePlaceholders = false),
+            pagingSourceFactory = {
+                shortsBeforeDatePagingSource(
+                    remotePostDataSource,
                     afterDate
                 )
             }
@@ -117,6 +130,10 @@ class DefaultPostsRepo(
 
     override suspend fun getPostById(postId: String): Result<Post, DataError.Remote> {
        return remotePostDataSource.getPost(postId).map { toDomain(it) }
+
+    }
+    override suspend fun getShortById(postId: String): Result<Post, DataError.Remote> {
+       return remotePostDataSource.getshort(postId).map { toDomain(it) }
 
     }
 

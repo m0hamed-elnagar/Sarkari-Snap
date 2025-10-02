@@ -51,6 +51,41 @@ GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
 ### getting the vedio from the post content
 GET https://video.blogger.com/video-play.mp4?contentId=faeec605ecb48d94
+### Retrieve posts from english blog
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=2
+    &endDate=2025-09-30T11:07:24-07:00
+    &orderBy=updated
+    &fields=nextPageToken,items(id,updated,url,title,content,labels)
+### Retrieve posts from english blog page2
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=2
+    &endDate=2025-09-30T07:23:48-07:00
+    &orderBy=updated
+    &fields=nextPageToken,items(id,updated,url,title,content,labels)
+### Retrieve posts from english blog page3
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=2
+    &endDate=2025-09-30T07:21:45-07:00
+    &orderBy=updated
+    &fields=nextPageToken,items(id,updated,url,title,content,labels)
+### Retrieve posts from english blog page4
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=2
+    &endDate=2025-09-30T07:18:57-07:00
+    &orderBy=updated
+    &fields=nextPageToken,items(id,updated,url,title,content,labels)
+### Retrieve posts from english blog page5
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=2
+    &endDate=2025-09-30T07:13:55-07:00
+    &orderBy=updated
+    &fields=nextPageToken,items(id,updated,url,title,content,labels)
 
 # GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/POST_ID?key=YOUR_API_KEY
 # Accept: application/json

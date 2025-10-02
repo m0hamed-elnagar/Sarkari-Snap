@@ -26,11 +26,18 @@ interface RemotePostDataSource {
     suspend fun getPostsAfterDate(
         limit: Int,
         label: String?,
-        afterDate: String?,
+        beforeDate: String?,
         pageToken: String?
     ): Result<BloggerResponse, DataError.Remote>
 
 
 
     suspend fun getShorts(limit: Int, pageToken: String?): Result<BloggerResponse, DataError.Remote>
+    suspend fun getshort(postId: String): Result<PostDto, DataError.Remote>
+    suspend fun getShortsBeforeDate(
+        limit: Int,
+        label: String? = null,
+        beforeDate: String?,
+        pageToken: String? = null
+    ): Result<BloggerResponse, DataError.Remote>
 }

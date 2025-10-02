@@ -142,6 +142,35 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
                 parameter("fields", "id,updated,url,title,content,labels")
             }.body()
         }
+    override suspend fun getshort(postId: String): Result<PostDto, DataError.Remote> =
+        safeCall<PostDto> {
+            httpClient.get("$BASE_URL_english/posts/$postId") {
+                parameter("key", apiKey)
+                parameter("fields", "id,updated,url,title,content,labels")
+            }.body()
+        }
+  override  suspend fun getShortsBeforeDate(
+        limit: Int,
+        label: String? ,
+        beforeDate: String?,
+        pageToken: String?
+    ): Result<BloggerResponse, DataError.Remote> {
+
+
+        return safeCall<BloggerResponse> {
+            httpClient.get("$BASE_URL_english/posts") {
+                parameter("key", apiKey)
+                parameter("maxResults", limit)
+                parameter("labels", "Video")
+
+                // all posts updated before this post
+                parameter("endDate", beforeDate)
+                pageToken?.let { parameter("pageToken", it) }
+                parameter("orderBy", "updated")
+                parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
+            }.body()
+        }
+    }
 
     override suspend fun getShorts(
         limit: Int,
