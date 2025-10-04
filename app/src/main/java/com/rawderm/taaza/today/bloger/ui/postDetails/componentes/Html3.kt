@@ -7,17 +7,16 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import java.util.WeakHashMap
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.ui.unit.dp
-import kotlin.collections.getOrPut
 
 object WebViewCache {
     private val cache = WeakHashMap<String, WebViewHolder0>()

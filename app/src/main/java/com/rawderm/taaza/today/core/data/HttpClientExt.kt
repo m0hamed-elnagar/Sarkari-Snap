@@ -1,7 +1,7 @@
-package com.plcoding.bookpedia.core.data
+package com.rawderm.taaza.today.core.data
 
-import com.plcoding.bookpedia.core.domain.DataError
-import com.plcoding.bookpedia.core.domain.Result
+import com.rawderm.taaza.today.core.domain.DataError
+import com.rawderm.taaza.today.core.domain.Result
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.SocketTimeoutException

@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import com.rawderm.taaza.today.bloger.data.mappers.toPage
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.domain.Page
-import com.plcoding.bookpedia.core.domain.Result
+import com.rawderm.taaza.today.core.domain.Result
 
 fun pagesPagingSource(
     remote: RemotePostDataSource

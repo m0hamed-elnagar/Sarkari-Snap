@@ -3,7 +3,7 @@ package com.rawderm.taaza.today.bloger.ui.postDetails.componentes
 
 
 import android.content.Context
-import android.graphics.Color.*
+import android.graphics.Color.TRANSPARENT
 import android.os.Parcelable
 import android.view.View
 import android.webkit.WebResourceRequest

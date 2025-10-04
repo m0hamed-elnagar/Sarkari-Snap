@@ -2,7 +2,7 @@ package com.rawderm.taaza.today.bloger.ui.home
 
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.plcoding.bookpedia.core.presentation.UiText
+import com.rawderm.taaza.today.core.ui.UiText
 
 data class HomeUiState(
     val labels: List<String> = emptyList(),

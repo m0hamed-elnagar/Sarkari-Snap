@@ -7,9 +7,9 @@ import androidx.paging.cachedIn
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
-import com.plcoding.bookpedia.core.domain.onError
-import com.plcoding.bookpedia.core.domain.onSuccess
-import com.plcoding.bookpedia.core.presentation.toUiText
+import com.rawderm.taaza.today.core.domain.onError
+import com.rawderm.taaza.today.core.domain.onSuccess
+import com.rawderm.taaza.today.core.ui.toUiText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow

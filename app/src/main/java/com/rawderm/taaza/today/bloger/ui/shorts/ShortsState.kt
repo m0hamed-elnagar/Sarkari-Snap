@@ -1,7 +1,7 @@
 package com.rawderm.taaza.today.bloger.ui.shorts
 
-import com.plcoding.bookpedia.core.presentation.UiText
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.core.ui.UiText
 
 data class ShortsState (
     val post: Post? = null,

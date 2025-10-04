@@ -20,13 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rawderm.taaza.today.R
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 
 fun openLink(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -42,7 +42,7 @@ fun SocialIconRow() {
     val facebookLink = stringResource(id = R.string.facebook_link)
     val telegramLink = stringResource(id = R.string.telegram_link)
     val xLink = stringResource(id = R.string.x_link)
-         Row(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
@@ -56,7 +56,7 @@ fun SocialIconRow() {
             circleSize = 48.dp,
             iconSize = 55.dp,
             elevation = 4.dp,
-            onClick =  {openLink(context, instagramLink) },
+            onClick = { openLink(context, instagramLink) },
             modifier = Modifier.weight(1f)
         )
         SocialIcon(
@@ -66,7 +66,7 @@ fun SocialIconRow() {
             circleSize = 48.dp,
             iconSize = 75.dp,
             elevation = 4.dp,
-            onClick = {openLink(context, whatsappLink) },
+            onClick = { openLink(context, whatsappLink) },
             modifier = Modifier.weight(1f)
         )
         SocialIcon(
@@ -76,7 +76,7 @@ fun SocialIconRow() {
             circleSize = 48.dp,
             iconSize = 80.dp,
             elevation = 4.dp,
-            onClick = {openLink(context, facebookLink) },
+            onClick = { openLink(context, facebookLink) },
             modifier = Modifier.weight(1f)
         )
         SocialIcon(
@@ -86,7 +86,7 @@ fun SocialIconRow() {
             circleSize = 48.dp,
             iconSize = 90.dp,
             elevation = 4.dp,
-            onClick = {openLink(context, telegramLink) },
+            onClick = { openLink(context, telegramLink) },
             modifier = Modifier.weight(1f)
         )
         SocialIcon(
@@ -96,7 +96,7 @@ fun SocialIconRow() {
             circleSize = 48.dp,
             iconSize = 48.dp,
             elevation = 4.dp,
-            onClick = {openLink(context, xLink) },
+            onClick = { openLink(context, xLink) },
             modifier = Modifier.weight(1f)
         )
     }

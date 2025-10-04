@@ -6,8 +6,8 @@ import com.rawderm.taaza.today.bloger.data.dto.LabelsResponse
 import com.rawderm.taaza.today.bloger.data.dto.PageDto
 import com.rawderm.taaza.today.bloger.data.dto.PagesResponse
 import com.rawderm.taaza.today.bloger.data.dto.PostDto
-import com.plcoding.bookpedia.core.domain.DataError
-import com.plcoding.bookpedia.core.domain.Result
+import com.rawderm.taaza.today.core.domain.DataError
+import com.rawderm.taaza.today.core.domain.Result
 
 interface RemotePostDataSource {
     suspend fun getPosts(

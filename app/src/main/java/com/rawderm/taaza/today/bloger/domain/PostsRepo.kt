@@ -1,9 +1,9 @@
 package com.rawderm.taaza.today.bloger.domain
 
 import androidx.paging.PagingData
-import com.plcoding.bookpedia.core.domain.DataError
-import com.plcoding.bookpedia.core.domain.EmptyResult
-import com.plcoding.bookpedia.core.domain.Result
+import com.rawderm.taaza.today.core.domain.DataError
+import com.rawderm.taaza.today.core.domain.EmptyResult
+import com.rawderm.taaza.today.core.domain.Result
 import kotlinx.coroutines.flow.Flow
 
 interface PostsRepo {

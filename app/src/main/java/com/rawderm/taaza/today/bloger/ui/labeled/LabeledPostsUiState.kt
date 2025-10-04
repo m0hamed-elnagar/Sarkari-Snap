@@ -1,7 +1,7 @@
 package com.rawderm.taaza.today.bloger.ui.labeled
 
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.plcoding.bookpedia.core.presentation.UiText
+import com.rawderm.taaza.today.core.ui.UiText
 
 data class LabeledPostsUiState(
     val title: String = "",

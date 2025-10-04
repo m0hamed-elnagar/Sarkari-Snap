@@ -3,8 +3,6 @@ package com.rawderm.taaza.today.app
 
 import android.app.Application
 import android.util.Log
-import com.rawderm.taaza.today.BuildConfig
-import com.rawderm.taaza.today.di.initKoin
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -17,6 +15,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.rawderm.taaza.today.BuildConfig
+import com.rawderm.taaza.today.di.initKoin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -1,4 +1,4 @@
-package com.plcoding.bookpedia.core.domain
+package com.rawderm.taaza.today.core.domain
 
 sealed interface DataError : Error {
     enum class Remote : DataError {

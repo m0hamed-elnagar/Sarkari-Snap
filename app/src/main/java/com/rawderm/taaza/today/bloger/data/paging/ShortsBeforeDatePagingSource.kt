@@ -5,7 +5,7 @@ import androidx.paging.PagingSource
 import com.rawderm.taaza.today.bloger.data.mappers.toDomain
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.plcoding.bookpedia.core.domain.Result
+import com.rawderm.taaza.today.core.domain.Result
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -63,6 +63,18 @@ private fun subtractOneSecond(timestamp: String): String {
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime = OffsetDateTime.parse(timestamp, formatter)
         val oneSecondEarlier = dateTime.minusSeconds(1)
+        oneSecondEarlier.format(formatter)
+    } catch (e: Exception) {
+        // If parsing fails, return the original timestamp
+        Log.e("PagingSource", "Failed to parse timestamp: $timestamp", e)
+        timestamp
+    }
+}
+ fun addOneSecond(timestamp: String): String {
+    return try {
+        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val dateTime = OffsetDateTime.parse(timestamp, formatter)
+        val oneSecondEarlier = dateTime.plusSeconds(1)
         oneSecondEarlier.format(formatter)
     } catch (e: Exception) {
         // If parsing fails, return the original timestamp

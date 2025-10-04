@@ -8,9 +8,9 @@ import com.rawderm.taaza.today.bloger.data.dto.LabelsResponse
 import com.rawderm.taaza.today.bloger.data.dto.PageDto
 import com.rawderm.taaza.today.bloger.data.dto.PagesResponse
 import com.rawderm.taaza.today.bloger.data.dto.PostDto
-import com.plcoding.bookpedia.core.data.safeCall
-import com.plcoding.bookpedia.core.domain.DataError
-import com.plcoding.bookpedia.core.domain.Result
+import com.rawderm.taaza.today.core.data.safeCall
+import com.rawderm.taaza.today.core.domain.DataError
+import com.rawderm.taaza.today.core.domain.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

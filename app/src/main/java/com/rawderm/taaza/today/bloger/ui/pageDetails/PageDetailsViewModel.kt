@@ -5,11 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.rawderm.taaza.today.bloger.domain.PostsRepo
 import com.rawderm.taaza.today.app.Route
-import com.plcoding.bookpedia.core.domain.onError
-import com.plcoding.bookpedia.core.domain.onSuccess
-import com.plcoding.bookpedia.core.presentation.toUiText
+import com.rawderm.taaza.today.bloger.domain.PostsRepo
+import com.rawderm.taaza.today.core.domain.onError
+import com.rawderm.taaza.today.core.domain.onSuccess
+import com.rawderm.taaza.today.core.ui.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

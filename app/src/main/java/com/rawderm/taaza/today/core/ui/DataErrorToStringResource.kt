@@ -1,8 +1,8 @@
-package com.plcoding.bookpedia.core.presentation
+package com.rawderm.taaza.today.core.ui
 
 
 import com.rawderm.taaza.today.R
-import com.plcoding.bookpedia.core.domain.DataError
+import com.rawderm.taaza.today.core.domain.DataError
 
 fun DataError.toUiText(): UiText {
     val stringRes = when (this) {

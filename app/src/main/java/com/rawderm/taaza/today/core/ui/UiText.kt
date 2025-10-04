@@ -1,4 +1,4 @@
-package com.plcoding.bookpedia.core.presentation
+package com.rawderm.taaza.today.core.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable

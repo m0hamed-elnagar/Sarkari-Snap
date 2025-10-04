@@ -1,6 +1,5 @@
 package com.rawderm.taaza.today.di
 
-import com.plcoding.bookpedia.di.sharedModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 

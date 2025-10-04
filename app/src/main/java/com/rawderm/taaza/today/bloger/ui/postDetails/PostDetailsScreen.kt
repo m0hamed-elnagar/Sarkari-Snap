@@ -63,7 +63,6 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.FavoriteToggleIcon
 import com.rawderm.taaza.today.bloger.ui.components.PostList
-import com.rawderm.taaza.today.bloger.ui.home.components.NativeBloggerVideo
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.NoPostState
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab

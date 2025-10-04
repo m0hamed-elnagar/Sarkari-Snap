@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.plcoding.bookpedia.core.domain.onError
-import com.plcoding.bookpedia.core.domain.onSuccess
-import com.plcoding.bookpedia.core.presentation.toUiText
+import com.rawderm.taaza.today.bloger.data.paging.addOneSecond
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
+import com.rawderm.taaza.today.core.domain.onError
+import com.rawderm.taaza.today.core.domain.onSuccess
+import com.rawderm.taaza.today.core.ui.toUiText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +61,7 @@ class ShortsViewModel(
 
             is ShortsActions.OnDeepLinkArrived -> {
                 action.date?.let { isoDate ->
-                    _beforeDate.value = isoDate        // <- triggers shorts re-load
+                    _beforeDate.value = addOneSecond(isoDate)        // <- triggers shorts re-load
                 }
             }
 

@@ -10,18 +10,18 @@ import com.rawderm.taaza.today.bloger.data.mappers.toPage
 import com.rawderm.taaza.today.bloger.data.mappers.toPost
 import com.rawderm.taaza.today.bloger.data.mappers.toPostEntity
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
+import com.rawderm.taaza.today.bloger.data.paging.ShortsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsPagingSource
+import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
-import com.plcoding.bookpedia.core.domain.DataError
-import com.plcoding.bookpedia.core.domain.EmptyResult
-import com.plcoding.bookpedia.core.domain.Result
-import com.plcoding.bookpedia.core.domain.map
-import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
-import com.rawderm.taaza.today.bloger.data.paging.ShortsPagingSource
+import com.rawderm.taaza.today.core.domain.DataError
+import com.rawderm.taaza.today.core.domain.EmptyResult
+import com.rawderm.taaza.today.core.domain.Result
+import com.rawderm.taaza.today.core.domain.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

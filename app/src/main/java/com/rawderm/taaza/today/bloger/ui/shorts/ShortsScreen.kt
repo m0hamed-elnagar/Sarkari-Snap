@@ -16,7 +16,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.IosShare
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,12 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
+import com.rawderm.taaza.today.core.utils.shareViaMore
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -131,7 +133,8 @@ private fun ShortsVideoPage(
 ) {
     // Local state for like (you might want to move this to ViewModel)
     var isLiked by remember(post.id) { mutableStateOf(false) }
-
+val context =   LocalContext.current
+    val appUrl = context.getString(R.string.app_url)
     Box(
         Modifier
             .fillMaxSize()
@@ -192,7 +195,10 @@ private fun ShortsVideoPage(
             // Share button
             IconButton(
                 onClick = {
-                    onAction(ShortsActions.OnShareClick(post.id))
+       val postUrl ="$appUrl/shorts/"+ post.rowDate
+                    val postTitle = post.title + "\nWatch this short video on Taaza Today.\n"
+
+                  shareViaMore(context, postTitle, postUrl)
                 },
                 modifier = Modifier.size(48.dp).padding(horizontal = 2.dp)
             ) {
