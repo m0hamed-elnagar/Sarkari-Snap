@@ -176,4 +176,8 @@ dependencies {
 
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
 
+    //datastore
+    implementation(libs.androidx.datastore.preferences)
+    //lang
+    implementation(libs.lingver)
 }
