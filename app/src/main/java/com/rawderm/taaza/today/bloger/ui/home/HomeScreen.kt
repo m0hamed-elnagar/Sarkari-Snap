@@ -169,7 +169,7 @@ private fun FavoriteTabContent(
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
             state.favoritePosts.isEmpty() -> Text(
-                text = "No favorites yet",
+                text = stringResource(R.string.no_favorites_yet),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -187,14 +187,14 @@ private fun FavoriteTabContent(
 @Composable
 private fun PagesTabContent() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Pages screen – coming soon", style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(R.string.pages_coming_soon), style = MaterialTheme.typography.bodyLarge)
     }
 }
 
 @Composable
 private fun CategoriesTabContent() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Categories screen – coming soon", style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(R.string.categories_coming_soon), style = MaterialTheme.typography.bodyLarge)
     }
 }
 enum class BottomTab(

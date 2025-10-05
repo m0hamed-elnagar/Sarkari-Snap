@@ -118,7 +118,7 @@ fun BottomTabRow(
         ) {
             Icon(
                 painter = painterResource(R.drawable.shorts_btn),
-                contentDescription = "Create",
+                contentDescription = stringResource(R.string.create),
                 tint = Color.Unspecified,
                 modifier = Modifier
                     .size(56.dp)

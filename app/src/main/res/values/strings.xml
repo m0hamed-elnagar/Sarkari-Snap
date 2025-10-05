@@ -37,4 +37,17 @@
     <string name="network_error">Network error</string>
     <string name="retry">Retry</string>
     <string name="share_shorts_suffix">\nWatch this short video on Taaza Today.\n</string>
+    <string name="no_favorites_yet">No favorites yet</string>
+    <string name="pages_coming_soon">Pages screen – coming soon</string>
+    <string name="categories_coming_soon">Categories screen – coming soon</string>
+    <string name="failed_to_load_posts_action">Failed to load posts</string>
+    <string name="retry_action">Retry</string>
+    <string name="in_app_browser">In-app browser</string>
+    <string name="article_not_available">Article not available</string>
+    <string name="article_not_available_reason">It may have been removed or the link is incorrect.</string>
+    <string name="go_back">Go back</string>
+    <string name="create">Create</string>
+    <string name="temporarily_stopped">the app temporarily stopped – please try again later.</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="check_connection_try_again">Please check your connection and try again.</string>
 </resources>
