@@ -20,9 +20,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = rootProject.file("key/blogger-release-key.jks")
-            storePassword = "Blogger101"
-            keyAlias = "key0"
-            keyPassword = "android101"
+            storePassword = project.findProperty("KEYSTORE_PASSWORD") as String? ?: ""
+            keyAlias = project.findProperty("KEY_ALIAS") as String? ?: ""
+            keyPassword = project.findProperty("KEY_PASSWORD") as String? ?: ""
         }
     }
 
