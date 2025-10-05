@@ -17,6 +17,7 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.di.initKoin
+import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.koin.android.ext.koin.androidContext
+import java.util.Locale
 
 
 class BloggerApplication : Application() {
@@ -31,9 +33,6 @@ class BloggerApplication : Application() {
         private val _isWorking = MutableStateFlow(true)   // always true until we know better
         val isWorking: StateFlow<Boolean> get() = _isWorking.asStateFlow()
     }
-
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    private lateinit var remoteConfig: FirebaseRemoteConfig
 
     override fun onCreate() {
         super.onCreate()
@@ -44,6 +43,8 @@ class BloggerApplication : Application() {
         setupAnalytics()
         setupCrashlytics()
         keepTryingRemoteConfig()
+        Lingver.init(this,"en")
+//        Locale.setDefault(Lingver.getInstance().getLocale())
 
     }
 
