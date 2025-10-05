@@ -145,10 +145,10 @@ fun PostDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Article", color = Color.White) },
+                title = { Text(stringResource(R.string.article_title), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
                     }
                 },
                 actions = {
@@ -298,7 +298,7 @@ private fun LazyItemScope.PostDetailContent(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Updated: ${post.date}",
+            text = stringResource(R.string.updated_prefix, post.date),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -390,11 +390,11 @@ private fun SectionWithPaging(
                 )
 
                 pagingItems.loadState.refresh is androidx.paging.LoadState.Error -> Text(
-                    "Failed to load posts",
+                    stringResource(R.string.failed_to_load_posts),
                     Modifier.align(Alignment.Center)
                 )
 
-                else -> Text("No posts available", Modifier.align(Alignment.Center))
+                else -> Text(stringResource(R.string.no_posts_available), Modifier.align(Alignment.Center))
             }
         }
     }
@@ -424,11 +424,11 @@ private fun LazyItemScope.ErrorFooter(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = error.localizedMessage ?: "Network error",
+            text = error.localizedMessage ?: stringResource(R.string.network_error),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(Modifier.height(8.dp))
-        Button(onClick = onRetry) { Text("Retry") }
+        Button(onClick = onRetry) { Text(stringResource(R.string.retry)) }
     }
 }
 

@@ -150,7 +150,7 @@ val context =   LocalContext.current
 
             /* 1. decide what to draw */
              when {
-                videoId.isNullOrBlank() -> PlaceholderBox("No video")
+                videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
                 abs(pageIndex - settledPage) <= 2 -> {
                     YouTubeShortsPlayer(
                         videoIds = listOf(videoId),
@@ -161,7 +161,7 @@ val context =   LocalContext.current
                         onVideoEnd = { /* optional scroll to next */ }
                     )
                 }
-                else -> PlaceholderBox("Loading…")
+                else -> PlaceholderBox(stringResource(R.string.loading_ellipsis))
             }
 
 
@@ -196,15 +196,15 @@ val context =   LocalContext.current
             IconButton(
                 onClick = {
        val postUrl ="$appUrl/shorts/"+ post.rowDate
-                    val postTitle = post.title + "\nWatch this short video on Taaza Today.\n"
+                    val postTitle = post.title + stringResource(R.string.share_shorts_suffix)
 
                   shareViaMore(context, postTitle, postUrl)
                 },
                 modifier = Modifier.size(48.dp).padding(horizontal = 2.dp)
             ) {
-                Icon(
+                    Icon(
                     imageVector = Icons.Default.Share,
-                    contentDescription = "Share",
+                    contentDescription = stringResource(R.string.share),
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
@@ -223,7 +223,7 @@ val context =   LocalContext.current
                 ) {
                     Icon(
                         imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Like",
+                        contentDescription = stringResource(R.string.like),
                         tint = if (isLiked) Color.White else Color.White,
                         modifier = Modifier.size(32.dp)
                     )
