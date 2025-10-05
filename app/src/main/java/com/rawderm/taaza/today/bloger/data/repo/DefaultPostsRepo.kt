@@ -10,7 +10,7 @@ import com.rawderm.taaza.today.bloger.data.mappers.toPage
 import com.rawderm.taaza.today.bloger.data.mappers.toPost
 import com.rawderm.taaza.today.bloger.data.mappers.toPostEntity
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
-import com.rawderm.taaza.today.bloger.data.paging.ShortsPagingSource
+import com.rawderm.taaza.today.bloger.data.paging.shortsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsPagingSource
@@ -81,7 +81,7 @@ class DefaultPostsRepo(
         return Pager(
             config = PagingConfig(pageSize = 3, enablePlaceholders = false),
             pagingSourceFactory = {
-                ShortsPagingSource(
+                shortsPagingSource(
                     remotePostDataSource)
             }
         ).flow

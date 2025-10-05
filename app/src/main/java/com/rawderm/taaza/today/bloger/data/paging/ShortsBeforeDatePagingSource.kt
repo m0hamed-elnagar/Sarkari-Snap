@@ -12,73 +12,14 @@ import java.time.format.DateTimeFormatter
 fun shortsBeforeDatePagingSource(
     remote: RemotePostDataSource,
     endDate: String?
-): ContentPagingSource<Post> = ContentPagingSource { key, loadSize ->
-
-    val currentEndDate = key ?: endDate
-
-    try {
-        when (val res = remote.getShortsBeforeDate(loadSize, "",currentEndDate, null)) {
-            is Result.Success -> {
-                val items = res.data.items
-
-                if (items.isEmpty()) {
-                    PagingSource.LoadResult.Page(
-                        data = emptyList(),
-                        prevKey = null,
-                        nextKey = null
-                    )
-                } else {
-                    // Get the last item's date
-                    val lastItemDate = items.last().updated
-
-                    // Subtract 1 second to make it exclusive
-                    val nextEndDate = subtractOneSecond(lastItemDate)
-
-                    Log.d("PagingSource", """
-                        Loaded ${items.size} items. 
-                        Current: $currentEndDate 
-                        Last item date: $lastItemDate
-                        Next (minus 1s): $nextEndDate
-                    """.trimIndent())
-
-                    PagingSource.LoadResult.Page(
-                        data = items.map { toDomain(it) },
-                        prevKey = null,
-                        nextKey = nextEndDate
-                    )
-                }
-            }
-
-            is Result.Error -> {
-                PagingSource.LoadResult.Error(Exception(res.error.toString()))
-            }
+): ContentPagingSource<Post> = beforeDatePagingSource(
+    initialEndDate = endDate,
+    fetch = { loadSize, end ->
+        when (val res = remote.getShortsBeforeDate(loadSize, "", end, null)) {
+            is Result.Success -> Result.Success(res.data.items)
+            is Result.Error -> Result.Error(res.error)
         }
-    } catch (e: Exception) {
-        PagingSource.LoadResult.Error(e)
-    }
-}
-
-fun subtractOneSecond(timestamp: String): String {
-    return try {
-        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-        val dateTime = OffsetDateTime.parse(timestamp, formatter)
-        val oneSecondEarlier = dateTime.minusSeconds(1)
-        oneSecondEarlier.format(formatter)
-    } catch (e: Exception) {
-        // If parsing fails, return the original timestamp
-        Log.e("PagingSource", "Failed to parse timestamp: $timestamp", e)
-        timestamp
-    }
-}
- fun addOneSecond(timestamp: String): String {
-    return try {
-        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-        val dateTime = OffsetDateTime.parse(timestamp, formatter)
-        val oneSecondEarlier = dateTime.plusSeconds(1)
-        oneSecondEarlier.format(formatter)
-    } catch (e: Exception) {
-        // If parsing fails, return the original timestamp
-        Log.e("PagingSource", "Failed to parse timestamp: $timestamp", e)
-        timestamp
-    }
-}
+    },
+    getUpdated = { it.updated },
+    mapToDomain = { toDomain(it) }
+)

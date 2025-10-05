@@ -6,7 +6,7 @@ import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.core.domain.Result
 
-fun ShortsPagingSource(
+fun shortsPagingSource(
     remote: RemotePostDataSource,
 ): ContentPagingSource<Post> = ContentPagingSource { key, loadSize ->
      when (val res = remote.getShorts(loadSize, key)) {

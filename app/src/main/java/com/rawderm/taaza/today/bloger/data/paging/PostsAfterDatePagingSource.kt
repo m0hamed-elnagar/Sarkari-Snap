@@ -11,43 +11,14 @@ fun postsBeforeDatePagingSource(
     remote: RemotePostDataSource,
     label: String?,
     endDate: String?
-): ContentPagingSource<Post> = ContentPagingSource { key, loadSize ->
-    val currentEndDate = key ?: endDate
-
-    when (val res = remote.getPostsAfterDate(loadSize, label, currentEndDate, null)) {
-        is Result.Success -> {
-            val items = res.data.items
-
-            if (items.isEmpty()) {
-                PagingSource.LoadResult.Page(
-                    data = emptyList(),
-                    prevKey = null,
-                    nextKey = null
-                )
-            } else {
-                // Get the last item's date
-                val lastItemDate = items.last().updated
-
-                // Subtract 1 second to make it exclusive
-                val nextEndDate = subtractOneSecond(lastItemDate)
-
-                Log.d("PagingSource", """
-                        Loaded ${items.size} items. 
-                        Current: $currentEndDate 
-                        Last item date: $lastItemDate
-                        Next (minus 1s): $nextEndDate
-                    """.trimIndent())
-
-                PagingSource.LoadResult.Page(
-                    data = items.map { toDomain(it) },
-                    prevKey = null,
-                    nextKey = nextEndDate
-                )
-            }
+): ContentPagingSource<Post> = beforeDatePagingSource(
+    initialEndDate = endDate,
+    fetch = { loadSize, end ->
+        when (val res = remote.getPostsAfterDate(loadSize, label, end, null)) {
+            is Result.Success -> Result.Success(res.data.items)
+            is Result.Error -> Result.Error(res.error)
         }
-
-        is Result.Error -> {
-            PagingSource.LoadResult.Error(Exception(res.error.toString()))
-        }
-    }
-}
+    },
+    getUpdated = { it.updated },
+    mapToDomain = { toDomain(it) }
+)
