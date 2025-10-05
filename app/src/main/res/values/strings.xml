@@ -50,4 +50,8 @@
     <string name="temporarily_stopped">the app temporarily stopped – please try again later.</string>
     <string name="no_internet">No internet connection</string>
     <string name="check_connection_try_again">Please check your connection and try again.</string>
+    <string name="Pages">Pages</string>
+    <string name="follow_us_on">Follow us on</string>
+    <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/190535731829050983</string>
+
 </resources>

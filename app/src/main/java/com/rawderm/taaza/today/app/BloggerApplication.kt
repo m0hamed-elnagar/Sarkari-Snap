@@ -42,7 +42,7 @@ class BloggerApplication : Application() {
         setupAnalytics()
         setupCrashlytics()
         keepTryingRemoteConfig()
-        Lingver.init(this,"en")
+        Lingver.init(this,"hi")
 //        Locale.setDefault(Lingver.getInstance().getLocale())
 
     }

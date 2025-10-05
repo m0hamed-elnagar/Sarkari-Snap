@@ -58,7 +58,7 @@ fun shortsBeforeDatePagingSource(
     }
 }
 
-private fun subtractOneSecond(timestamp: String): String {
+fun subtractOneSecond(timestamp: String): String {
     return try {
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime = OffsetDateTime.parse(timestamp, formatter)

@@ -10,6 +10,7 @@ import com.rawderm.taaza.today.bloger.domain.PostsRepo
 import com.rawderm.taaza.today.core.domain.onError
 import com.rawderm.taaza.today.core.domain.onSuccess
 import com.rawderm.taaza.today.core.ui.toUiText
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,6 +43,7 @@ class ShortsViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = PagingData.empty()
         )
+    @OptIn(ExperimentalCoroutinesApi::class)
     val shorts: Flow<PagingData<Post>> =
         _beforeDate
             .flatMapLatest { date -> postsRepo.getShortsBeforeDate(date) }

@@ -40,9 +40,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
+import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 
@@ -63,7 +65,7 @@ fun MoreTabScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
-        item { SectionTitle("Follow us on") }
+        item { SectionTitle(stringResource(R.string.follow_us_on)) }
         item { SocialIconRow() }
 
 //        item { SectionTitle("Share App") }
@@ -103,7 +105,7 @@ fun MoreTabScreen(
 //        }
 
         // ---------  Paged Pages  ---------
-        item { SectionTitle("Pages") }
+        item { SectionTitle(stringResource(R.string.Pages)) }
 
         // loading first page
         when (pages.loadState.refresh) {
@@ -158,11 +160,6 @@ fun MoreTabScreen(
                 }
             }
         }
-//
-//        // static footer rows
-//        item { CardRow(Icons.Default.PrivacyTip, "Privacy Policy", onClick = {}) }
-//        item { CardRow(Icons.AutoMirrored.Filled.Article, "Terms & Conditions", onClick = {}) }
-//        item { CardRow(Icons.Default.Email, "Contact Us", onClick = {}) }
 
         // bottom spacer
         item { Spacer(modifier = Modifier.height(24.dp)) }

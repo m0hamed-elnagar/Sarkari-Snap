@@ -79,7 +79,7 @@ class DefaultPostsRepo(
     }
     override fun getPagedShorts(): Flow<PagingData<Post>> {
         return Pager(
-            config = PagingConfig(pageSize = 2, enablePlaceholders = false),
+            config = PagingConfig(pageSize = 3, enablePlaceholders = false),
             pagingSourceFactory = {
                 ShortsPagingSource(
                     remotePostDataSource)
@@ -101,7 +101,7 @@ class DefaultPostsRepo(
 
     override fun getPostsAfterDate(label: String?, afterDate: String?): Flow<PagingData<Post>> {
         return Pager(
-            config = PagingConfig(pageSize = 2, enablePlaceholders = false),
+            config = PagingConfig(pageSize = 6, enablePlaceholders = false),
             pagingSourceFactory = {
                 postsBeforeDatePagingSource(
                     remotePostDataSource,
@@ -114,7 +114,7 @@ class DefaultPostsRepo(
     }
  override fun getShortsBeforeDate( afterDate: String?): Flow<PagingData<Post>> {
         return Pager(
-            config = PagingConfig(pageSize = 2, enablePlaceholders = false),
+            config = PagingConfig(pageSize = 6, enablePlaceholders = false),
             pagingSourceFactory = {
                 shortsBeforeDatePagingSource(
                     remotePostDataSource,

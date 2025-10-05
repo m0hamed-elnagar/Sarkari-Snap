@@ -30,40 +30,14 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
 
-    @SuppressLint("LogNotTimber")
     override suspend fun getPostsAfterDate(
         limit: Int,
-        label: String?,
-        afterDate: String?,
+        label: String? ,
+        beforeDate: String?,
         pageToken: String?
     ): Result<BloggerResponse, DataError.Remote> {
-        Log.d(
-            "KtorRemoteBlogDataSource",
-            "getPostsAfterDate: label=$label, =$afterDate, limit=$limit"
-        )
-        val (realToken, packedDate) = pageToken
-            ?.takeIf { it.contains("|||") }
-            ?.split("|||")
-            ?.let { it[0] to it[1] }
-            ?: (null to null)
 
-// Use a safe fallback date if both packedDate and afterDate are null/empty
-        val safeAfterDate = packedDate.takeIf { !it.isNullOrEmpty() }
-            ?: afterDate.takeIf { !it.isNullOrEmpty() }
-            ?: "1970-01-01T00:00:00Z" // fallback default date
 
-        val inclusive = try {
-            OffsetDateTime.parse(safeAfterDate)
-        } catch (e: Exception) {
-            Log.w("KtorRemoteBlogDataSource", "Invalid date format: $safeAfterDate, using epoch")
-            OffsetDateTime.parse("1970-01-01T00:00:00Z")
-        }
-
-        // first page
-        Log.d(
-            "KtorRemoteBlogDataSource",
-            "getPostsAfterDate: label=$label, afterDate=$afterDate, realToken=$realToken"
-        )
         return safeCall<BloggerResponse> {
             httpClient.get("$BASE_URL/posts") {
                 parameter("key", apiKey)
@@ -71,10 +45,10 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
                 if (!label.isNullOrEmpty() && label != "All") {
                     parameter("labels", label)
                 }
-                parameter("endDate", inclusive)
 
-                realToken?.let { parameter("pageToken", it) }
-
+                // all posts updated before this post
+                parameter("endDate", beforeDate)
+                pageToken?.let { parameter("pageToken", it) }
                 parameter("orderBy", "updated")
                 parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
             }.body()
