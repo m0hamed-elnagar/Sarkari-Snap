@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
@@ -185,6 +186,7 @@ val context =   LocalContext.current
             }
         }
 
+        val  suffixShare = stringResource(R.string.share_shorts_suffix)
         /* Action buttons on the right side */
         Column(
             modifier = Modifier
@@ -196,7 +198,7 @@ val context =   LocalContext.current
             IconButton(
                 onClick = {
        val postUrl ="$appUrl/shorts/"+ post.rowDate
-                    val postTitle = post.title + stringResource(R.string.share_shorts_suffix)
+                    val postTitle = post.title + suffixShare
 
                   shareViaMore(context, postTitle, postUrl)
                 },
@@ -233,10 +235,8 @@ val context =   LocalContext.current
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            // You can add more action buttons here (comment, etc.)
         }
 
-        /* Optional: Page indicator at top */
         Text(
             text = "${pageIndex + 1}",
             color = Color.White.copy(alpha = 0.7f),
@@ -248,7 +248,6 @@ val context =   LocalContext.current
     }
 }
 
-/* ----------  reusable placeholder  ---------- */
 @Composable
 private fun PlaceholderBox(text: String) {
     /* swap with any shimmer / circular spinner you like */
