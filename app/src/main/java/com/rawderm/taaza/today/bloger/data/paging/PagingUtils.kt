@@ -1,7 +1,6 @@
 package com.rawderm.taaza.today.bloger.data.paging
 
 
-import android.util.Log
 import androidx.paging.PagingSource
 import com.rawderm.taaza.today.core.domain.DataError
 import com.rawderm.taaza.today.core.domain.Result
@@ -9,8 +8,13 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * Generic builder for "before/after date" pagination where the next key is derived
- * from the last item's updated timestamp by subtracting one second.
+ * Builds a paging source for feeds that page by date where each subsequent page
+ * is fetched with an ISO-8601 endDate strictly before the last item's updated timestamp.
+ *
+ * - initialEndDate: optional starting endDate (null = no constraint for first page)
+ * - fetch: suspend function to fetch items for a given loadSize and endDate
+ * - getUpdated: extracts the ISO-8601 updated timestamp from the DTO
+ * - mapToDomain: maps DTO to domain model
  */
 internal fun <T : Any, D> beforeDatePagingSource(
     initialEndDate: String?,
@@ -48,26 +52,17 @@ internal fun <T : Any, D> beforeDatePagingSource(
 }
 
  fun subtractOneSecond(timestamp: String): String {
-    return try {
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime = OffsetDateTime.parse(timestamp, formatter)
-        dateTime.minusSeconds(1).format(formatter)
-    } catch (e: Exception) {
-        Log.e("PagingSource", "Failed to parse timestamp: $timestamp", e)
-        timestamp
-    }
+     return dateTime.minusSeconds(1).format(formatter)
+
 }
 
  fun addOneSecond(timestamp: String): String {
-    return try {
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime = OffsetDateTime.parse(timestamp, formatter)
-         dateTime.plusSeconds(1).format(formatter)
-    } catch (e: Exception) {
-        // If parsing fails, return the original timestamp
-        Log.e("PagingSource", "Failed to parse timestamp: $timestamp", e)
-        timestamp
-    }
+        return dateTime.plusSeconds(1).format(formatter)
+
 }
 
 

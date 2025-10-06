@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.di
 
 
 import androidx.room.Room
+import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.database.FavoritePostDataBase
 import com.rawderm.taaza.today.bloger.data.network.KtorRemoteBlogDataSource
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
@@ -36,6 +37,7 @@ val sharedModule = module {
         ).fallbackToDestructiveMigration(false)
             .build()
     }
+    single { LanguageDataStore(context = get())    }
     single { get<FavoritePostDataBase>().favoritePostDao }
     viewModelOf(::HomeViewModel)
     viewModelOf(::PostDetailsViewModel)

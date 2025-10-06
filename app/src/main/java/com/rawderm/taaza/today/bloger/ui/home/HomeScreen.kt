@@ -1,9 +1,14 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
+import android.app.Activity
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -13,9 +18,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,13 +35,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.R
@@ -43,6 +58,7 @@ import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
+import com.yariksoffice.lingver.Lingver
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -109,11 +125,10 @@ fun HomeScreen(
             onAction(HomeActions.OnTabSelected(tabIndex))
         }
     }
+val context = LocalContext.current
+    val locale = remember { Lingver.getInstance().getLocale().language }
 
-
-
-
-      Scaffold(
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -122,6 +137,81 @@ fun HomeScreen(
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
+                },
+                actions = {
+                    // Language switcher dropdown
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        // Current language display
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable { expanded = true }
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = if (locale == "en") "EN" else "HI",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "Change Language",
+                                tint = Color.White
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text("English")
+                                        if (locale == "en") {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "Selected"
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    Lingver.getInstance().setLocale(context, "en")
+                                    (context as? Activity)?.recreate()
+
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text("हिन्दी")
+                                        if (locale == "hi") {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "Selected"
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    Lingver.getInstance().setLocale(context, "hi")
+                                    (context as? Activity)?.recreate()
+
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = SandYellow)
             )

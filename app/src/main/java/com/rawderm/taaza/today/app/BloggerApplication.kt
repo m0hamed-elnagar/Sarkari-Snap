@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.app
 
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
@@ -42,11 +43,12 @@ class BloggerApplication : Application() {
         setupAnalytics()
         setupCrashlytics()
         keepTryingRemoteConfig()
-        Lingver.init(this,"hi")
-//        Locale.setDefault(Lingver.getInstance().getLocale())
+        Lingver.init(this, "hi")          // fallback for very first install
 
+        // 2. Read whatever is stored (or fallback) and **apply** it
+        val code = Lingver.getInstance().getLanguage()
+        Lingver.getInstance().setLocale(this, code)
     }
-
     private fun setupAnalytics() {
         val analytics = Firebase.analytics
         analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
