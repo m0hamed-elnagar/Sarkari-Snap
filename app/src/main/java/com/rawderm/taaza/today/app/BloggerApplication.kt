@@ -4,6 +4,7 @@ package com.rawderm.taaza.today.app
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import android.webkit.WebView
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -47,6 +48,12 @@ class BloggerApplication : Application() {
 
         // 2. Read whatever is stored (or fallback) and **apply** it
         val code = Lingver.getInstance().getLanguage()
+        Lingver.getInstance().setLocale(this, code)
+        try {
+            WebView(this).destroy()
+        } catch (_: Throwable) { /* WebView not available */ }
+
+        // 3. restore locale again (WebView just reset it)
         Lingver.getInstance().setLocale(this, code)
     }
     private fun setupAnalytics() {
