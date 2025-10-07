@@ -40,7 +40,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
-import com.rawderm.taaza.today.core.utils.shareViaMore
+import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -50,11 +50,9 @@ fun ShortsScreenRoot(
     viewModel: ShortsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
-    val state by viewModel.state.collectAsState()
     val shortsPaging = viewModel.shorts.collectAsLazyPagingItems()
 
     ShortsScreen(
-        singlePost = state.post,
         shortsPaging = shortsPaging,
         onAction = { action ->
             when (action) {
@@ -68,7 +66,6 @@ fun ShortsScreenRoot(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShortsScreen(
-    singlePost: Post?,
     shortsPaging: LazyPagingItems<Post>,
     onAction: (ShortsActions) -> Unit,
 ) {
@@ -77,17 +74,6 @@ fun ShortsScreen(
     /* we only treat a page as settled when paging *and* settle-animation are done */
     var settledPage by remember { mutableIntStateOf(-1) }
 
-    // Auto-scroll to the single post when it loads in paging data
-//    LaunchedEffect(singlePost, shortsPaging.itemSnapshotList.items) {
-//        if (singlePost != null) {
-//            val targetIndex = shortsPaging.itemSnapshotList.items.indexOfFirst { it.id == singlePost.id }
-//            if (targetIndex >= 0) {
-//                // Found the post in the list - scroll to it
-//                pagerState.scrollToPage(targetIndex)
-//                settledPage = targetIndex
-//            }
-//        }
-//    }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress) {
@@ -200,7 +186,7 @@ val context =   LocalContext.current
        val postUrl ="$appUrl/shorts/"+ post.rowDate
                     val postTitle = post.title + suffixShare
 
-                  shareViaMore(context, postTitle, postUrl)
+                    systemChooser(context, postTitle, postUrl)
                 },
                 modifier = Modifier.size(48.dp).padding(horizontal = 2.dp)
             ) {

@@ -82,23 +82,5 @@ class ShortsViewModel(
 else -> {}
         }
     }
-    fun fetchShortById(postId: String)  {
-        if (postId.isBlank()) return
-        _state.value = _state.value.copy(isLoading = true,)
-        viewModelScope.launch {
-            postsRepo.getShortById(postId).onSuccess { result ->
-                _state.value = _state.value.copy(
-                    post = result,
-                    isLoading = false
-                )
-            }
-                .onError { error ->
-                    _state.value = _state.value.copy(
-                        errorMessage = error.toUiText(),
-                    )
-                }
-
-        }
-    }
 
 }

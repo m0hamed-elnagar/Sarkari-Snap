@@ -132,9 +132,6 @@ class DefaultPostsRepo(
        return remotePostDataSource.getPost(postId).map { toDomain(it) }
 
     }
-    override suspend fun getShortById(postId: String): Result<Post, DataError.Remote> {
-       return remotePostDataSource.getshort(postId).map { toDomain(it) }
 
-    }
 
 }

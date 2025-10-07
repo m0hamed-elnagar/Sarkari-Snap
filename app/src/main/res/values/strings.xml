@@ -54,4 +54,15 @@
     <string name="follow_us_on">Follow us on</string>
     <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/190535731829050983</string>
 
+    <!-- Non-translatable URL bases (best practice: do not localize URLs) -->
+    <string name="blogger_base_url" >https://www.googleapis.com/blogger/v3/blogs/190535731829050983</string>
+    <string name="blogger_shorts_base_url" translatable="false">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
+    <string name="youtube_embed_base" translatable="false">https://www.youtube.com/embed/</string>
+    <string name="blogger_video_play_base" translatable="false">https://video.blogger.com/video-play.mp4?contentId=</string>
+    <string name="blogger_referer" translatable="false">https://taazatodayhindi.blogspot.com/</string>
+    <string name="twitter_intent_base" translatable="false">https://twitter.com/intent/tweet</string>
+    <string name="facebook_share_base" translatable="false">https://www.facebook.com/sharer/sharer.php</string>
+    <string name="share_app_link" translatable="false">https://taaza-today.web.app</string>
+    <string name="share_via" translatable="false">Share via\n</string>
+
 </resources>

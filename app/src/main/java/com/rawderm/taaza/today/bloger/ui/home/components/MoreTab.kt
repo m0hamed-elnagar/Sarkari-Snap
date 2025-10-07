@@ -240,9 +240,10 @@ private fun CardRow(
  */
 @Composable
 fun ShareAppLinkRow(
-    link: String = "https://yourapp.link/share"
+    link: String? = null
 ) {
     val context = LocalContext.current
+    val resolved = link ?: stringResource(R.string.share_app_link)
     var justCopied by remember { mutableStateOf(false) }
 
     // run toast only once
@@ -271,7 +272,7 @@ fun ShareAppLinkRow(
             Column(Modifier.weight(1f)) {
 
                 Text(
-                    text = link,
+                    text = resolved,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -280,7 +281,7 @@ fun ShareAppLinkRow(
             /* right : copy button */
             TextButton(
                 onClick = {
-                    val clip = ClipData.newPlainText("link", link)
+                    val clip = ClipData.newPlainText("link", resolved)
                     context.getSystemService(ClipboardManager::class.java)
                         .setPrimaryClip(clip)
                     justCopied = true

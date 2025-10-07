@@ -13,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.res.stringResource
+import com.rawderm.taaza.today.R
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -84,29 +86,29 @@ fun NativeBloggerVideo(
                 })
             }
     }
-    val videoUrl ="https://video.blogger.com/video-play.mp4?contentId=faeec605ecb48d94"
+    val resolvedVideoUrl = videoUrl
 
     val defaultDataSourceFactory = DefaultHttpDataSource.Factory()
         .setUserAgent("Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36")
         .setDefaultRequestProperties(
             mapOf(
-                "Referer" to "https://taazatodayhindi.blogspot.com/" // your blog
+                "Referer" to stringResource(R.string.blogger_referer)
             )
         )
 
     val mediaSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory)
-        .createMediaSource(MediaItem.fromUri(videoUrl))
+        .createMediaSource(MediaItem.fromUri(resolvedVideoUrl))
 
 
-    LaunchedEffect(videoUrl) {
-        Log.d("ExoPlayer", "Attempting to load video URL: $videoUrl")
+    LaunchedEffect(resolvedVideoUrl) {
+        Log.d("ExoPlayer", "Attempting to load video URL: $resolvedVideoUrl")
         try {
-            if (videoUrl.isBlank()) {
+            if (resolvedVideoUrl.isBlank()) {
                 Log.e("ExoPlayer", "Video URL is blank")
                 return@LaunchedEffect
             }
 
-            val mediaItem = MediaItem.fromUri(videoUrl)
+            val mediaItem = MediaItem.fromUri(resolvedVideoUrl)
             exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
             exoPlayer.playWhenReady = true
@@ -150,9 +152,9 @@ fun NativeBloggerVideo(
                 settings.mediaPlaybackRequiresUserGesture = false
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
+                val base = context.getString(R.string.youtube_embed_base)
                 loadUrl(
-                    "https://www.youtube.com/embed/$videoId"
-//                    "?rel=0&autoplay=1&mute=1&playsinline=1&controls=0&loop=1"
+                    base + videoId
                 )
             }
         },
@@ -161,6 +163,8 @@ fun NativeBloggerVideo(
             .aspectRatio(9f / 16f)   // 9:16 vertical video
     )
 }
-private fun buildUrl(id: String) =
-    "https://www.youtube.com/embed/$id" +
-            "?rel=0&autoplay=1&mute=1&playsinline=1&controls=0&loop=1"
+private fun buildUrl(id: String): String =
+    "?rel=0&autoplay=1&mute=1&playsinline=1&controls=0&loop=1".let { params ->
+        // The base is provided at call site using string resource to avoid context leaks here
+        id + params
+    }

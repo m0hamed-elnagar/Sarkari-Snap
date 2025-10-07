@@ -76,7 +76,7 @@ fun HomeScreenRoot(
         state = state, // Pass state argument
         pagedPosts = pagedPosts,
         trendingPosts = trendingPosts,
-        pages= pages,
+        pages = pages,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
@@ -88,10 +88,12 @@ fun HomeScreenRoot(
         }
     )
 }
- fun tabToPager(tabIndex: Int) = if (tabIndex > 2) tabIndex - 1 else tabIndex
+
+fun tabToPager(tabIndex: Int) = if (tabIndex > 2) tabIndex - 1 else tabIndex
 
 /* pager-index -> tab-index */
- fun pagerToTab(pagerIndex: Int) = if (pagerIndex >= 2) pagerIndex + 1 else pagerIndex
+fun pagerToTab(pagerIndex: Int) = if (pagerIndex >= 2) pagerIndex + 1 else pagerIndex
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -102,7 +104,7 @@ fun HomeScreen(
     onAction: (HomeActions) -> Unit
 ) {
     val tabs = BottomTab.entries
-    val pagerState = rememberPagerState { tabs.size-1 } // ← dynamic count
+    val pagerState = rememberPagerState { tabs.size - 1 } // ← dynamic count
 
     val title = when (state.selectedTabIndex) {
         0 -> stringResource(R.string.home)
@@ -125,7 +127,7 @@ fun HomeScreen(
             onAction(HomeActions.OnTabSelected(tabIndex))
         }
     }
-val context = LocalContext.current
+    val context = LocalContext.current
     val locale = remember { Lingver.getInstance().getLocale().language }
 
     Scaffold(
@@ -183,6 +185,11 @@ val context = LocalContext.current
                                 },
                                 onClick = {
                                     Lingver.getInstance().setLocale(context, "en")
+                                    // Trigger a refresh of data in the ViewModel
+                                    pagedPosts.refresh()
+                                    trendingPosts.refresh()
+                                    pages.refresh()
+                                    onAction(HomeActions.OnRefresh)
                                     (context as? Activity)?.recreate()
 
                                     expanded = false
@@ -205,6 +212,11 @@ val context = LocalContext.current
                                 },
                                 onClick = {
                                     Lingver.getInstance().setLocale(context, "hi")
+                                    // Trigger a refresh of data in the ViewModel
+                                    pagedPosts.refresh()
+                                    trendingPosts.refresh()
+                                    pages.refresh()
+                                    onAction(HomeActions.OnRefresh)
                                     (context as? Activity)?.recreate()
 
                                     expanded = false
@@ -232,8 +244,8 @@ val context = LocalContext.current
                 .fillMaxSize()
                 .padding(padding)
         ) { page ->
-    when (tabs[pagerToTab(page)]) {          // ← enum instead of int
-                BottomTab.HOME-> HomeTabWithPullRefresh(
+            when (tabs[pagerToTab(page)]) {          // ← enum instead of int
+                BottomTab.HOME -> HomeTabWithPullRefresh(
                     state,
                     pagedPosts,
                     onAction,
@@ -241,10 +253,17 @@ val context = LocalContext.current
                     currentListState
                 )
 
-                BottomTab.TRENDING -> TrendingTabContentPullRefresh(state,trendingPosts, pages,onAction)
-                BottomTab.FAVORITES->FavoriteTabContent(state, onAction)
+                BottomTab.TRENDING -> TrendingTabContentPullRefresh(
+                    state,
+                    trendingPosts,
+                    pages,
+                    onAction
+                )
+
+                BottomTab.FAVORITES -> FavoriteTabContent(state, onAction)
                 BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
-           else -> {} }
+                else -> {}
+            }
         }
     }
 }
@@ -284,9 +303,13 @@ private fun PagesTabContent() {
 @Composable
 private fun CategoriesTabContent() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(stringResource(R.string.categories_coming_soon), style = MaterialTheme.typography.bodyLarge)
+        Text(
+            stringResource(R.string.categories_coming_soon),
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }
+
 enum class BottomTab(
     @param:StringRes val labelRes: Int,
     val icon: ImageVector

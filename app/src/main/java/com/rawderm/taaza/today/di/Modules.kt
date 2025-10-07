@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.di
 
 
 import androidx.room.Room
+import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.database.FavoritePostDataBase
 import com.rawderm.taaza.today.bloger.data.network.KtorRemoteBlogDataSource
@@ -25,8 +26,11 @@ import org.koin.dsl.module
 val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     single<HttpClientEngine> { OkHttp.create() }
-    singleOf(::KtorRemoteBlogDataSource)
-        .bind<RemotePostDataSource>()
+    single<RemotePostDataSource> {
+        val context = get<android.content.Context>()
+        val baseUrl = context.getString(R.string.blogger_base_url)
+        KtorRemoteBlogDataSource(get(), baseUrl)
+    }
     singleOf(::DefaultPostsRepo)
         .bind<PostsRepo>()
     single {

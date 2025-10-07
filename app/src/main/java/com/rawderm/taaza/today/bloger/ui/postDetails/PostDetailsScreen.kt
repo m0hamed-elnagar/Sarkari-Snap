@@ -69,12 +69,12 @@ import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlCo
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareTarget
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
+import com.rawderm.taaza.today.core.utils.ShareUtils.messenger
+import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
+import com.rawderm.taaza.today.core.utils.ShareUtils.telegram
+import com.rawderm.taaza.today.core.utils.ShareUtils.twitter
+import com.rawderm.taaza.today.core.utils.ShareUtils.whatsApp
 import com.rawderm.taaza.today.core.utils.openUrlInCustomTab
-import com.rawderm.taaza.today.core.utils.shareViaMessenger
-import com.rawderm.taaza.today.core.utils.shareViaMore
-import com.rawderm.taaza.today.core.utils.shareViaTelegram
-import com.rawderm.taaza.today.core.utils.shareViaWhatsApp
-import com.rawderm.taaza.today.core.utils.shareViaX
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -149,7 +149,11 @@ fun PostDetailsScreen(
                 title = { Text(stringResource(R.string.article_title), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                            tint = Color.White
+                        )
                     }
                 },
                 actions = {
@@ -174,14 +178,14 @@ fun PostDetailsScreen(
         floatingActionButton = {
             state.post?.let { postToShare ->
                 ShareExpandableFab(onShareClick = { target ->
-                    val postUrl ="$appUrl/post/"+ postToShare.id
-                    val postTitle = postToShare.title+ readFullNews
+                    val postUrl = "$appUrl/post/" + postToShare.id
+                    val postTitle = postToShare.title + readFullNews
                     when (target) {
-                        ShareTarget.WHATSAPP -> shareViaWhatsApp(context, postTitle, postUrl)
-                        ShareTarget.TELEGRAM -> shareViaTelegram(context, postTitle, postUrl)
-                        ShareTarget.X -> shareViaX(context, postTitle, postUrl)
-                        ShareTarget.FACEBOOK -> shareViaMessenger(context, postTitle, postUrl)
-                        ShareTarget.MORE -> shareViaMore(context, postTitle, postUrl)
+                        ShareTarget.WHATSAPP -> whatsApp(context, postTitle, postUrl)
+                        ShareTarget.TELEGRAM -> telegram(context, postTitle, postUrl)
+                        ShareTarget.X -> twitter(context, postTitle, postUrl)
+                        ShareTarget.FACEBOOK -> messenger(context, postTitle, postUrl)
+                        ShareTarget.MORE -> systemChooser(context, postTitle, postUrl)
                     }
                 })
             }
@@ -193,14 +197,15 @@ fun PostDetailsScreen(
             val post = state.post
             when {
                 state.isLoading || post == null && state.error == null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
-                return@Scaffold
-            }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) { CircularProgressIndicator() }
+                    return@Scaffold
+                }
+
                 post == null || state.error != null -> {
                     /* we have nothing to show */
                     NoPostState(
@@ -209,15 +214,16 @@ fun PostDetailsScreen(
                         onBackClicked = { onAction(PostDetailsActions.OnBackClick) }
                     )
                 }
-            else -> {
-            // Use a single LazyColumn for the whole screen
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                state = scrollState,
 
-                ) {
+                else -> {
+                    // Use a single LazyColumn for the whole screen
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        state = scrollState,
+
+                        ) {
 //                item(key = "shorts") {
 //                    val shortIds = listOf("uCAHNFRTh3w")      // add more later
 //                    Column(modifier = Modifier.fillMaxWidth()) {
@@ -228,11 +234,11 @@ fun PostDetailsScreen(
 //                    }
 //                }
 
-                item(key = "main_post_${state.post.id}") {
-                    val post = state.post ?: return@item
-                    /* everything you already had: hero, title, date, chips, body */
-                    PostDetailContent(post = post, onAction = onAction)
-                }
+                        item(key = "main_post_${state.post.id}") {
+                            val post = state.post ?: return@item
+                            /* everything you already had: hero, title, date, chips, body */
+                            PostDetailContent(post = post, onAction = onAction)
+                        }
 //                itemsIndexed(
 //                    items = relatedPostsPaging.itemSnapshotList.items.filterNotNull(),
 //                    key = { index, post -> "related_${post.id}_$index" } // Add prefix and index for uniqueness
@@ -258,10 +264,13 @@ fun PostDetailsScreen(
 //                    else -> Unit
 //                }
 
+                    }
+                }
             }
         }
-    }}}
+    }
 }
+
 @Composable
 private fun LazyItemScope.PostDetailContent(
     post: Post,
@@ -295,7 +304,7 @@ private fun LazyItemScope.PostDetailContent(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding( 12.dp),
+            .padding(12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -313,12 +322,16 @@ private fun LazyItemScope.PostDetailContent(
         ) {
             post.labels.forEach { label ->
                 AssistChip(
-                    onClick = {onAction(PostDetailsActions.OnLabelClick(label)) },
-                    label = { Text(label.uppercase(), style = MaterialTheme.typography.bodyMedium) },
-                     modifier = Modifier.padding(top = 4.dp, end = 2.dp, start = 2.dp)
-                    ,
+                    onClick = { onAction(PostDetailsActions.OnLabelClick(label)) },
+                    label = {
+                        Text(
+                            label.uppercase(),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    modifier = Modifier.padding(top = 4.dp, end = 2.dp, start = 2.dp),
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor =colorResource(R.color.splash_background),
+                        containerColor = colorResource(R.color.splash_background),
                         labelColor = Color.White
                     ),
                     leadingIcon = {
@@ -326,7 +339,7 @@ private fun LazyItemScope.PostDetailContent(
                             painter = painterResource(R.drawable.search_list_svgrepo_com),
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
-                            tint =  Color.White
+                            tint = Color.White
                         )
                     }
                 )
@@ -395,7 +408,10 @@ private fun SectionWithPaging(
                     Modifier.align(Alignment.Center)
                 )
 
-                else -> Text(stringResource(R.string.no_posts_available), Modifier.align(Alignment.Center))
+                else -> Text(
+                    stringResource(R.string.no_posts_available),
+                    Modifier.align(Alignment.Center)
+                )
             }
         }
     }

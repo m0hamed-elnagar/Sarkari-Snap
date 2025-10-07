@@ -11,6 +11,7 @@ import com.rawderm.taaza.today.bloger.data.dto.PostDto
 import com.rawderm.taaza.today.core.data.safeCall
 import com.rawderm.taaza.today.core.domain.DataError
 import com.rawderm.taaza.today.core.domain.Result
+import com.yariksoffice.lingver.Lingver
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -26,10 +27,20 @@ private const val BASE_URL2 =
 private const val BASE_URL_english =
     "https://www.googleapis.com/blogger/v3/blogs/2640395952322331775"
 
-class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostDataSource {
+class KtorRemoteBlogDataSource(
+    private val httpClient: HttpClient,
+    private val baseUrl: String,
+) : RemotePostDataSource {
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
-
+     fun getBaseUrl(): String {
+        val lang = Lingver.getInstance().getLocale().language // e.g. "hi" or "en"
+        return when (lang) {
+            "en" -> BASE_URL_english
+            "hi" -> BASE_URL
+            else -> BASE_URL // fallback
+        }
+    }
     override suspend fun getPostsAfterDate(
         limit: Int,
         label: String? ,
@@ -39,7 +50,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
 
         return safeCall<BloggerResponse> {
-            httpClient.get("$BASE_URL/posts") {
+            httpClient.get("${getBaseUrl()}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 if (!label.isNullOrEmpty() && label != "All") {
@@ -67,7 +78,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
             "getPosts: label=$labelLog, pageToken=$tokenLog, limit=$limit"
         )
         return safeCall<BloggerResponse> {
-            httpClient.get("$BASE_URL/posts") {
+            httpClient.get("${getBaseUrl()}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 if (!label.isNullOrEmpty() && label != "All") {
@@ -84,7 +95,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     override suspend fun getUniqueLabels(limit: Int): Result<LabelsResponse, DataError.Remote> {
         return safeCall<LabelsResponse> {
-            httpClient.get("$BASE_URL/posts") {
+            httpClient.get("${getBaseUrl()}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 parameter("fields", "nextPageToken,items(labels)")
@@ -94,7 +105,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     override suspend fun getPages(): Result<PagesResponse, DataError.Remote> {
         return safeCall<PagesResponse> {
-            httpClient.get("$BASE_URL/pages") {
+            httpClient.get("${getBaseUrl()}/pages") {
                 parameter("key", apiKey)
                 parameter("fields", "items(id,title,content,url,updated)")
             }.body()
@@ -103,7 +114,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     override suspend fun getPage(pageId: String): Result<PageDto, DataError.Remote> =
         safeCall<PageDto> {
-            httpClient.get("$BASE_URL/pages/$pageId") {
+            httpClient.get("${getBaseUrl()}/pages/$pageId") {
                 parameter("key", apiKey)
                 parameter("fields", "id,title,content,url")
             }.body()
@@ -111,14 +122,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
     override suspend fun getPost(postId: String): Result<PostDto, DataError.Remote> =
         safeCall<PostDto> {
-            httpClient.get("$BASE_URL/posts/$postId") {
-                parameter("key", apiKey)
-                parameter("fields", "id,updated,url,title,content,labels")
-            }.body()
-        }
-    override suspend fun getshort(postId: String): Result<PostDto, DataError.Remote> =
-        safeCall<PostDto> {
-            httpClient.get("$BASE_URL_english/posts/$postId") {
+            httpClient.get("${getBaseUrl()}/posts/$postId") {
                 parameter("key", apiKey)
                 parameter("fields", "id,updated,url,title,content,labels")
             }.body()
@@ -132,7 +136,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
 
 
         return safeCall<BloggerResponse> {
-            httpClient.get("$BASE_URL_english/posts") {
+            httpClient.get("${getBaseUrl()}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 parameter("labels", "Video")
@@ -156,7 +160,7 @@ class KtorRemoteBlogDataSource(private val httpClient: HttpClient) : RemotePostD
             "getPosts:, pageToken=$tokenLog, limit=$limit"
         )
         return safeCall<BloggerResponse> {
-            httpClient.get("$BASE_URL_english/posts") {
+            httpClient.get("${getBaseUrl()}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 parameter("labels", "Video")
