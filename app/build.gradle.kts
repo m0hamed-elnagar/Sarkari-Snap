@@ -17,6 +17,11 @@ android {
     namespace = "com.rawderm.taaza.today"
     compileSdk = 36
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
     signingConfigs {
         create("release") {
             storeFile = rootProject.file("key/blogger-release-key.jks")
