@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.bloger.data
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -31,18 +32,20 @@ class LanguageDataStore(private val context: Context) {
     // Expose language as Flow - this will emit updates!
     val languageFlow: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[LANGUAGE_KEY] ?: "hi" // Default to English
+            preferences[LANGUAGE_KEY] ?: "hi" // Default to Hindi
         }
 
     suspend fun saveLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
         }
+        context.dataStore.data.first()
+        Log.d("LANG-WRITE", "Saved $language and flushed")
     }
 
     suspend fun getLanguage(): String {
         return context.dataStore.data.map { preferences ->
-            preferences[LANGUAGE_KEY] ?: "en"
+            preferences[LANGUAGE_KEY] ?: "hi" // Default to Hindi
         }.first()
     }
 }

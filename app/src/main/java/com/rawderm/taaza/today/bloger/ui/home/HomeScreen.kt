@@ -1,14 +1,16 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
 import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,12 +47,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.PostListStatic
@@ -59,6 +63,11 @@ import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.yariksoffice.lingver.Lingver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -72,11 +81,14 @@ fun HomeScreenRoot(
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     val trendingPosts = viewModel.trendingPosts.collectAsLazyPagingItems()
     val pages = viewModel.pages.collectAsLazyPagingItems()
+    val languageManager: LanguageManager = koinInject()
+
     HomeScreen(
         state = state, // Pass state argument
         pagedPosts = pagedPosts,
         trendingPosts = trendingPosts,
         pages = pages,
+        languageManager,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
@@ -101,6 +113,7 @@ fun HomeScreen(
     pagedPosts: LazyPagingItems<Post>,
     trendingPosts: LazyPagingItems<Post>,
     pages: LazyPagingItems<Page>,
+    languageManager: LanguageManager,
     onAction: (HomeActions) -> Unit
 ) {
     val tabs = BottomTab.entries
@@ -129,7 +142,6 @@ fun HomeScreen(
     }
     val context = LocalContext.current
     val locale = remember { Lingver.getInstance().getLocale().language }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -184,13 +196,13 @@ fun HomeScreen(
                                     }
                                 },
                                 onClick = {
-                                    Lingver.getInstance().setLocale(context, "en")
-                                    // Trigger a refresh of data in the ViewModel
-                                    pagedPosts.refresh()
-                                    trendingPosts.refresh()
-                                    pages.refresh()
-                                    onAction(HomeActions.OnRefresh)
-                                    (context as? Activity)?.recreate()
+                                    if (locale == "en") {
+                                        expanded = false
+                                        return@DropdownMenuItem
+                                    }
+                                    onAction(HomeActions.OnLoading)
+                                    Log.d("LANG", "changeLanguage() invoked: en")
+                                    languageManager.setLanguageAndRestart("en", context)
 
                                     expanded = false
                                 }
@@ -211,13 +223,15 @@ fun HomeScreen(
                                     }
                                 },
                                 onClick = {
-                                    Lingver.getInstance().setLocale(context, "hi")
-                                    // Trigger a refresh of data in the ViewModel
-                                    pagedPosts.refresh()
-                                    trendingPosts.refresh()
-                                    pages.refresh()
-                                    onAction(HomeActions.OnRefresh)
-                                    (context as? Activity)?.recreate()
+                                    if (locale == "hi") {
+                                        expanded = false
+                                        return@DropdownMenuItem
+                                    }
+
+
+                                    // Restart the app to ensure language change is applied everywhere
+                                    Log.d("LANG", "changeLanguage() invoked: hi")
+                                    languageManager.setLanguageAndRestart("hi", context)
 
                                     expanded = false
                                 }
@@ -265,8 +279,11 @@ fun HomeScreen(
                 else -> {}
             }
         }
+
+
     }
 }
+
 
 @Composable
 private fun FavoriteTabContent(

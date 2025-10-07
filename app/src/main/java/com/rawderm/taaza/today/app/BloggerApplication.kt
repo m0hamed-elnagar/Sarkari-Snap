@@ -5,6 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.webkit.WebView
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -18,6 +20,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.rawderm.taaza.today.BuildConfig
+import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.di.initKoin
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +29,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
 
 
@@ -44,17 +50,19 @@ class BloggerApplication : Application() {
         setupAnalytics()
         setupCrashlytics()
         keepTryingRemoteConfig()
-        Lingver.init(this, "hi")          // fallback for very first install
+        Lingver.init(this)
+        val store = LanguageDataStore(this)
+        val language = runBlocking(Dispatchers.IO) { store.getLanguage() }
+        Log.d("LANG-START", "DataStore returned: $language")   // ← add this
 
-        // 2. Read whatever is stored (or fallback) and **apply** it
-        val code = Lingver.getInstance().getLanguage()
-        Lingver.getInstance().setLocale(this, code)
-        try {
-            WebView(this).destroy()
-        } catch (_: Throwable) { /* WebView not available */ }
+        Lingver.getInstance().setLocale(this, language)
 
-        // 3. restore locale again (WebView just reset it)
-        Lingver.getInstance().setLocale(this, code)
+        /* 4. optional – delete the old conflicting file once */
+        deleteSharedPreferences("lingver")
+
+        /* WebView hack */
+        try { WebView(this).destroy() } catch (_: Throwable) {}
+        Lingver.getInstance().setLocale(this, language)
     }
     private fun setupAnalytics() {
         val analytics = Firebase.analytics

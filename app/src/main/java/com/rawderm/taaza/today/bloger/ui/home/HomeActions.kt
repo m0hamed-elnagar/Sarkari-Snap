@@ -13,6 +13,7 @@ sealed interface HomeActions {
     data class ChangeLanguage(val language: String) : HomeActions
     object OnRefresh : HomeActions
     object OnNextPage : HomeActions
+    object OnLoading : HomeActions
     object OnShortsClick : HomeActions
 
 
