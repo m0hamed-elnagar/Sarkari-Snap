@@ -10,8 +10,8 @@ class ContentPagingSource<T : Any>(
     override suspend fun load(params: LoadParams<String>): LoadResult<String, T> =
         loader(params.key, params.loadSize)
 
-    override val keyReuseSupported: Boolean
-        get() = true
+
+    override val keyReuseSupported: Boolean = true
 
 
     override fun getRefreshKey(state: PagingState<String, T>): String? {

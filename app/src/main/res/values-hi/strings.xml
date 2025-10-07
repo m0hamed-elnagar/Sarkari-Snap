@@ -53,6 +53,6 @@
     <string name="Pages">पेज़</string>
     <string name="follow_us_on">हमें फॉलो करें </string>
     <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
-    <string name="blogger_base_url" >https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
+    <string name="blogger_id" >190535731829050983</string>
 
 </resources>

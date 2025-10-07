@@ -1,21 +1,25 @@
 package com.rawderm.taaza.today.bloger.ui.shorts
 
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.rawderm.taaza.today.bloger.data.paging.addOneSecond
+import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
 import com.rawderm.taaza.today.core.domain.onError
 import com.rawderm.taaza.today.core.domain.onSuccess
 import com.rawderm.taaza.today.core.ui.toUiText
+import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -29,7 +33,7 @@ data class VideoItem(
     val isPlaying: Boolean = false
 )
 enum class YouTubePlayerState { UNSTARTED, ENDED, PLAYING, PAUSED, BUFFERING, CUED }
-
+@OptIn(ExperimentalCoroutinesApi::class)
 class ShortsViewModel(
     private val postsRepo: PostsRepo
 ) : ViewModel() {
@@ -43,7 +47,6 @@ class ShortsViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = PagingData.empty()
         )
-    @OptIn(ExperimentalCoroutinesApi::class)
     val shorts: Flow<PagingData<Post>> =
         _beforeDate
             .flatMapLatest { date -> postsRepo.getShortsBeforeDate(date) }

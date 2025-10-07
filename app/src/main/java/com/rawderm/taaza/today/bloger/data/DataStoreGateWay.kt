@@ -15,36 +15,34 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-class LanguageDataStore(
-    private val context: Context
-) {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("settings")
-    private val LANG_KEY = stringPreferencesKey("selected_language")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "language_prefs")
 
-    val language: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            preferences[LANG_KEY] ?: "hi" // Default to Hindi
-        }
+class LanguageDataStore(private val context: Context) {
 
-    suspend fun setLanguage(lang: String) {
-        context.dataStore.edit { preferences ->
-            preferences[LANG_KEY] = lang
-        }
-        Lingver.getInstance().setLocale(context, lang)
-        (context as? Activity)?.recreate()
+    companion object {
+        val LANGUAGE_KEY = stringPreferencesKey("selected_language")
     }
-//       init {
-//        // Auto-apply locale changes
-//        language
-//            .onEach { locale ->
-//                Lingver.getInstance().setLocale(context, locale)
-//                // Removed automatic activity recreation to avoid conflicts with manual language switching
-//                // (context as? Activity)?.recreate()
-//            }
-//            .launchIn(CoroutineScope(Dispatchers.Main + SupervisorJob()))
-//    }
+
+    // Expose language as Flow - this will emit updates!
+    val languageFlow: Flow<String> = context.dataStore.data
+        .map { preferences ->
+            preferences[LANGUAGE_KEY] ?: "hi" // Default to English
+        }
+
+    suspend fun saveLanguage(language: String) {
+        context.dataStore.edit { preferences ->
+            preferences[LANGUAGE_KEY] = language
+        }
+    }
+
+    suspend fun getLanguage(): String {
+        return context.dataStore.data.map { preferences ->
+            preferences[LANGUAGE_KEY] ?: "en"
+        }.first()
+    }
 }

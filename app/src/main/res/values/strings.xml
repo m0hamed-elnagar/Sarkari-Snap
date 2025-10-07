@@ -55,7 +55,7 @@
     <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/190535731829050983</string>
 
     <!-- Non-translatable URL bases (best practice: do not localize URLs) -->
-    <string name="blogger_base_url" >https://www.googleapis.com/blogger/v3/blogs/190535731829050983</string>
+    <string name="blogger_id" >2640395952322331775</string>
     <string name="blogger_shorts_base_url" translatable="false">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
     <string name="youtube_embed_base" translatable="false">https://www.youtube.com/embed/</string>
     <string name="blogger_video_play_base" translatable="false">https://video.blogger.com/video-play.mp4?contentId=</string>

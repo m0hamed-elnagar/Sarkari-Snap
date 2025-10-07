@@ -25,7 +25,7 @@ class LabeledPostsViewModel(
     val label = savedStateHandle.toRoute<Route.LabeledPosts>().label
 
     // Paging 3: Expose paged posts for the label
-    val pagedPosts: Flow<PagingData<Post>> = repo.getPagedPosts(label)
+    val pagedPosts: Flow<PagingData<Post>> = repo.getPagedPosts(label,null)
 
     private val _state = MutableStateFlow(LabeledPostsUiState())
     val state: StateFlow<LabeledPostsUiState> = _state
