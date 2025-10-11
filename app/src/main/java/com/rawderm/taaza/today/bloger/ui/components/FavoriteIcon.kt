@@ -11,9 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.res.stringResource
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
+import com.rawderm.taaza.today.core.ui.theme.Transparent
 
 @Composable
 fun FavoriteToggleIcon(
@@ -29,17 +31,14 @@ fun FavoriteToggleIcon(
         onClick = onToggle,
         modifier = modifier
             .background(
-                brush = Brush.radialGradient(
-                    colors = listOf(glowColor, Color.Transparent),
-                    radius = 90f
-                ),
+                color = Transparent,
                 shape = CircleShape                               // optional circle mask
             )
     ) {
         Icon(
             imageVector = if (isFavorite) Icons.Filled.Favorite
             else Icons.Outlined.FavoriteBorder,
-            tint = Color.White,
+            tint = Black,
             contentDescription = stringResource(
                 if (isFavorite) R.string.remove_from_favorites
                 else R.string.mark_as_favorite

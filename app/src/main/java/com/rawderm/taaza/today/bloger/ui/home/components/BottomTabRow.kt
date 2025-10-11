@@ -5,12 +5,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -23,6 +26,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,16 +58,18 @@ fun BottomTabRow(
     tabs: List<BottomTab> = BottomTab.entries,
     onShortsClick: () -> Unit = {}
 ) {
-    val barBackground = SandYellow
-    val selectedColor = LightOrange
+    val barBackground = White
+    val selectedColor = Black
     val unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .background(Gray)
+            .padding(top = .5.dp)
             .background(barBackground)
-            .padding(top = 8.dp)
-            .background(Color.Black)
+            .padding(top = 4.dp)
+            .background(Black)
             .navigationBarsPadding(), contentAlignment = Alignment.TopCenter
     ) {
         TabRow(

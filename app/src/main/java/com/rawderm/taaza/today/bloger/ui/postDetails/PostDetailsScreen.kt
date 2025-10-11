@@ -43,6 +43,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -146,13 +148,13 @@ fun PostDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.article_title), color = Color.White) },
+                title = { Text(stringResource(R.string.article_title), color = Black) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(PostDetailsActions.OnBackClick) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back),
-                            tint = Color.White
+                            tint = Black
                         )
                     }
                 },
@@ -171,7 +173,7 @@ fun PostDetailsScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = SandYellow,
+                    containerColor = White,
                 )
             )
         },
@@ -334,14 +336,14 @@ private fun LazyItemScope.PostDetailContent(
                         containerColor = colorResource(R.color.splash_background),
                         labelColor = Color.White
                     ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.search_list_svgrepo_com),
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = Color.White
-                        )
-                    }
+//                    leadingIcon = {
+//                        Icon(
+//                            painter = painterResource(R.drawable.search_list_svgrepo_com),
+//                            contentDescription = null,
+//                            modifier = Modifier.size(18.dp),
+//                            tint = Color.White
+//                        )
+//                    }
                 )
 
 //                PostChip(

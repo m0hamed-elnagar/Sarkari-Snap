@@ -33,9 +33,11 @@ class DefaultPostsRepo(
 
     override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
         return remotePostDataSource.getUniqueLabels().map { dto ->
+            val excludedLabels = setOf("shorts", "video", "test 1", "test")
             listOf("All") + dto.items
                 .flatMap { it.labels }
-                .distinct()
+                .filter { it.lowercase() !in excludedLabels }
+                .distinct()      .distinct()
         }
     }
 

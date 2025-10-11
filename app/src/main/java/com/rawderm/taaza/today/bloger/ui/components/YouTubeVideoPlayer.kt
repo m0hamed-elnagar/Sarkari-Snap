@@ -52,7 +52,11 @@ fun YouTubeShortsPlayer(
                 state: PlayerConstants.PlayerState
             ) {
                 if (state == PlayerConstants.PlayerState.ENDED) {
-                    if (currentIndex < videoIds.size - 1) {
+  if (videoIds.size == 1) {
+            // SINGLE video → replay instantly
+            youTubePlayer.seekTo(0f)
+            youTubePlayer.play()
+        } else if (currentIndex < videoIds.size - 1) {
                         currentIndex++
                         youTubePlayer.loadVideo(videoIds[currentIndex], 0f)
                     } else {

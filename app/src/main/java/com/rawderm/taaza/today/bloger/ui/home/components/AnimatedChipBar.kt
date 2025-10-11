@@ -62,15 +62,7 @@ fun AnimatedChipBar(
                         labelColor = if (selected) Color.White
                         else MaterialTheme.colorScheme.onSurface
                     ),
-                    leadingIcon = {
-                        Icon(
-                            painter = iconPainter,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = if (selected) Color.White
-                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+
                 )
             }
         }

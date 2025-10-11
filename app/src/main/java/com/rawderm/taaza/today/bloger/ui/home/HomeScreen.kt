@@ -4,17 +4,26 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.More
@@ -44,14 +53,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.mohamedrejeb.richeditor.model.RichSpanStyle
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Page
@@ -143,104 +159,128 @@ fun HomeScreen(
     val context = LocalContext.current
     val locale = remember { Lingver.getInstance().getLocale().language }
     Scaffold(
+
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
-                },
-                actions = {
-                    // Language switcher dropdown
-                    var expanded by remember { mutableStateOf(false) }
-                    Box {
-                        // Current language display
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(White)
+                    .background(Gray)
+                    .padding(bottom = .5.dp)
+            ) {
+                TopAppBar(
+                    navigationIcon = {          // <- leading icon
+                        Image(
+                            painter = painterResource(id = R.drawable.icon2), // or R.drawable.ic_logo
+                            contentDescription = "App logo",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .clickable { expanded = true }
-                                .padding(horizontal = 8.dp)
-                        ) {
-                            Text(
-                                text = if (locale == "en") "EN" else "HI",
-                                color = Color.White,
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier.padding(end = 4.dp)
-                            )
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Change Language",
-                                tint = Color.White
-                            )
-                        }
+                                .height(80.dp)
+                                .aspectRatio(16f / 9f)  // landscape box
+                                .padding(start = (0).dp)
 
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text("English")
+                        )
+                    },
+
+                    title = {
+//                    Text(
+//                        text = title,
+//                        style = MaterialTheme.typography.titleLarge,
+//                        color = Color.Black
+//                    )
+                    },
+                    actions = {
+                        // Language switcher dropdown
+                        var expanded by remember { mutableStateOf(false) }
+                        Box {
+                            // Current language display
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clickable { expanded = true }
+                                    .padding(horizontal = 8.dp)
+                            ) {
+                                Text(
+                                    text = if (locale == "en") "EN" else "HI",
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    modifier = Modifier.padding(end = 4.dp)
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Change Language",
+                                    tint = Color.Black
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Text("English")
+                                            if (locale == "en") {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "Selected"
+                                                )
+                                            }
+                                        }
+                                    },
+                                    onClick = {
                                         if (locale == "en") {
-                                            Icon(
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = "Selected"
-                                            )
+                                            expanded = false
+                                            return@DropdownMenuItem
                                         }
-                                    }
-                                },
-                                onClick = {
-                                    if (locale == "en") {
-                                        expanded = false
-                                        return@DropdownMenuItem
-                                    }
-                                    onAction(HomeActions.OnLoading)
-                                    Log.d("LANG", "changeLanguage() invoked: en")
-                                    languageManager.setLanguageAndRestart("en", context)
+                                        onAction(HomeActions.OnLoading)
+                                        Log.d("LANG", "changeLanguage() invoked: en")
+                                        languageManager.setLanguageAndRestart("en", context)
 
-                                    expanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text("हिन्दी")
+                                        expanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Text("हिन्दी")
+                                            if (locale == "hi") {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "Selected"
+                                                )
+                                            }
+                                        }
+                                    },
+                                    onClick = {
                                         if (locale == "hi") {
-                                            Icon(
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = "Selected"
-                                            )
+                                            expanded = false
+                                            return@DropdownMenuItem
                                         }
-                                    }
-                                },
-                                onClick = {
-                                    if (locale == "hi") {
+
+
+                                        // Restart the app to ensure language change is applied everywhere
+                                        Log.d("LANG", "changeLanguage() invoked: hi")
+                                        languageManager.setLanguageAndRestart("hi", context)
+
                                         expanded = false
-                                        return@DropdownMenuItem
                                     }
-
-
-                                    // Restart the app to ensure language change is applied everywhere
-                                    Log.d("LANG", "changeLanguage() invoked: hi")
-                                    languageManager.setLanguageAndRestart("hi", context)
-
-                                    expanded = false
-                                }
-                            )
+                                )
+                            }
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = SandYellow)
-            )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = White),
+
+                    )
+            }
         },
         bottomBar = {
             BottomTabRow(
@@ -252,12 +292,14 @@ fun HomeScreen(
             )
         }
     ) { padding ->
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) { page ->
+
             when (tabs[pagerToTab(page)]) {          // ← enum instead of int
                 BottomTab.HOME -> HomeTabWithPullRefresh(
                     state,

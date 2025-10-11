@@ -18,6 +18,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,7 +75,14 @@ private fun HomeTabContent(
     chipsListState: LazyListState
 ) {
     val coroutineScope = rememberCoroutineScope()
-
+    val showLoadingInsteadOfEmpty = remember { mutableStateOf(true) }
+    LaunchedEffect(pagedPosts.itemCount) {
+        if (pagedPosts.itemCount == 0) {
+            showLoadingInsteadOfEmpty.value = true          // reset in case we come back to 0
+            kotlinx.coroutines.delay(5_000)                 // wait 5s
+            showLoadingInsteadOfEmpty.value = false         // now allow “No posts” to appear
+        }
+    }
     Column(Modifier.fillMaxSize()) {
         AnimatedChipBar(
             labels = state.labels,
@@ -135,11 +145,15 @@ private fun HomeTabContent(
                 else -> Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState()), // only here
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("No posts available")
+                    if (showLoadingInsteadOfEmpty.value) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text("No posts available")
+                    }
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.rawderm.taaza.today.bloger.data
 
+import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -86,13 +88,15 @@ suspend fun setLanguage(language: String) {
         restartApp(context)
     }
 }
-
     fun restartApp(context: Context) {
-        val pm = context.packageManager
-        val intent = pm.getLaunchIntentForPackage(context.packageName)!!.apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        val activity = context as Activity
+        val intent = Intent(activity, activity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
         }
-        context.startActivity(intent)
-        Runtime.getRuntime().exit(0)   // <-- guarantees clean slate
+        val options = ActivityOptions.makeCustomAnimation(activity, 0, 0)
+        activity.finish()
+        activity.startActivity(intent, options.toBundle())
+
     }
 }

@@ -88,7 +88,7 @@ fun ShortsScreen(
         state = pagerState,
         modifier = Modifier.fillMaxSize(),
         pageSpacing = 0.dp,
-        beyondViewportPageCount = 2,
+        beyondViewportPageCount = 3,
         userScrollEnabled = true,
         flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
         key = { pageIndex ->
