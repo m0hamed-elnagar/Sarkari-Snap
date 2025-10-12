@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
@@ -96,9 +97,9 @@ fun BottomTabRow(
                                 .size(56.dp)
                         ) {
                             Icon(
-                                painter =if (selected){painterResource(R.drawable.shorts_selected)}else painterResource(R.drawable.shorts_unselected),
+                                painter =if (selected){painterResource(R.drawable.shorts_btn)}else painterResource(R.drawable.shorts_selected),
                                 contentDescription = stringResource(R.string.create),
-                                tint = if (selected) Black else Gray,
+                                tint = if (selected) Unspecified else Gray,
                                 modifier = Modifier
                                     .size(56.dp)
                            )
@@ -131,19 +132,5 @@ fun BottomTabRow(
             }
         }
 
-//        Column(
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            modifier = modifier
-//                .offset(y = (-2).dp)          // slightly higher
-//                .size(56.dp)                   // bigger
-//        ) {
-//            Icon(
-//                painter = painterResource(R.drawable.shorts_unselected),
-//                contentDescription = stringResource(R.string.create),
-//                tint = Gray,
-//                modifier = Modifier
-//                    .size(56.dp)
-//                    .clickable { onShortsClick() })
-//        }
     }
 }
