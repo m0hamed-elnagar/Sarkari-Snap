@@ -1,4 +1,5 @@
 package com.rawderm.taaza.today.bloger.ui.home.components
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Page
@@ -64,7 +66,7 @@ fun MoreTabScreen(
     ) {
     val context = LocalContext.current
     val appLink = stringResource(R.string.app_link)
-val appName = stringResource(R.string.app_name)
+    val appName = stringResource(R.string.app_name)
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +86,7 @@ val appName = stringResource(R.string.app_name)
                 textColor = Color.White,
                 iconColor = Color.White,
                 alignment = Arrangement.Center,
-                onClick = {whatsApp(context, appName, appLink)}
+                onClick = { whatsApp(context, appName, appLink) }
             )
         }
         item {
@@ -140,7 +142,9 @@ val appName = stringResource(R.string.app_name)
                     )
                 }
             }
-     else -> { /* content below */ }
+
+            else -> { /* content below */
+            }
         }
 
         // actual pages
@@ -170,32 +174,43 @@ val appName = stringResource(R.string.app_name)
                 }
             }
         }
-
+        val sanskrit = FontFamily(
+            Font(R.font.sanskrit_regular, FontWeight.Medium),
+//            Font(R.font.poppins_bold,     FontWeight.Bold)
+        )
+        val sanskritItalic =             FontFamily(
+            Font(R.font.sanskrit_italic, FontWeight.Medium),
+        )
         // bottom spacer
         item { Spacer(modifier = Modifier.height(24.dp)) }
 
-    item {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp, bottom = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
 
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "Made by",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)
-            )
-            Text(
-                text = "Mohamed El-Nagar",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "Made by",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontFamily = sanskrit,
+                        letterSpacing = 0.12.sp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)
+                )
+                Text(
+                    text = "Mohamed El-Nagar",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontFamily = sanskritItalic,
+                        letterSpacing = 0.12.sp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
-    }}
+    }
 }
 /* -------------------- Re-usable components -------------------- */
 
@@ -266,6 +281,7 @@ private fun CardRow(
     alignment = alignment,
     onClick = onClick
 )
+
 /**
  * Share-App row :  link + Copy button
  * @param link  the url you want to show & copy

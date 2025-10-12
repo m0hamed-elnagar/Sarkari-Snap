@@ -82,6 +82,8 @@ import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteVideosScreen
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
@@ -138,7 +140,7 @@ fun HomeScreen(
     onAction: (HomeActions) -> Unit
 ) {
     val tabs = BottomTab.entries
-    val pagerState = rememberPagerState { tabs.size - 1 } // ← dynamic count
+    val pagerState = rememberPagerState { tabs.size  } // ← dynamic count
 
     val scope = rememberCoroutineScope()
     val chipListState = remember { LazyListState() }
@@ -148,9 +150,13 @@ fun HomeScreen(
 
     val settledPage = pagerState.settledPage
     LaunchedEffect(settledPage) {
-        val tabIndex = pagerToTab(pagerState.settledPage)
-        if (state.selectedTabIndex != tabIndex) {
-            onAction(HomeActions.OnTabSelected(tabIndex))
+        if (state.selectedTabIndex != pagerState.settledPage) {
+            onAction(HomeActions.OnTabSelected(pagerState.settledPage))
+        }
+    }
+    LaunchedEffect(state.selectedTabIndex) {
+        if (state.selectedTabIndex != pagerState.currentPage) {
+            pagerState.animateScrollToPage(state.selectedTabIndex)
         }
     }
     val context = LocalContext.current
@@ -163,11 +169,9 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(White)
-//                    .background(Gray)
-//                    .padding(bottom = .5.dp)
             ) {
                 TopAppBar(
-                    navigationIcon = {          // <- leading icon
+                    navigationIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.icon2), // or R.drawable.ic_logo
                             contentDescription = "App logo",
@@ -280,7 +284,7 @@ fun HomeScreen(
                 pagerState = pagerState,
                 scope = scope,
                 tabs = tabs,
-                onShortsClick = { onAction(HomeActions.OnShortsClick) }
+
             )
         }
     ) { padding ->
@@ -292,7 +296,7 @@ fun HomeScreen(
                 .padding(padding)
         ) { page ->
 
-            when (tabs[pagerToTab(page)]) {          // ← enum instead of int
+            when (tabs[page]) {          // ← enum instead of int
                 BottomTab.HOME -> HomeTabWithPullRefresh(
                     state,
                     pagedPosts,
@@ -307,7 +311,15 @@ fun HomeScreen(
                     pages,
                     onAction
                 )
+BottomTab.SHORTS ->{
+    val shortsViewModel = koinViewModel<ShortsViewModel>()
 
+
+    ShortsScreenRoot(
+        viewModel = shortsViewModel,
+        onBackClicked = { },
+    )
+}
                 BottomTab.FAVORITES -> FavoriteTabContent(state, onAction)
                 BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
                 else -> {}
@@ -397,7 +409,7 @@ enum class BottomTab(
     TRENDING(R.string.trending, Icons.AutoMirrored.Filled.TrendingUp),
 
     // ----- middle gap -----
-    EMPTY(R.string.empty, Icons.Default.Add),
+    SHORTS(R.string.empty, Icons.Default.Add),
 
     FAVORITES(R.string.favorites, Icons.Default.Favorite),
     MORE(R.string.more, Icons.AutoMirrored.Filled.More)

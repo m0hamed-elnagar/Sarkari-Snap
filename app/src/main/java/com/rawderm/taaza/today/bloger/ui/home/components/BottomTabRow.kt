@@ -56,7 +56,6 @@ fun BottomTabRow(
     pagerState: PagerState,
     scope: CoroutineScope,
     tabs: List<BottomTab> = BottomTab.entries,
-    onShortsClick: () -> Unit = {}
 ) {
     val barBackground = White
     val selectedColor = Black
@@ -73,10 +72,10 @@ fun BottomTabRow(
             .navigationBarsPadding(), contentAlignment = Alignment.TopCenter
     ) {
         TabRow(
-            selectedTabIndex = pagerState.currentPage.let(::pagerToTab),
+            selectedTabIndex = pagerState.currentPage,
             containerColor = barBackground,
             indicator = { positions ->
-                val idx = pagerState.currentPage.let(::pagerToTab)
+                val idx = pagerState.currentPage
                 TabRowDefaults.PrimaryIndicator(
                     Modifier.tabIndicatorOffset(positions[idx]),
                     height = 3.dp,
@@ -84,18 +83,32 @@ fun BottomTabRow(
                 )
             }) {
             tabs.forEachIndexed { index, tab ->
+                val selected = pagerState.currentPage == index
+
                 when (tab) {
-                    BottomTab.EMPTY -> Tab(
-                        selected = false,
-                        onClick = { },
-                        enabled = false,
-                        content = { Box(Modifier.size(56.dp)) })
+                    BottomTab.SHORTS -> Tab(
+                        selected = selected,
+                        onClick = { scope.launch { pagerState.scrollToPage(index) } }) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = modifier
+                                .offset(y = (-2).dp)
+                                .size(56.dp)
+                        ) {
+                            Icon(
+                                painter =if (selected){painterResource(R.drawable.shorts_selected)}else painterResource(R.drawable.shorts_unselected),
+                                contentDescription = stringResource(R.string.create),
+                                tint = if (selected) Black else Gray,
+                                modifier = Modifier
+                                    .size(56.dp)
+                           )
+                        }
+                    }
 
                     else -> {
-                        val selected = pagerState.currentPage == tabToPager(index)
                         Tab(
                             selected = selected,
-                            onClick = { scope.launch { pagerState.scrollToPage(tabToPager(index)) } }) {
+                            onClick = { scope.launch { pagerState.scrollToPage(index) } }) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -118,19 +131,19 @@ fun BottomTabRow(
             }
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
-                .offset(y = (-2).dp)          // slightly higher
-                .size(56.dp)                   // bigger
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.shorts_unselected),
-                contentDescription = stringResource(R.string.create),
-                tint = Gray,
-                modifier = Modifier
-                    .size(56.dp)
-                    .clickable { onShortsClick() })
-        }
+//        Column(
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            modifier = modifier
+//                .offset(y = (-2).dp)          // slightly higher
+//                .size(56.dp)                   // bigger
+//        ) {
+//            Icon(
+//                painter = painterResource(R.drawable.shorts_unselected),
+//                contentDescription = stringResource(R.string.create),
+//                tint = Gray,
+//                modifier = Modifier
+//                    .size(56.dp)
+//                    .clickable { onShortsClick() })
+//        }
     }
 }

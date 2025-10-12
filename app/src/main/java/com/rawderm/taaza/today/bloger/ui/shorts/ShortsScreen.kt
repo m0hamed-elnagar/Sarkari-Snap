@@ -147,7 +147,7 @@ private fun ShortsVideoPage(
     onAction: (ShortsActions) -> Unit
 ) {
     // Local state for like (you might want to move this to ViewModel)
-    var isLiked by remember(shortItem.short.id) { mutableStateOf(false) }
+    val isLiked = shortItem.isFavorite
     val context = LocalContext.current
     val appUrl = context.getString(R.string.app_url)
     Box(
@@ -240,7 +240,6 @@ private fun ShortsVideoPage(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 IconButton(
                     onClick = {
-                        isLiked = !isLiked
                         onAction(ShortsActions.OnPostFavoriteClick(shortItem))
                     },
                     modifier = Modifier.size(48.dp)
