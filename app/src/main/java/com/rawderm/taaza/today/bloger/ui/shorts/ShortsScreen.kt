@@ -17,12 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.R
-import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import kotlinx.coroutines.delay
@@ -50,7 +49,7 @@ fun ShortsScreenRoot(
     viewModel: ShortsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
-    val shortsPaging = viewModel.shorts.collectAsLazyPagingItems()
+    val shortsPaging = viewModel.uiShorts.collectAsLazyPagingItems()
 
     ShortsScreen(
         shortsPaging = shortsPaging,
@@ -66,7 +65,7 @@ fun ShortsScreenRoot(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShortsScreen(
-    shortsPaging: LazyPagingItems<Post>,
+    shortsPaging: LazyPagingItems<ShortUiItem>,
     onAction: (ShortsActions) -> Unit,
 ) {
     val pagerState = rememberPagerState(initialPage = 0) { shortsPaging.itemCount }
@@ -83,7 +82,35 @@ fun ShortsScreen(
             if (next < shortsPaging.itemCount) shortsPaging.retry()
         }
     }
+    val showLoadingInsteadOfEmpty = remember { mutableStateOf(true) }
+    LaunchedEffect(shortsPaging.itemCount) {
+        if (shortsPaging.itemCount == 0) {
+            showLoadingInsteadOfEmpty.value = true          // reset in case we come back to 0
+            kotlinx.coroutines.delay(5_000)                 // wait 5s
+            showLoadingInsteadOfEmpty.value = false         // now allow “No posts” to appear
+        }
+    }
+    /* 1. empty state */
+    if (shortsPaging.itemCount == 0) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+            contentAlignment = Alignment.Center
+        ) {
+            if (showLoadingInsteadOfEmpty.value) {
+                CircularProgressIndicator()
+            } else {
 
+                Text(
+                    text = stringResource(R.string.no_shorts_yet),
+                    color = Color.White,
+                    fontSize = 18.sp
+                )
+            }
+        }
+        return   // do not draw the pager at all
+    }
     VerticalPager(
         state = pagerState,
         modifier = Modifier.fillMaxSize(),
@@ -92,14 +119,15 @@ fun ShortsScreen(
         userScrollEnabled = true,
         flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
         key = { pageIndex ->
-            val post = shortsPaging.peek(pageIndex)
-            "page_${pageIndex}_post_${post?.id ?: "null"}"        }
+            val shortItem = shortsPaging.peek(pageIndex)
+            "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
+        }
     ) { pageIndex ->
-        val post = shortsPaging[pageIndex] ?: return@VerticalPager
-        val videoId = remember(post) { post.videoIds.orEmpty().firstOrNull() }
+        val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
+        val videoId = remember(shortItem) { shortItem.short.videoId }
 
         ShortsVideoPage(
-            post = post,
+            shortItem = shortItem,
             videoId = videoId,
             isSelected = pageIndex == settledPage,
             settledPage = settledPage,
@@ -111,7 +139,7 @@ fun ShortsScreen(
 
 @Composable
 private fun ShortsVideoPage(
-    post: Post,
+    shortItem: ShortUiItem,
     videoId: String?,
     isSelected: Boolean,
     settledPage: Int,
@@ -119,8 +147,8 @@ private fun ShortsVideoPage(
     onAction: (ShortsActions) -> Unit
 ) {
     // Local state for like (you might want to move this to ViewModel)
-    var isLiked by remember(post.id) { mutableStateOf(false) }
-val context =   LocalContext.current
+    var isLiked by remember(shortItem.short.id) { mutableStateOf(false) }
+    val context = LocalContext.current
     val appUrl = context.getString(R.string.app_url)
     Box(
         Modifier
@@ -136,7 +164,7 @@ val context =   LocalContext.current
             )
 
             /* 1. decide what to draw */
-             when {
+            when {
                 videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
                 abs(pageIndex - settledPage) <= 2 -> {
                     YouTubeShortsPlayer(
@@ -148,6 +176,7 @@ val context =   LocalContext.current
                         onVideoEnd = { /* optional scroll to next */ }
                     )
                 }
+
                 else -> PlaceholderBox(stringResource(R.string.loading_ellipsis))
             }
 
@@ -166,13 +195,18 @@ val context =   LocalContext.current
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
         ) {
-            Text(post.title, color = Color.White, fontSize = 18.sp,modifier = Modifier.padding(bottom = 8.dp))
-            post.description?.takeIf { it.isNotBlank() }?.let {
+            Text(
+                shortItem. short.title,
+                color = Color.White,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            shortItem.short.description?.takeIf { it.isNotBlank() }?.let {
                 Text(it, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, maxLines = 2)
             }
         }
 
-        val  suffixShare = stringResource(R.string.share_shorts_suffix)
+        val suffixShare = stringResource(R.string.share_shorts_suffix)
         /* Action buttons on the right side */
         Column(
             modifier = Modifier
@@ -183,14 +217,16 @@ val context =   LocalContext.current
             // Share button
             IconButton(
                 onClick = {
-       val postUrl ="$appUrl/shorts/"+ post.rowDate
-                    val postTitle = post.title + suffixShare
+                    val postUrl = "$appUrl/shorts/" + shortItem.short.rowDate
+                    val postTitle = shortItem.short.title + suffixShare
 
                     systemChooser(context, postTitle, postUrl)
                 },
-                modifier = Modifier.size(48.dp).padding(horizontal = 2.dp)
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(horizontal = 2.dp)
             ) {
-                    Icon(
+                Icon(
                     imageVector = Icons.Default.Share,
                     contentDescription = stringResource(R.string.share),
                     tint = Color.White,
@@ -205,7 +241,7 @@ val context =   LocalContext.current
                 IconButton(
                     onClick = {
                         isLiked = !isLiked
-                        onAction(ShortsActions.OnPostFavoriteClick(post))
+                        onAction(ShortsActions.OnPostFavoriteClick(shortItem))
                     },
                     modifier = Modifier.size(48.dp)
                 ) {

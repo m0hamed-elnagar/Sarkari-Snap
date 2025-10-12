@@ -137,6 +137,9 @@ class HomeViewModel(
             repo.getFavoritePosts()
                 .onEach { fav -> _state.update { it.copy(favoritePosts = fav) } }
                 .launchIn(viewModelScope)
+            repo.getFavoriteShorts()
+                .onEach { fav -> _state.update { it.copy(favoriteShorts = fav) } }
+                .launchIn(viewModelScope)
         }
     }
 

@@ -25,6 +25,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -40,6 +42,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -55,6 +58,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.RectangleShape
@@ -77,6 +81,7 @@ import com.rawderm.taaza.today.bloger.ui.home.components.BottomTabRow
 import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
+import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteVideosScreen
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
@@ -135,14 +140,6 @@ fun HomeScreen(
     val tabs = BottomTab.entries
     val pagerState = rememberPagerState { tabs.size - 1 } // ← dynamic count
 
-    val title = when (state.selectedTabIndex) {
-        0 -> stringResource(R.string.home)
-        1 -> stringResource(R.string.trending)
-        3 -> stringResource(R.string.favorites)
-        4 -> stringResource(R.string.more)
-        else -> ""
-    }
-
     val scope = rememberCoroutineScope()
     val chipListState = remember { LazyListState() }
     // --- Per-label LazyListState map ---
@@ -166,8 +163,8 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(White)
-                    .background(Gray)
-                    .padding(bottom = .5.dp)
+//                    .background(Gray)
+//                    .padding(bottom = .5.dp)
             ) {
                 TopAppBar(
                     navigationIcon = {          // <- leading icon
@@ -184,11 +181,6 @@ fun HomeScreen(
                     },
 
                     title = {
-//                    Text(
-//                        text = title,
-//                        style = MaterialTheme.typography.titleLarge,
-//                        color = Color.Black
-//                    )
                     },
                     actions = {
                         // Language switcher dropdown
@@ -332,43 +324,71 @@ private fun FavoriteTabContent(
     state: HomeUiState,
     onAction: (HomeActions) -> Unit,
 ) {
-    val listState = rememberLazyListState()
+    val pagerState = rememberPagerState(pageCount = { 2 })
+    val scope = rememberCoroutineScope()
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        when {
-            state.favoritePosts.isEmpty() -> Text(
-                text = stringResource(R.string.no_favorites_yet),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    Column(modifier = Modifier.fillMaxSize()
+     .background(White)
+     ) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = White,
+            contentColor = Black
+        ) {
+            Tab(
+                selected = pagerState.currentPage == 0,
+                onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+                text = { Text("Videos") }
             )
+            Tab(
+                selected = pagerState.currentPage == 1,
+                onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
+                text = { Text("Posts") }
+            )
+        }
 
-            else -> PostListStatic(
-                posts = state.favoritePosts,
-                onPostClick = { post -> onAction(HomeActions.OnPostClick(post)) },
-                modifier = Modifier.fillMaxSize(),
-                scrollState = listState
-            )
+        // Pager Content
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            userScrollEnabled = false             // ← disables swipe
+        ) { page ->
+            when (page) {
+                0 -> FavoriteVideosScreen(
+                    shorts = state.favoriteShorts,
+                    onVideoClick = {}
+                )
+
+                1 -> {
+                    val listState = rememberLazyListState()
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                     .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        when {
+                            state.favoritePosts.isEmpty() -> Text(
+                                text = stringResource(R.string.no_favorites_yet),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+
+                            else -> PostListStatic(
+                                posts = state.favoritePosts,
+                                onPostClick = { post ->
+                                    onAction(HomeActions.OnPostClick(post))
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                scrollState = listState
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
-
-@Composable
-private fun PagesTabContent() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(stringResource(R.string.pages_coming_soon), style = MaterialTheme.typography.bodyLarge)
-    }
-}
-
-@Composable
-private fun CategoriesTabContent() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            stringResource(R.string.categories_coming_soon),
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
 enum class BottomTab(
     @param:StringRes val labelRes: Int,
     val icon: ImageVector

@@ -5,10 +5,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.sqlite.SQLiteException
 import com.rawderm.taaza.today.bloger.data.database.FavoritePostDao
+import com.rawderm.taaza.today.bloger.data.database.ShortDao
 import com.rawderm.taaza.today.bloger.data.mappers.toDomain
 import com.rawderm.taaza.today.bloger.data.mappers.toPage
 import com.rawderm.taaza.today.bloger.data.mappers.toPost
 import com.rawderm.taaza.today.bloger.data.mappers.toPostEntity
+import com.rawderm.taaza.today.bloger.data.mappers.toShort
+import com.rawderm.taaza.today.bloger.data.mappers.toShortEntity
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.data.paging.shortsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
@@ -18,6 +21,7 @@ import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
+import com.rawderm.taaza.today.bloger.domain.Short
 import com.rawderm.taaza.today.core.domain.DataError
 import com.rawderm.taaza.today.core.domain.EmptyResult
 import com.rawderm.taaza.today.core.domain.Result
@@ -27,7 +31,8 @@ import kotlinx.coroutines.flow.map
 
 class DefaultPostsRepo(
     private val remotePostDataSource: RemotePostDataSource,
-    private val dao: FavoritePostDao
+    private val postDao: FavoritePostDao,
+    private val shortDao: ShortDao
 ) : PostsRepo {
 
 
@@ -37,19 +42,47 @@ class DefaultPostsRepo(
             listOf("All") + dto.items
                 .flatMap { it.labels }
                 .filter { it.lowercase() !in excludedLabels }
-                .distinct()      .distinct()
+                .distinct().distinct()
         }
+    }
+
+    override suspend fun getFavoriteShorts(): Flow<List<Short>> {
+        return shortDao.getAllShort().map { entities ->
+            entities.map { it.toShort() }
+        }
+    }
+
+    override fun isShortFavorite(shortId: String): Flow<Boolean> {
+        return shortDao.getAllShort().map { entities ->
+            entities.any { it.id == shortId }
+        }
+    }
+  override  fun observeFavoriteShortIds(): Flow<Set<String>> =
+        shortDao.observeIds()
+            .map { it.toSet() }
+    override suspend fun markShortAsFavorite(short: Short): EmptyResult<DataError.Local> {
+        return try {
+
+            shortDao.upsert(short.toShortEntity())
+            Result.Success(Unit)
+        } catch (e: SQLiteException) {
+            Result.Error(DataError.Local.DISK_FULL)
+        }
+    }
+
+    override suspend fun removeShortFromFavorites(shortId: String) {
+        return shortDao.deleteShort(shortId)
     }
 
 
     override suspend fun getFavoritePosts(): Flow<List<Post>> {
-        return dao.getAllFavoriteBook().map { entities ->
+        return postDao.getAllFavoritePosts().map { entities ->
             entities.map { it.toPost() }
         }
     }
 
     override fun isPostFavorite(postId: String): Flow<Boolean> {
-        return dao.getAllFavoriteBook().map { entities ->
+        return postDao.getAllFavoritePosts().map { entities ->
             entities.any { it.id == postId }
         }
     }
@@ -57,7 +90,7 @@ class DefaultPostsRepo(
     override suspend fun markPostAsFavorite(post: Post): EmptyResult<DataError.Local> {
         return try {
 
-            dao.upsert(post.toPostEntity())
+            postDao.upsert(post.toPostEntity())
             Result.Success(Unit)
         } catch (e: SQLiteException) {
             Result.Error(DataError.Local.DISK_FULL)
@@ -65,7 +98,7 @@ class DefaultPostsRepo(
     }
 
     override suspend fun removePostFromFavorites(postId: String) {
-        return dao.deleteFavoriteBook(postId)
+        return postDao.deleteFavoritePost(postId)
     }
 
     override fun getPagedPosts(label: String?): Flow<PagingData<Post>> {
@@ -79,12 +112,14 @@ class DefaultPostsRepo(
             }
         ).flow
     }
+
     override fun getPagedShorts(): Flow<PagingData<Post>> {
         return Pager(
             config = PagingConfig(pageSize = 3, enablePlaceholders = false),
             pagingSourceFactory = {
                 shortsPagingSource(
-                    remotePostDataSource)
+                    remotePostDataSource
+                )
             }
         ).flow
     }
@@ -114,7 +149,8 @@ class DefaultPostsRepo(
         ).flow
 
     }
- override fun getShortsBeforeDate( afterDate: String?): Flow<PagingData<Post>> {
+
+    override fun getShortsBeforeDate(afterDate: String?): Flow<PagingData<Short>> {
         return Pager(
             config = PagingConfig(pageSize = 6, enablePlaceholders = false),
             pagingSourceFactory = {
@@ -131,7 +167,7 @@ class DefaultPostsRepo(
         remotePostDataSource.getPage(pageId).map { it.toPage() }
 
     override suspend fun getPostById(postId: String): Result<Post, DataError.Remote> {
-       return remotePostDataSource.getPost(postId).map { toDomain(it) }
+        return remotePostDataSource.getPost(postId).map { toDomain(it) }
 
     }
 

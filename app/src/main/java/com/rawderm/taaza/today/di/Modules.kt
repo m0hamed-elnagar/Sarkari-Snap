@@ -7,6 +7,7 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.data.database.FavoritePostDataBase
+import com.rawderm.taaza.today.bloger.data.database.Migration2To3
 import com.rawderm.taaza.today.bloger.data.network.KtorRemoteBlogDataSource
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
 import com.rawderm.taaza.today.bloger.data.repo.DefaultPostsRepo
@@ -52,9 +53,11 @@ val sharedModule = module {
             FavoritePostDataBase::class.java,
             "Posts_db"
         ).fallbackToDestructiveMigration(false)
+            .addMigrations(Migration2To3)
             .build()
     }
     single { get<FavoritePostDataBase>().favoritePostDao }
+    single { get<FavoritePostDataBase>().shortDao }
     viewModelOf(::HomeViewModel)
     viewModelOf(::PostDetailsViewModel)
     viewModelOf(::PageDetailsViewModel)

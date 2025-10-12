@@ -125,9 +125,9 @@ fun BottomTabRow(
                 .size(56.dp)                   // bigger
         ) {
             Icon(
-                painter = painterResource(R.drawable.shorts_btn),
+                painter = painterResource(R.drawable.shorts_unselected),
                 contentDescription = stringResource(R.string.create),
-                tint = Color.Unspecified,
+                tint = Gray,
                 modifier = Modifier
                     .size(56.dp)
                     .clickable { onShortsClick() })

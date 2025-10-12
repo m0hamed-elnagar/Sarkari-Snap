@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,13 +41,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
+import com.rawderm.taaza.today.core.utils.ShareUtils.messenger
+import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
+import com.rawderm.taaza.today.core.utils.ShareUtils.whatsApp
 
 @Composable
 fun MoreTabScreen(
@@ -56,53 +63,56 @@ fun MoreTabScreen(
 
     ) {
     val context = LocalContext.current
-
+    val appLink = stringResource(R.string.app_link)
+val appName = stringResource(R.string.app_name)
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
         item { SectionTitle(stringResource(R.string.follow_us_on)) }
         item { SocialIconRow() }
 
-//        item { SectionTitle("Share App") }
-//        item { ShareAppLinkRow("https://test.link/share") }
-//        item {
-//            CardRow(
-//                icon = painterResource(R.drawable.ic_whatsapp),
-//                title = "WhatsApp",
-//                color = R.color.whatsapp,
-//                textColor = Color.White,
-//                iconColor = Color.White,
-//                alignment = Arrangement.Center,
-//                onClick = {}
-//            )
-//        }
-//        item {
-//            CardRow(
-//                icon = painterResource(R.drawable.messenger),
-//                title = "Messenger",
-//                color = R.color.messenger,
-//                textColor = Color.White,
-//                iconColor = Color.White,
-//                alignment = Arrangement.Center,
-//                onClick = {}
-//            )
-//        }
-//        item {
-//            CardRow(
-//                imageVector = Icons.Default.Share,
-//                title = "Share",
-//                color = R.color.share,
-//                iconColor = Color.White,
-//                textColor = Color.White,
-//                alignment = Arrangement.Center,
-//                onClick = {}
-//            )
-//        }
+        item { SectionTitle("Share App") }
+        item { ShareAppLinkRow(appLink) }
+        item {
+            CardRow(
+                icon = painterResource(R.drawable.ic_whatsapp),
+                title = "WhatsApp",
+                color = R.color.whatsapp,
+                textColor = Color.White,
+                iconColor = Color.White,
+                alignment = Arrangement.Center,
+                onClick = {whatsApp(context, appName, appLink)}
+            )
+        }
+        item {
+            CardRow(
+                icon = painterResource(R.drawable.messenger),
+                title = "Messenger",
+                color = R.color.messenger,
+                textColor = Color.White,
+                iconColor = Color.White,
+                alignment = Arrangement.Center,
+                onClick = {
+                    messenger(context, appName, appLink)
+                }
+            )
+        }
+        item {
+            CardRow(
+                imageVector = Icons.Default.Share,
+                title = "Share",
+                color = R.color.share,
+                iconColor = Color.White,
+                textColor = Color.White,
+                alignment = Arrangement.Center,
+                onClick = {
+                    systemChooser(context, appName, appLink)
+                }
+            )
+        }
 
         // ---------  Paged Pages  ---------
         item { SectionTitle(stringResource(R.string.Pages)) }
@@ -163,7 +173,29 @@ fun MoreTabScreen(
 
         // bottom spacer
         item { Spacer(modifier = Modifier.height(24.dp)) }
-    }
+
+    item {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp, bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Made by",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)
+            )
+            Text(
+                text = "Mohamed El-Nagar",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }}
 }
 /* -------------------- Re-usable components -------------------- */
 

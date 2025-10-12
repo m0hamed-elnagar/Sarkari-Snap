@@ -15,7 +15,7 @@ private fun PostDetailsScreenPreview() {
         date = "2025-09-02",
         labels = listOf("Tech", "News"),
         imageUrls = listOf(),
-        url = "",
+        selfUrl = "",
         description = "Sample description for the article.",
     )
 

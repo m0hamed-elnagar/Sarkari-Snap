@@ -2,12 +2,16 @@ package com.rawderm.taaza.today.bloger.data.mappers
 
 import android.util.Log
 import com.rawderm.taaza.today.bloger.data.database.PostEntity
+import com.rawderm.taaza.today.bloger.data.database.ShortEntity
 import com.rawderm.taaza.today.bloger.data.dto.PageDto
 import com.rawderm.taaza.today.bloger.data.dto.PostDto
 import com.rawderm.taaza.today.bloger.domain.Page
+import com.rawderm.taaza.today.bloger.domain.Short
 import com.rawderm.taaza.today.bloger.domain.Post
 import org.jsoup.Jsoup
+import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 fun toDomain(dto: PostDto): Post {
@@ -32,18 +36,20 @@ fun toDomain(dto: PostDto): Post {
         content = cleanHtml,
         date = dto.updated.toDateOnly(),
         rowDate = dto.updated,
-        url = dto.url,
+        selfUrl = dto.url,
         imageUrls = images,
         videoIds = extractYouTubeIds(dto.content),
         labels = dto.labels
     )
 }
+
 private fun extractYouTubeIds(html: String): List<String> =
     """/embed/([a-zA-Z0-9_-]{11})""".toRegex()
         .findAll(html)
         .map { it.groupValues[1] }
         .distinct()
         .toList()
+
 // Extract direct video URLs from embed codes or iframe sources
 fun extractDirectVideoUrl(postContent: String): String? {
     val doc = Jsoup.parse(postContent)
@@ -87,6 +93,7 @@ fun extractDirectVideoUrl(postContent: String): String? {
     Log.d("VideoExtraction", "No direct video URL found in content$youTubeId")
     return null
 }
+
 private fun extractYouTubeId(html: String): String? {
     val patterns = listOf(
         """(?:youtube\.com/watch\?v=|youtu\.be/|/embed/|/v/|/shorts/)([a-zA-Z0-9_-]{11})""",
@@ -97,6 +104,7 @@ private fun extractYouTubeId(html: String): String? {
         p.toRegex().find(html)?.groupValues?.get(1)
     }
 }
+
 // Check if URL is likely a video file
 private fun isVideoUrl(url: String): Boolean {
     val videoPatterns = listOf(
@@ -116,6 +124,7 @@ private fun String?.toDateOnly(): String {
         odt.format(DateTimeFormatter.ISO_LOCAL_DATE) // yyyy-MM-dd
     }.getOrDefault("")
 }
+
 fun String.log() {
 
 
@@ -152,7 +161,10 @@ fun extractBloggerVideoToken(postContent: String): String? {
     for (pattern in patterns) {
         val match = pattern.find(postContent)
         if (match != null) {
-            Log.d("TokenExtraction", "Found token with pattern: ${pattern.pattern} -> ${match.groupValues[1]}")
+            Log.d(
+                "TokenExtraction",
+                "Found token with pattern: ${pattern.pattern} -> ${match.groupValues[1]}"
+            )
             return match.groupValues[1]
         }
     }
@@ -168,7 +180,7 @@ fun Post.toPostEntity() = PostEntity(
     content = this.content,
     date = this.date,
     rowDate = this.rowDate,
-    url = this.url,
+    url = this.selfUrl,
     imageUrls = this.imageUrls,
     labels = this.labels
 )
@@ -180,10 +192,11 @@ fun PostEntity.toPost() = Post(
     content = this.content,
     date = this.date,
     rowDate = this.rowDate,
-    url = this.url,
+    selfUrl = this.url,
     imageUrls = this.imageUrls,
     labels = this.labels
 )
+
 fun PageDto.toPage(): Page {
     val images = extractAllImages(content)
     val plainText = parsePlainText(content)
@@ -204,6 +217,57 @@ fun PageDto.toPage(): Page {
         date = updated.toDateOnly()
     )
 }
+/* ----------  Domain ←→ Entity  ---------- */
+
+fun ShortEntity.toShort(): Short =
+    Short(
+        id = id,
+        title = title,
+        selfUrl = selfUrl,
+        description = description,
+        videoId = videoId,
+        content = content,
+        labels = labels,
+        date = date,
+        rowDate = rowDate,
+        updatedAt = Instant.ofEpochMilli(updatedAt)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+            .toString()
+    )
+
+fun Short.toShortEntity(): ShortEntity =
+    ShortEntity(
+        id = id,
+        title = title,
+        selfUrl = selfUrl,
+        description = description,
+        videoId = videoId,
+        content = content,
+        labels = labels,
+        date = date,
+        rowDate = rowDate,
+        updatedAt = System.currentTimeMillis()
+    )
+
+fun PostDto.toShort(): Short {
+    val plainText = parsePlainText(content)
+    val videoId = extractYouTubeId(content) ?: "" // we expect exactly one
+
+    return Short(
+        id = id,
+        title = title,
+        selfUrl = url,
+        description = plainText,
+        videoId = videoId,
+        content = content,
+        labels = labels,
+        date = updated.toDateOnly(),
+        rowDate = updated,
+        updatedAt = updated.toDateOnly()
+    )
+}
+
 // plain Kotlin, no Android context needed
 fun extractBloggerVideoToken2(postContent: String): String? {
     val regex = """contentid\\*=\s*["']([\w]+)["']""".toRegex()

@@ -9,14 +9,25 @@ import kotlinx.coroutines.flow.Flow
 interface FavoritePostDao {
     @Upsert
     suspend fun upsert(post: PostEntity)
-
     @Query("SELECT * FROM Posts ORDER BY addedAt DESC")
-    fun getAllFavoriteBook(): Flow<List<PostEntity>>
-
-
+    fun getAllFavoritePosts(): Flow<List<PostEntity>>
     @Query("SELECT * FROM Posts WHERE id = :id")
-    suspend fun getFavoriteBook(id: String): PostEntity?
+    suspend fun getFavoritePost(id: String): PostEntity?
 
     @Query("DELETE FROM Posts WHERE id = :id")
-    suspend fun deleteFavoriteBook(id: String)
+    suspend fun deleteFavoritePost(id: String)
+}
+@Dao
+interface ShortDao {
+    @Query("SELECT id FROM Shorts")
+    fun observeIds(): Flow<List<String>>
+
+    @Upsert
+    suspend fun upsert(short: ShortEntity)
+    @Query("SELECT * FROM Shorts ORDER BY updatedAt DESC")
+    fun getAllShort(): Flow<List<ShortEntity>>
+    @Query("SELECT * FROM Shorts WHERE id = :id")
+    suspend fun getShortById(id: String): ShortEntity?
+    @Query("DELETE FROM Shorts WHERE id = :id")
+    suspend fun deleteShort(id: String)
 }

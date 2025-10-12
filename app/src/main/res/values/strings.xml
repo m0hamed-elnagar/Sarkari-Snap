@@ -64,5 +64,7 @@
     <string name="facebook_share_base" translatable="false">https://www.facebook.com/sharer/sharer.php</string>
     <string name="share_app_link" translatable="false">https://taaza-today.web.app</string>
     <string name="share_via" translatable="false">Share via\n</string>
+    <string name="no_shorts_yet" translatable="false">no Shorts to show\n</string>
+    <string name="app_link" translatable="false">https://play.google.com/store/apps/details?id=com.rawderm.taaza.today</string>
 
 </resources>
