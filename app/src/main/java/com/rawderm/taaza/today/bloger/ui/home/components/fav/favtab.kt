@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +29,7 @@ import com.rawderm.taaza.today.bloger.domain.Short
 @Composable
 fun FavoriteVideosScreen(
     shorts: List<Short>,
-    onVideoClick: () -> Unit = {},
+    onVideoClick: (date: String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyVerticalStaggeredGrid(
@@ -40,7 +41,7 @@ fun FavoriteVideosScreen(
         items(shorts, key = { it.id }) { short ->
             ShortThumb(
                 short   = short,
-                onClick = {  },
+                onClick = { onVideoClick(short.rowDate) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

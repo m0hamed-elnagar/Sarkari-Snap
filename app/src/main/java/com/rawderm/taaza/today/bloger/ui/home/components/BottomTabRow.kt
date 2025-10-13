@@ -37,8 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.ui.home.BottomTab
-import com.rawderm.taaza.today.bloger.ui.home.pagerToTab
-import com.rawderm.taaza.today.bloger.ui.home.tabToPager
+
 import com.rawderm.taaza.today.core.ui.theme.LightOrange
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import kotlinx.coroutines.CoroutineScope

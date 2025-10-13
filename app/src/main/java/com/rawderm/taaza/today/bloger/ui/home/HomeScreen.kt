@@ -1,7 +1,5 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
-import android.app.Activity
-import android.content.Intent
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -12,21 +10,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -35,7 +29,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,22 +49,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.mohamedrejeb.richeditor.model.RichSpanStyle
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Page
@@ -82,29 +70,29 @@ import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteVideosScreen
+import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
-import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+val tabs = BottomTab.entries
 
 @Composable
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onPostClick: (Post) -> Unit,
     onPagesClick: (Page) -> Unit,
-    onShortsClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     val trendingPosts = viewModel.trendingPosts.collectAsLazyPagingItems()
     val pages = viewModel.pages.collectAsLazyPagingItems()
     val languageManager: LanguageManager = koinInject()
+    val pagerState = rememberPagerState { tabs.size  } // ← dynamic count
+    val scope = rememberCoroutineScope()
 
     HomeScreen(
         state = state, // Pass state argument
@@ -112,11 +100,20 @@ fun HomeScreenRoot(
         trendingPosts = trendingPosts,
         pages = pages,
         languageManager,
+        pagerState,
+        scope,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
                 is HomeActions.OnPageClick -> onPagesClick(action.page)
-                is HomeActions.OnShortsClick -> onShortsClick()
+                is HomeActions.OnTabSelected -> {  ->
+                    if (state.selectedTabIndex != action.index) {
+                        scope.launch {
+                            pagerState.animateScrollToPage(action.index)
+                        }
+                    }
+
+                }
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -124,10 +121,6 @@ fun HomeScreenRoot(
     )
 }
 
-fun tabToPager(tabIndex: Int) = if (tabIndex > 2) tabIndex - 1 else tabIndex
-
-/* pager-index -> tab-index */
-fun pagerToTab(pagerIndex: Int) = if (pagerIndex >= 2) pagerIndex + 1 else pagerIndex
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -137,27 +130,29 @@ fun HomeScreen(
     trendingPosts: LazyPagingItems<Post>,
     pages: LazyPagingItems<Page>,
     languageManager: LanguageManager,
+    pagerState: PagerState,
+    scope: CoroutineScope,
     onAction: (HomeActions) -> Unit
 ) {
-    val tabs = BottomTab.entries
-    val pagerState = rememberPagerState { tabs.size  } // ← dynamic count
 
-    val scope = rememberCoroutineScope()
     val chipListState = remember { LazyListState() }
     // --- Per-label LazyListState map ---
     val labelListStates = remember { mutableMapOf<String, LazyListState>() }
     val currentListState = labelListStates.getOrPut(state.selectedLabel) { LazyListState() }
-
+    val shortsViewModel = koinViewModel<ShortsViewModel>()
     val settledPage = pagerState.settledPage
     LaunchedEffect(settledPage) {
         if (state.selectedTabIndex != pagerState.settledPage) {
             onAction(HomeActions.OnTabSelected(pagerState.settledPage))
         }
+
+
     }
     LaunchedEffect(state.selectedTabIndex) {
         if (state.selectedTabIndex != pagerState.currentPage) {
             pagerState.animateScrollToPage(state.selectedTabIndex)
         }
+
     }
     val context = LocalContext.current
     val locale = remember { Lingver.getInstance().getLocale().language }
@@ -289,6 +284,7 @@ fun HomeScreen(
         }
     ) { padding ->
 
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
@@ -312,15 +308,13 @@ fun HomeScreen(
                     onAction
                 )
 BottomTab.SHORTS ->{
-    val shortsViewModel = koinViewModel<ShortsViewModel>()
 
 
     ShortsScreenRoot(
         viewModel = shortsViewModel,
-        onBackClicked = { },
     )
 }
-                BottomTab.FAVORITES -> FavoriteTabContent(state, onAction)
+                BottomTab.FAVORITES -> FavoriteTabContent(state,onAction, pagerState, shortsViewModel)
                 BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
                 else -> {}
             }
@@ -335,6 +329,8 @@ BottomTab.SHORTS ->{
 private fun FavoriteTabContent(
     state: HomeUiState,
     onAction: (HomeActions) -> Unit,
+    homePagerState: PagerState,
+    shortsVM: ShortsViewModel = koinViewModel()
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
@@ -350,13 +346,13 @@ private fun FavoriteTabContent(
         ) {
             Tab(
                 selected = pagerState.currentPage == 0,
-                onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                text = { Text("Videos") }
+                onClick = { scope.launch { pagerState.animateScrollToPage(0)} },
+                text = { Text("Articles") }
             )
             Tab(
                 selected = pagerState.currentPage == 1,
                 onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                text = { Text("Posts") }
+                text = { Text("Videos") }
             )
         }
 
@@ -367,16 +363,20 @@ private fun FavoriteTabContent(
             userScrollEnabled = false             // ← disables swipe
         ) { page ->
             when (page) {
-                0 -> FavoriteVideosScreen(
+                1 -> FavoriteVideosScreen(
                     shorts = state.favoriteShorts,
-                    onVideoClick = {}
+                    onVideoClick = {date->
+                     scope.launch {
+                         onAction(HomeActions.OnTabSelected(2))
+                     }
+                        shortsVM.onAction(ShortsActions.OnGetShortsByDate(date))                    }
                 )
 
-                1 -> {
+                0 -> {
                     val listState = rememberLazyListState()
                     Box(
                         modifier = Modifier.fillMaxSize()
-                     .background(Color.White),
+                     .background(White),
                         contentAlignment = Alignment.Center
                     ) {
                         when {

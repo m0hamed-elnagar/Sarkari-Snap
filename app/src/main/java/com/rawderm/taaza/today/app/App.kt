@@ -26,7 +26,6 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.app.BloggerApplication.Companion.isWorking
 import com.rawderm.taaza.today.app.components.TemporarilyStoppedScreen
 import com.rawderm.taaza.today.bloger.ui.SelectedPostViewModel
-import com.rawderm.taaza.today.bloger.ui.home.BottomTab
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeScreenRoot
 import com.rawderm.taaza.today.bloger.ui.home.HomeViewModel
@@ -92,7 +91,7 @@ private fun AppNavigation(navController: NavHostController) {
                 LaunchedEffect(Unit) { sharedVM.selectPost(null) }
                 LaunchedEffect(date) {
                     if (!date.isNullOrBlank()) {
-                        shortsViewModel.onAction(ShortsActions.OnDeepLinkArrived(date))
+                        shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(date))
                         homeVM.onAction(HomeActions.OnTabSelected(2))
                         Log . d ("Date", "AppNavigation: $date")
 
@@ -112,11 +111,7 @@ private fun AppNavigation(navController: NavHostController) {
                             launchSingleTop = true
                         }
                     },
-                    onShortsClick = {
-                        navController.navigate(Route.Shorts) {
-                            launchSingleTop = true
-                        }
-                    }
+
                 )
             }
             composable<Route.PostDetails>(

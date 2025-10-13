@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -23,10 +24,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +45,7 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
@@ -50,12 +55,27 @@ fun ShortsScreenRoot(
     onBackClicked: () -> Unit = {}
 ) {
     val shortsPaging = viewModel.uiShorts.collectAsLazyPagingItems()
+    val pagerState = rememberPagerState(initialPage = 0) { shortsPaging.itemCount }
+val targetDate = viewModel.beforeDate.collectAsState()
+    val generation by remember { derivedStateOf { shortsPaging.itemSnapshotList.hashCode() } }
+    LaunchedEffect(generation, targetDate.value) {
+        if (shortsPaging.itemCount > 0 ) {
+            /* find the exact page that matches the date */
+            val index = (0 until shortsPaging.itemCount)
+                .firstOrNull { shortsPaging[it]?.short?.rowDate == targetDate.value }
+                ?: 0   // fallback to first item if not found
+            pagerState.scrollToPage(index)
+        }
+    }
 
     ShortsScreen(
         shortsPaging = shortsPaging,
+        pagerState,
         onAction = { action ->
             when (action) {
                 is ShortsActions.OnBackClick -> onBackClicked()
+
+
                 else -> viewModel.onAction(action)
             }
         }
@@ -66,9 +86,9 @@ fun ShortsScreenRoot(
 @Composable
 fun ShortsScreen(
     shortsPaging: LazyPagingItems<ShortUiItem>,
+    pagerState: PagerState,
     onAction: (ShortsActions) -> Unit,
 ) {
-    val pagerState = rememberPagerState(initialPage = 0) { shortsPaging.itemCount }
 
     /* we only treat a page as settled when paging *and* settle-animation are done */
     var settledPage by remember { mutableIntStateOf(-1) }
@@ -86,7 +106,7 @@ fun ShortsScreen(
     LaunchedEffect(shortsPaging.itemCount) {
         if (shortsPaging.itemCount == 0) {
             showLoadingInsteadOfEmpty.value = true          // reset in case we come back to 0
-            kotlinx.coroutines.delay(5_000)                 // wait 5s
+            delay(5_000)                 // wait 5s
             showLoadingInsteadOfEmpty.value = false         // now allow “No posts” to appear
         }
     }
@@ -201,9 +221,9 @@ private fun ShortsVideoPage(
                 fontSize = 18.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            shortItem.short.description?.takeIf { it.isNotBlank() }?.let {
-                Text(it, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, maxLines = 2)
-            }
+//            shortItem.short.description.takeIf { it.isNotBlank() }?.let {
+//                Text(it, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, maxLines = 2)
+//            }
         }
 
         val suffixShare = stringResource(R.string.share_shorts_suffix)
@@ -258,14 +278,7 @@ private fun ShortsVideoPage(
 
         }
 
-        Text(
-            text = "${pageIndex + 1}",
-            color = Color.White.copy(alpha = 0.7f),
-            fontSize = 14.sp,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        )
+
     }
 }
 
