@@ -3,7 +3,6 @@ package com.rawderm.taaza.today.bloger.ui.home.components
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,10 +47,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Page
+import com.rawderm.taaza.today.bloger.ui.components.BannerAd
+import com.rawderm.taaza.today.bloger.ui.components.TestBanner
+import com.rawderm.taaza.today.bloger.ui.components.TestBanner2
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.core.utils.ShareUtils.messenger
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
@@ -161,6 +162,7 @@ fun MoreTabScreen(
             }
         }
 
+
         // append loading / retry
         if (pages.loadState.append is androidx.paging.LoadState.Loading) {
             item {
@@ -192,22 +194,22 @@ fun MoreTabScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-
+BannerAd()
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    text = "Made by",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontFamily = sanskrit,
-                        letterSpacing = 0.12.sp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)
-                )
-                Text(
-                    text = "Mohamed El-Nagar",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontFamily = sanskritItalic,
-                        letterSpacing = 0.12.sp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+//                Text(
+//                    text = "Made by",
+//                    style = MaterialTheme.typography.labelSmall.copy(
+//                        fontFamily = sanskrit,
+//                        letterSpacing = 0.12.sp),
+//                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)
+//                )
+//                Text(
+//                    text = "Mohamed El-Nagar",
+//                    style = MaterialTheme.typography.labelMedium.copy(
+//                        fontFamily = sanskritItalic,
+//                        letterSpacing = 0.12.sp),
+//                    color = MaterialTheme.colorScheme.onSurface
+//                )
             }
         }
     }

@@ -1,8 +1,11 @@
 package com.rawderm.taaza.today.bloger.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,13 +18,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,13 +47,17 @@ import androidx.paging.compose.LazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
+import com.rawderm.taaza.today.bloger.ui.home.UiModel
 
 @Composable
 fun PostList(
     posts: LazyPagingItems<Post>,
+
     onPostClick: (Post) -> Unit,
     modifier: Modifier = Modifier,
-    scrollState: LazyListState
+    scrollState: LazyListState,
+    pagedUiItem: LazyPagingItems<UiModel>? = null,
 ) {
     val noOpConnection = remember {
         object : NestedScrollConnection {
@@ -67,39 +77,179 @@ fun PostList(
                 Velocity.Zero
         }
     }
+    if (pagedUiItem != null) {
+        LazyColumn(
+            state = scrollState,
+            modifier = modifier
+                .fillMaxSize()
+                .nestedScroll(noOpConnection)
+                .clipToBounds(),
+            contentPadding = PaddingValues(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                count = pagedUiItem.itemCount,
+                key = { index ->
+                    val item = pagedUiItem[index]
+                    when (item) {
+                        is UiModel.PostItem -> item.post.id
+                        is UiModel.BannerItem -> "banner_${index}".also { Log.e("khalid", it) }
+                        else -> "unknown_$index"
+                    }
+                }
+            ) { index ->
+                val uiItem = pagedUiItem[index]
+                if(index!=0&&index%6==0) {
+                    AdItemComposable()
+                }
+                when (uiItem) {
+                    is UiModel.PostItem -> {
+                        val post = uiItem.post
+                        if (index == 0) {
+                            // ✅ Special layout for the first item
+                            FeaturedPost(
+                                post = post,
+                                onClick = { onPostClick(post) }
+                            )
+                        } else {
+                            NormalPost(
+                                post = post,
+                                onClick = { onPostClick(post) }
+                            )
+                        }
+                    }
 
-    LazyColumn(
-        state = scrollState,
-        modifier = modifier
-            .fillMaxSize()
-            .nestedScroll(noOpConnection)
-            .clipToBounds(),
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    is UiModel.BannerItem -> {
+//                        AdItemComposable()
+                    }
+
+                    null -> {
+                        // Optional: a placeholder or loading shimmer
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .background(Color.LightGray)
+                        )
+
+                    }
+                }
+
+            }
+            // Pagination loading indicator
+            item {
+                if (pagedUiItem.loadState.append.endOfPaginationReached.not() && pagedUiItem.itemCount > 0) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+        }
+    }
+}
+//@Composable
+//fun PostListWithAds(
+//    posts: LazyPagingItems<Post>,
+//    onPostClick: (Post) -> Unit,
+//    modifier: Modifier = Modifier,
+//    scrollState: LazyListState
+//) {
+//    LazyColumn(
+//        state = scrollState,
+//        modifier = modifier.fillMaxSize(),
+//        contentPadding = PaddingValues(vertical = 8.dp),
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        // Convert paging items to a list with ads inserted
+//        val itemsWithAds = remember(posts.itemSnapshotList) {
+//            buildList {
+//                var postCount = 0
+//                posts.itemSnapshotList.forEach { post ->
+//                    // Insert ad after every 4 posts
+//                    if (postCount > 0 && postCount % 4 == 0) {
+//                        add(ListItem.AdItem("ad_${postCount}"))
+//                    }
+//                    add(ListItem.PostItem(post, postCount))
+//                    postCount++
+//                }
+//            }
+//        }
+//
+//        items(
+//            items = itemsWithAds,
+//            key = { item ->
+//                when (item) {
+//                    is ListItem.AdItem -> item.key
+//                    is ListItem.PostItem -> item.post?.id ?: "post_${item.index}"
+//                }
+//            }
+//        ) { item ->
+//            when (item) {
+//                is ListItem.AdItem -> AdItemComposable()
+//                is ListItem.PostItem -> {
+//                    if (item.post != null) {
+//                        if (item.index == 0) {
+//                            FeaturedPost(item.post) { onPostClick(item.post) }
+//                        } else {
+//                            NormalPost(item.post) { onPostClick(item.post) }
+//                        }
+//                    } else {
+//                        PostPlaceholder()
+//                    }
+//                }
+//            }
+//        }
+//
+//    /* pagination spinner */
+//        item {
+//            if (posts.loadState.append.endOfPaginationReached.not() && posts.itemCount > 0) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    horizontalArrangement = Arrangement.Center
+//                ) {
+//                    CircularProgressIndicator()
+//                }
+//            }
+//        }
+//    }
+//}
+
+// Sealed class for different item types
+sealed class ListItem {
+    data class AdItem(val key: String) : ListItem()
+    data class PostItem(val post: Post?, val index: Int) : ListItem()
+}
+
+@Composable
+private fun LoadingIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        items(count = posts.itemCount, key = { idx -> posts[idx]?.id ?: "" }) { index ->
-            val post = posts[index]
-            if (post != null) {
-                if (index == 0) {
-                    FeaturedPost(post, onClick = { onPostClick(post) })
-                } else {
-                    NormalPost(post, onClick = { onPostClick(post) })
-                }
-            }
-        }
-        // Pagination loading indicator
-        item {
-            if (posts.loadState.append.endOfPaginationReached.not() && posts.itemCount > 0) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    androidx.compose.material3.CircularProgressIndicator()
-                }
-            }
-        }
+        CircularProgressIndicator()
+    }
+}
+
+// Placeholder composable for loading states
+@Composable
+fun PostPlaceholder() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(Color.LightGray.copy(alpha = 0.3f)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(modifier = Modifier.size(24.dp))
     }
 }
 
@@ -144,6 +294,27 @@ fun PostListStatic(
             } else {
                 NormalPost(post, onClick = { onPostClick(post) })
             }
+        }
+    }
+}
+
+@Composable
+fun AdItemComposable(modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            // Your ad implementation here
+            NativeScreen(
+                modifier = Modifier.fillMaxWidth(),
+//                nativeAdUnitID = "ca-app-pub-7395572779611582/5930969860"
+            )
         }
     }
 }
@@ -206,7 +377,7 @@ fun FeaturedPost(post: Post, onClick: () -> Unit) {
 fun NormalPost(post: Post, onClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor =Color.White
+            containerColor = Color.White
         ),
         modifier = Modifier
             .fillMaxWidth()

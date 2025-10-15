@@ -1,19 +1,22 @@
 package com.rawderm.taaza.today.bloger.ui.home.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.material.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.More
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -25,21 +28,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rawderm.taaza.today.R
-import com.rawderm.taaza.today.bloger.ui.home.BottomTab
-
-import com.rawderm.taaza.today.core.ui.theme.LightOrange
-import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -48,6 +47,19 @@ import kotlinx.coroutines.launch
 private fun BottomTabRowPreview() {
     val pagerState = androidx.compose.foundation.pager.rememberPagerState { 3 }
     BottomTabRow(pagerState = pagerState, scope = rememberCoroutineScope())
+}
+enum class BottomTab(
+    @param:StringRes val labelRes: Int,
+    val icon: ImageVector
+) {
+    HOME(R.string.home, Icons.Default.Home),
+    TRENDING(R.string.trending, Icons.AutoMirrored.Filled.TrendingUp),
+
+    // ----- middle gap -----
+    SHORTS(R.string.empty, Icons.Default.Add),
+
+    FAVORITES(R.string.favorites, Icons.Default.Favorite),
+    MORE(R.string.more, Icons.AutoMirrored.Filled.More)
 }
 
 @Composable

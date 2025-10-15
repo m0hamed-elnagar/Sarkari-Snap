@@ -34,7 +34,7 @@ fun AnimatedChipBar(
     iconPainter: Painter = painterResource(R.drawable.search_list_svgrepo_com),
     chipsListState: LazyListState
 ) {
-    val reordered = listOf(selectedLabel) + labels.filterNot { it == selectedLabel }
+//    val reordered = listOf(selectedLabel) + labels.filterNot { it == selectedLabel }
 
     LazyRow(
         state = chipsListState,
@@ -43,16 +43,16 @@ fun AnimatedChipBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         items(
-            items = reordered,
+            items = labels,
             key = { it }                       // stable key for individual animation
         ) { label ->
             val selected = label == selectedLabel
-            AnimatedVisibility(
-                visible = true,                // we only animate placement
-                enter = slideInHorizontally() + fadeIn(),
-                exit = slideOutHorizontally() + fadeOut(),
-                modifier = Modifier.animateItem(),
-            ) {
+//            AnimatedVisibility(
+//                visible = true,                // we only animate placement
+//                enter = slideInHorizontally() + fadeIn(),
+//                exit = slideOutHorizontally() + fadeOut(),
+//                modifier = Modifier.animateItem(),
+//            ) {
                 AssistChip(
                     onClick = { onLabelSelected(label) },
                     label = { Text(label) },
@@ -66,5 +66,5 @@ fun AnimatedChipBar(
                 )
             }
         }
-    }
+//    }
 }

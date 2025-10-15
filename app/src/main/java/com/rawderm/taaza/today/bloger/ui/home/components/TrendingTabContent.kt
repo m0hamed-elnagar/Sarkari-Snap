@@ -23,6 +23,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.bloger.ui.components.BannerAd
 import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeUiState
@@ -77,7 +78,7 @@ private fun TrendingTabContent(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState()), // only here
+                            .verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -88,14 +89,14 @@ private fun TrendingTabContent(
                     posts = pagedPosts,
                     onPostClick = { onAction(HomeActions.OnPostClick(it)) },
                     modifier = Modifier.fillMaxSize(),
-                    scrollState = listState
+                    scrollState = listState,
                 )
 
                 pagedPosts.loadState.refresh is LoadState.Error ->
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState()), // only here
+                            .verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -116,5 +117,9 @@ private fun TrendingTabContent(
                 }
             }
         }
+
+        // Banner at the bottom
+        BannerAd(
+        )
     }
 }

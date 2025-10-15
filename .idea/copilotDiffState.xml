@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/sarkarisnap/bloger/ui/home/HomeUiState.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/example/sarkarisnap/bloger/ui/home/HomeUiState.kt" />
+              <option name="originalContent" value="package com.example.sarkarisnap.bloger.ui.home&#10;&#10;import com.example.sarkarisnap.bloger.domain.Post&#10;import com.plcoding.bookpedia.core.presentation.UiText&#10;&#10;data class HomeUiState(&#10;    val labels: List&lt;String&gt; = emptyList(),&#10;    val selectedLabel: String = &quot;All&quot;,&#10;    val favoritePosts: List&lt;Post&gt; = emptyList(),&#10;    val isLoading: Boolean = false,&#10;    val isRefreshing: Boolean = false,&#10;    val selectedTabIndex: Int = 0,&#10;    val errorMessage: UiText? = null&#10;)" />
+              <option name="updatedContent" value="package com.example.sarkarisnap.bloger.ui.home&#10;&#10;import com.example.sarkarisnap.bloger.domain.Post&#10;import com.plcoding.bookpedia.core.presentation.UiText&#10;&#10;data class HomeUiState(&#10;    val labels: List&lt;String&gt; = emptyList(),&#10;    val selectedLabel: String = &quot;All&quot;,&#10;    val favoritePosts: List&lt;Post&gt; = emptyList(),&#10;    val isLoading: Boolean = false,&#10;    val isRefreshing: Boolean = false,&#10;    val selectedTabIndex: Int = 0,&#10;    val errorMessage: UiText? = null&#10;)" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

@@ -7,6 +7,7 @@ import android.util.Log
 import android.webkit.WebView
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
 
@@ -60,9 +62,11 @@ class BloggerApplication : Application() {
         /* 4. optional – delete the old conflicting file once */
         deleteSharedPreferences("lingver")
 
-        /* WebView hack */
+        /* WebView hack  for localisation*/
         try { WebView(this).destroy() } catch (_: Throwable) {}
         Lingver.getInstance().setLocale(this, language)
+
+
     }
     private fun setupAnalytics() {
         val analytics = Firebase.analytics

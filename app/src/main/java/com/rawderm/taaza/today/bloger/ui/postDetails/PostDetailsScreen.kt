@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -49,7 +48,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -66,11 +64,11 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.FavoriteToggleIcon
 import com.rawderm.taaza.today.bloger.ui.components.PostList
+import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.NoPostState
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab
 import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareTarget
-import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.rawderm.taaza.today.core.utils.ShareUtils.messenger
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import com.rawderm.taaza.today.core.utils.ShareUtils.telegram
@@ -356,7 +354,6 @@ private fun LazyItemScope.PostDetailContent(
             }
         }
     }
-
     key("html_${post.id}") {
         PermanentHtmlContent2(
             html = post.content,
@@ -369,6 +366,7 @@ private fun LazyItemScope.PostDetailContent(
 
         )
     }
+    NativeScreen()
 }
 
 @Composable
@@ -402,7 +400,7 @@ private fun SectionWithPaging(
                     posts = pagingItems,
                     onPostClick = onPostClick,
                     modifier = Modifier.fillMaxSize(),
-                    scrollState = rememberLazyListState()
+                    scrollState = rememberLazyListState(),
                 )
 
                 pagingItems.loadState.refresh is androidx.paging.LoadState.Error -> Text(

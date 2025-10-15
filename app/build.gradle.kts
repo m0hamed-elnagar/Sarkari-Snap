@@ -56,8 +56,7 @@ android {
             isCrunchPngs = false
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
         }
@@ -186,4 +185,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     //lang
     implementation(libs.lingver)
+    // ads
+    implementation("com.google.android.gms:play-services-ads:24.7.0")
 }
