@@ -1,20 +1,27 @@
 package com.rawderm.taaza.today.bloger.ui.components.ads
 
+import android.widget.ImageView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -33,118 +40,72 @@ import com.rawderm.taaza.today.bloger.ui.components.ads.compose_util.NativeAdSto
 import com.rawderm.taaza.today.bloger.ui.components.ads.compose_util.NativeAdView
 
 @Composable
-        /** Display a native ad with a user defined template. */
 fun DisplayNativeAdView(nativeAd: NativeAd) {
-
     NativeAdView(nativeAd) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth() // width only
-                .height(320.dp)
-                .padding(8.dp)
-        ) {
-            // Ad attribution
-            NativeAdAttribution(text = "Ad")
+        Box(Modifier.fillMaxSize()) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
+            /* 1. full-screen media (background) */
+            NativeAdMediaView(Modifier.fillMaxSize())
+
+            /* 2. foreground content */
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Icon
-                nativeAd.icon?.let { icon ->
-                    NativeAdIconView(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .padding(end = 8.dp)
-                    ) {
-                        icon.drawable?.toBitmap()?.let { bitmap ->
+
+                /* top block */
+                Column(Modifier.weight(1f, fill = false)) {
+
+                    /* 2a. icon */
+                    nativeAd.icon?.let { ic ->
+                        NativeAdIconView(Modifier.size(48.dp)) {
                             Image(
-                                bitmap = bitmap.asImageBitmap(),
-                                contentDescription = "Ad icon",
+                                bitmap = ic.drawable!!.toBitmap().asImageBitmap(),
+                                contentDescription = null,
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
+                        Spacer(Modifier.height(8.dp))
                     }
-                }
 
-                Column(modifier = Modifier.weight(1f)) {
-                    // Headline
-                    nativeAd.headline?.let { headline ->
+                    /* 2b. headline */
+                    nativeAd.headline?.let {
                         NativeAdHeadlineView {
-                            Text(
-                                text = headline,
-                                style = MaterialTheme.typography.titleSmall,
-                                maxLines = 2
-                            )
+                            Text(text = it, style = MaterialTheme.typography.headlineSmall)
                         }
                     }
 
-                    // Star rating
-                    nativeAd.starRating?.let { rating ->
-                        NativeAdStarRatingView {
-                            Text(
-                                text = "★ $rating",
-                                style = MaterialTheme.typography.labelSmall
-                            )
+                    /* 2c. body */
+                    nativeAd.body?.let {
+                        Spacer(Modifier.height(4.dp))
+                        NativeAdBodyView {
+                            Text(text = it, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
-            }
 
-            // Body
-            nativeAd.body?.let { body ->
-                NativeAdBodyView(
-                    modifier = Modifier.padding(vertical = 8.dp)
+                /* bottom block (price / store / CTA) */
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = body,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 3
-                    )
-                }
-            }
-
-            // Media view with fixed height
-            NativeAdMediaView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .width(150.dp)
-                    .padding(vertical = 8.dp)
-            )
-
-            // Bottom row with price, store, and CTA
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Price
-                    nativeAd.price?.let { price ->
-                        NativeAdPriceView(
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text(text = price)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        nativeAd.price?.let { p ->
+                            NativeAdPriceView { Text(p) }
+                            Spacer(Modifier.width(4.dp))
+                        }
+                        nativeAd.store?.let { s ->
+                            NativeAdStoreView { Text(s) }
                         }
                     }
-                }
-                // If available, display the store asset.
-                nativeAd.store?.let {
-                    NativeAdStoreView(Modifier
-                        .padding(5.dp)
-                        .align(Alignment.CenterVertically)) {
-                        Text(text = it)
-                    }
-                }
-                // If available, display the call to action asset.
-                // Note: The Jetpack Compose button implements a click handler which overrides the native
-                // ad click handler, causing issues. Use the NativeAdButton which does not implement a
-                // click handler. To handle native ad clicks, use the NativeAd AdListener onAdClicked
-                // callback.
-                nativeAd.callToAction?.let { callToAction ->
-                    NativeAdCallToActionView {
-                        NativeAdButton(text = callToAction)
+
+                    nativeAd.callToAction?.let { cta ->
+                        NativeAdCallToActionView {
+                            NativeAdButton(cta)
+                        }
                     }
                 }
             }

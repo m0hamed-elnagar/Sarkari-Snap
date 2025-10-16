@@ -6,7 +6,10 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MediaAspectRatio
+import com.google.android.gms.ads.VideoOptions
 import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
 
 fun loadNativeAd(
     context: Context,
@@ -15,8 +18,15 @@ fun loadNativeAd(
     onAdFailed: () -> Unit = {}
 ) {
     val TAG = "NativeAd"
-
-    val adLoader = AdLoader.Builder(context, nativeAdUnitID)
+    val videoOptions = VideoOptions.Builder()
+        .setStartMuted(true)            // mute by default
+        .build()
+    val nativeAdOptions =
+        NativeAdOptions.Builder()
+            .setVideoOptions(videoOptions)  // allow video
+            .setMediaAspectRatio(MediaAspectRatio.PORTRAIT)
+            .build()
+    val adLoader = AdLoader.Builder(context, nativeAdUnitID).withNativeAdOptions(nativeAdOptions)
         .forNativeAd { nativeAd ->
             onAdLoaded(nativeAd)
         }
@@ -39,7 +49,8 @@ fun loadNativeAd(
                     Log.d(TAG, "Native ad was clicked.")
                 }
             }
-        )
+        )        .withNativeAdOptions(nativeAdOptions)   // <── important
+
         .build()
     adLoader.loadAd(AdRequest.Builder().build())
 }

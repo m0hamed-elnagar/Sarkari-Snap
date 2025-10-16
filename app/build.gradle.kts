@@ -169,9 +169,11 @@ dependencies {
     implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
     implementation("androidx.compose.material:material:1.6.8")
     // build.gradle (:app)  or (:feature)
+    // paging
     implementation("androidx.paging:paging-compose:3.3.6")
-// latest stable
     implementation("androidx.paging:paging-runtime-ktx:3.3.6")
+    implementation("androidx.paging:paging-common-ktx:3.3.6")
+
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.material.icons.extended)
     implementation("com.izettle:html2bitmap:1.10")

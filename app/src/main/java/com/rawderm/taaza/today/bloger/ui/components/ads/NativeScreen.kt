@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.bloger.ui.components.ads
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +28,9 @@ import com.google.android.gms.ads.nativead.NativeAd
 @Composable
 fun NativeScreen(
     modifier: Modifier = Modifier,
-    nativeAdUnitID: String = "ca-app-pub-3940256099942544/2247696110"
+    nativeAdUnitID: String = "ca-app-pub-7395572779611582/5930969860",
+    testNativeAdUnitID: String = "ca-app-pub-3940256099942544/2247696110",
+    onAdResult: (loaded: Boolean) -> Unit = {}
 ) {
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -52,13 +55,14 @@ fun NativeScreen(
                     // Destroy the native ad if loaded after the screen is disposed.
                     ad.destroy()
                 }
+                onAdResult(true)
             },
             onAdFailed = {
                 if (!isDisposed) {
                     isLoading = false
                     hasError = true
                     Log.e("NATIVE_AD", "Failed to load native ad in NativeScreen")
-                }
+                    onAdResult(false)          }
             }
         )
         // Destroy the native ad to prevent memory leaks when we dispose of this screen.
@@ -71,10 +75,10 @@ fun NativeScreen(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .height(320.dp) // Fixed height to ensure space is reserved
+            .fillMaxSize()
+//            .height(320.dp) // Fixed height to ensure space is reserved
             .background(Color.White)
-            .padding(8.dp)
+//            .padding(8.dp)
     ) {
         when {
             isLoading -> {
@@ -98,13 +102,12 @@ fun NativeScreen(
                 // Error state
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(320.dp)          // <-- finite height
-                        .background(Color.White)
-                        .padding(8.dp),
+                        .fillMaxSize()
+                        .background(Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center) {
                         Text(
                             "Ad not available",
                             modifier = Modifier.padding(top = 8.dp),

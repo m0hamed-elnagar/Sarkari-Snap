@@ -48,16 +48,15 @@ import coil3.compose.rememberAsyncImagePainter
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
-import com.rawderm.taaza.today.bloger.ui.home.UiModel
+import com.rawderm.taaza.today.bloger.ui.home.PostUiItem
 
 @Composable
 fun PostList(
     posts: LazyPagingItems<Post>,
-
     onPostClick: (Post) -> Unit,
     modifier: Modifier = Modifier,
     scrollState: LazyListState,
-    pagedUiItem: LazyPagingItems<UiModel>? = null,
+    pagedUiItem: LazyPagingItems<PostUiItem>? = null,
 ) {
     val noOpConnection = remember {
         object : NestedScrollConnection {
@@ -89,38 +88,34 @@ fun PostList(
         ) {
             items(
                 count = pagedUiItem.itemCount,
-                key = { index ->
-                    val item = pagedUiItem[index]
-                    when (item) {
-                        is UiModel.PostItem -> item.post.id
-                        is UiModel.BannerItem -> "banner_${index}".also { Log.e("khalid", it) }
-                        else -> "unknown_$index"
+                key = { idx ->
+                    when (val item = pagedUiItem[idx]) {
+                        is PostUiItem -> if (item.isAd) "ad_$idx" else item.post?.id ?: "null_$idx"
+                        else -> "unknown_$idx"
                     }
                 }
             ) { index ->
                 val uiItem = pagedUiItem[index]
-                if(index!=0&&index%6==0) {
-                    AdItemComposable()
-                }
-                when (uiItem) {
-                    is UiModel.PostItem -> {
-                        val post = uiItem.post
-                        if (index == 0) {
-                            // ✅ Special layout for the first item
-                            FeaturedPost(
-                                post = post,
-                                onClick = { onPostClick(post) }
-                            )
-                        } else {
-                            NormalPost(
-                                post = post,
-                                onClick = { onPostClick(post) }
-                            )
-                        }
-                    }
 
-                    is UiModel.BannerItem -> {
-//                        AdItemComposable()
+                when (uiItem) {
+                    is PostUiItem-> {
+                        if (uiItem.isAd) {
+                            TestBanner2()
+                        } else {
+                           uiItem.post?.let { post ->
+                            if (index == 0) {
+                                // ✅ Special layout for the first item
+                                FeaturedPost(
+                                    post = post,
+                                    onClick = { onPostClick(post) }
+                                )
+                            } else {
+                                NormalPost(
+                                    post = post,
+                                    onClick = { onPostClick(post) }
+                                )
+                            }}
+                        }
                     }
 
                     null -> {
@@ -129,7 +124,7 @@ fun PostList(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(100.dp)
-                                .background(Color.LightGray)
+                                .background(Color.Black)
                         )
 
                     }
@@ -304,18 +299,11 @@ fun AdItemComposable(modifier: Modifier = Modifier) {
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            // Your ad implementation here
-            NativeScreen(
-                modifier = Modifier.fillMaxWidth(),
+
+        BannerAd(
+            modifier = Modifier.fillMaxWidth(),
 //                nativeAdUnitID = "ca-app-pub-7395572779611582/5930969860"
-            )
-        }
+        )
     }
 }
 

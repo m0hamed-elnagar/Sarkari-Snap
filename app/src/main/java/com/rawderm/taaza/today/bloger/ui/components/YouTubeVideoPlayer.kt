@@ -112,6 +112,12 @@ fun YouTubeShortsPlayer(
                     }
                 }
             })
+        }else{
+            playerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+                override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                    youTubePlayer.pause()
+                }
+            })
         }
     }
 

@@ -19,6 +19,7 @@ package com.rawderm.taaza.today.bloger.ui.components.ads.compose_util
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -235,6 +236,7 @@ fun NativeAdMediaView(modifier: Modifier = Modifier, scaleType: ImageView.ScaleT
   AndroidView(
     factory = { MediaView(localContext) },
     update = { view ->
+
       nativeAdView.mediaView = view
       scaleType?.let { type -> view.setImageScaleType(type) }
     },
