@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.core.edit
@@ -27,14 +28,16 @@ class LanguageDataStore(private val context: Context) {
 
     companion object {
         val LANGUAGE_KEY = stringPreferencesKey("selected_language")
+        val FIRST_LAUNCH_KEY  = booleanPreferencesKey("is_first_launch")   // NEW
+
     }
 
-    // Expose language as Flow - this will emit updates!
-    val languageFlow: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            preferences[LANGUAGE_KEY] ?: "hi" // Default to Hindi
-        }
+    suspend fun isFirstLaunch(): Boolean =
+        context.dataStore.data.map { it[FIRST_LAUNCH_KEY] ?: true }.first()
 
+    suspend fun markFirstLaunchDone() {
+        context.dataStore.edit { it[FIRST_LAUNCH_KEY] = false }
+    }
     suspend fun saveLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
