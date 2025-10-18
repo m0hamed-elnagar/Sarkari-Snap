@@ -1,83 +1,42 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
-import android.util.Log
-import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Tab
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.More
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.rawderm.taaza.today.bloger.ui.components.PostListStatic
+import com.rawderm.taaza.today.bloger.ui.components.TopBar
+import com.rawderm.taaza.today.bloger.ui.home.components.BottomTab
 import com.rawderm.taaza.today.bloger.ui.home.components.BottomTabRow
 import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
-import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteVideosScreen
-import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions
+import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteTabContent
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
-import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+
 val tabs = BottomTab.entries
 
 @Composable
@@ -88,10 +47,11 @@ fun HomeScreenRoot(
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
+    val pagedUiItem = viewModel.pagedUiModels.collectAsLazyPagingItems()
     val trendingPosts = viewModel.trendingPosts.collectAsLazyPagingItems()
     val pages = viewModel.pages.collectAsLazyPagingItems()
     val languageManager: LanguageManager = koinInject()
-    val pagerState = rememberPagerState { tabs.size  } // ← dynamic count
+    val pagerState = rememberPagerState { tabs.size } // ← dynamic count
     val scope = rememberCoroutineScope()
 
     HomeScreen(
@@ -102,23 +62,22 @@ fun HomeScreenRoot(
         languageManager,
         pagerState,
         scope,
+        pagedUiItem = pagedUiItem,
         onAction = { action ->
             when (action) {
                 is HomeActions.OnPostClick -> onPostClick(action.post)
                 is HomeActions.OnPageClick -> onPagesClick(action.page)
-                is HomeActions.OnTabSelected -> {  ->
+                is HomeActions.OnTabSelected -> { ->
                     if (state.selectedTabIndex != action.index) {
                         scope.launch {
                             pagerState.animateScrollToPage(action.index)
                         }
                     }
-
                 }
                 else -> Unit
             }
             viewModel.onAction(action)
-        }
-    )
+        })
 }
 
 
@@ -132,7 +91,8 @@ fun HomeScreen(
     languageManager: LanguageManager,
     pagerState: PagerState,
     scope: CoroutineScope,
-    onAction: (HomeActions) -> Unit
+    onAction: (HomeActions) -> Unit,
+    pagedUiItem: LazyPagingItems<PostUiItem>
 ) {
 
     val chipListState = remember { LazyListState() }
@@ -145,8 +105,6 @@ fun HomeScreen(
         if (state.selectedTabIndex != pagerState.settledPage) {
             onAction(HomeActions.OnTabSelected(pagerState.settledPage))
         }
-
-
     }
     LaunchedEffect(state.selectedTabIndex) {
         if (state.selectedTabIndex != pagerState.currentPage) {
@@ -154,263 +112,55 @@ fun HomeScreen(
         }
 
     }
-    val context = LocalContext.current
-    val locale = remember { Lingver.getInstance().getLocale().language }
+
     Scaffold(
 
         topBar = {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(White)
-            ) {
-                TopAppBar(
-                    navigationIcon = {
-                        Image(
-                            painter = painterResource(id = R.drawable.icon2), // or R.drawable.ic_logo
-                            contentDescription = "App logo",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .height(80.dp)
-                                .aspectRatio(16f / 9f)  // landscape box
-                                .padding(start = (0).dp)
-
-                        )
-                    },
-
-                    title = {
-                    },
-                    actions = {
-                        // Language switcher dropdown
-                        var expanded by remember { mutableStateOf(false) }
-                        Box {
-                            // Current language display
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .clickable { expanded = true }
-                                    .padding(horizontal = 8.dp)
-                            ) {
-                                Text(
-                                    text = if (locale == "en") "EN" else "HI",
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier.padding(end = 4.dp)
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "Change Language",
-                                    tint = Color.Black
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Text("English")
-                                            if (locale == "en") {
-                                                Icon(
-                                                    imageVector = Icons.Default.Check,
-                                                    contentDescription = "Selected"
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        if (locale == "en") {
-                                            expanded = false
-                                            return@DropdownMenuItem
-                                        }
-                                        onAction(HomeActions.OnLoading)
-                                        Log.d("LANG", "changeLanguage() invoked: en")
-                                        languageManager.setLanguageAndRestart("en", context)
-
-                                        expanded = false
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Text("हिन्दी")
-                                            if (locale == "hi") {
-                                                Icon(
-                                                    imageVector = Icons.Default.Check,
-                                                    contentDescription = "Selected"
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        if (locale == "hi") {
-                                            expanded = false
-                                            return@DropdownMenuItem
-                                        }
-
-
-                                        // Restart the app to ensure language change is applied everywhere
-                                        Log.d("LANG", "changeLanguage() invoked: hi")
-                                        languageManager.setLanguageAndRestart("hi", context)
-
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = White),
-
-                    )
+            AnimatedVisibility(visible = pagerState.currentPage != BottomTab.SHORTS.ordinal) {
+                TopBar(languageManager, onAction)
             }
-        },
-        bottomBar = {
+        }, bottomBar = {
             BottomTabRow(
                 modifier = Modifier,
                 pagerState = pagerState,
                 scope = scope,
                 tabs = tabs,
 
-            )
-        }
-    ) { padding ->
-
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) { page ->
-
-            when (tabs[page]) {          // ← enum instead of int
-                BottomTab.HOME -> HomeTabWithPullRefresh(
-                    state,
-                    pagedPosts,
-                    onAction,
-                    chipListState,
-                    currentListState
                 )
+        }) { padding ->
+        Column(Modifier.fillMaxSize()) {
+            HorizontalPager(
+                state = pagerState, modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .padding(padding)
+            ) { page ->
 
-                BottomTab.TRENDING -> TrendingTabContentPullRefresh(
-                    state,
-                    trendingPosts,
-                    pages,
-                    onAction
-                )
-BottomTab.SHORTS ->{
+                when (tabs[page]) {          // ← enum instead of int
+                    BottomTab.HOME -> HomeTabWithPullRefresh(
+                        state,
+                        pagedPosts,
+                        onAction,
+                        chipListState,
+                        currentListState,
+                        pagedUiItem = pagedUiItem
+                    )
 
+                    BottomTab.TRENDING -> TrendingTabContentPullRefresh(
+                        state, trendingPosts, pages, onAction
+                    )
 
-    ShortsScreenRoot(
-        viewModel = shortsViewModel,
-    )
-}
-                BottomTab.FAVORITES -> FavoriteTabContent(state,onAction, pagerState, shortsViewModel)
-                BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
-                else -> {}
-            }
-        }
-
-
-    }
-}
-
-
-@Composable
-private fun FavoriteTabContent(
-    state: HomeUiState,
-    onAction: (HomeActions) -> Unit,
-    homePagerState: PagerState,
-    shortsVM: ShortsViewModel = koinViewModel()
-) {
-    val pagerState = rememberPagerState(pageCount = { 2 })
-    val scope = rememberCoroutineScope()
-
-    Column(modifier = Modifier.fillMaxSize()
-     .background(White)
-     ) {
-        TabRow(
-            selectedTabIndex = pagerState.currentPage,
-            modifier = Modifier.fillMaxWidth(),
-            containerColor = White,
-            contentColor = Black
-        ) {
-            Tab(
-                selected = pagerState.currentPage == 0,
-                onClick = { scope.launch { pagerState.animateScrollToPage(0)} },
-                text = { Text("Articles") }
-            )
-            Tab(
-                selected = pagerState.currentPage == 1,
-                onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                text = { Text("Videos") }
-            )
-        }
-
-        // Pager Content
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize(),
-            userScrollEnabled = false             // ← disables swipe
-        ) { page ->
-            when (page) {
-                1 -> FavoriteVideosScreen(
-                    shorts = state.favoriteShorts,
-                    onVideoClick = {date->
-                     scope.launch {
-                         onAction(HomeActions.OnTabSelected(2))
-                     }
-                        shortsVM.onAction(ShortsActions.OnGetShortsByDate(date))                    }
-                )
-
-                0 -> {
-                    val listState = rememberLazyListState()
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                     .background(White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        when {
-                            state.favoritePosts.isEmpty() -> Text(
-                                text = stringResource(R.string.no_favorites_yet),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-
-                            else -> PostListStatic(
-                                posts = state.favoritePosts,
-                                onPostClick = { post ->
-                                    onAction(HomeActions.OnPostClick(post))
-                                },
-                                modifier = Modifier.fillMaxSize(),
-                                scrollState = listState
-                            )
-                        }
+                    BottomTab.SHORTS -> {
+                        ShortsScreenRoot(viewModel = shortsViewModel)
                     }
+
+                    BottomTab.FAVORITES -> FavoriteTabContent(
+                        state, onAction, pagerState, shortsViewModel
+                    )
+
+                    BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
                 }
             }
         }
     }
-}
-enum class BottomTab(
-    @param:StringRes val labelRes: Int,
-    val icon: ImageVector
-) {
-    HOME(R.string.home, Icons.Default.Home),
-    TRENDING(R.string.trending, Icons.AutoMirrored.Filled.TrendingUp),
-
-    // ----- middle gap -----
-    SHORTS(R.string.empty, Icons.Default.Add),
-
-    FAVORITES(R.string.favorites, Icons.Default.Favorite),
-    MORE(R.string.more, Icons.AutoMirrored.Filled.More)
 }

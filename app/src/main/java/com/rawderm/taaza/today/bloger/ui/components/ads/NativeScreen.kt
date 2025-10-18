@@ -51,18 +51,19 @@ fun NativeScreen(
                     nativeAd = ad
                     isLoading = false
                     Log.d("NATIVE_AD", "Ad loaded successfully in NativeScreen")
+                    onAdResult(true)
                 } else {
                     // Destroy the native ad if loaded after the screen is disposed.
                     ad.destroy()
                 }
-                onAdResult(true)
             },
             onAdFailed = {
                 if (!isDisposed) {
                     isLoading = false
                     hasError = true
                     Log.e("NATIVE_AD", "Failed to load native ad in NativeScreen")
-                    onAdResult(false)          }
+                    onAdResult(false)
+                }
             }
         )
         // Destroy the native ad to prevent memory leaks when we dispose of this screen.

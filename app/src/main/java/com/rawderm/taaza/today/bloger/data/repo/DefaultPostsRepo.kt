@@ -26,8 +26,10 @@ import com.rawderm.taaza.today.core.domain.DataError
 import com.rawderm.taaza.today.core.domain.EmptyResult
 import com.rawderm.taaza.today.core.domain.Result
 import com.rawderm.taaza.today.core.domain.map
+import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 
 class DefaultPostsRepo(
     private val remotePostDataSource: RemotePostDataSource,
@@ -38,11 +40,62 @@ class DefaultPostsRepo(
 
     override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
         return remotePostDataSource.getUniqueLabels().map { dto ->
-            val excludedLabels = setOf("shorts", "video", "test 1", "test")
-            listOf("All") + dto.items
+            val excludedLabels = setOf("shorts", "video", "test 1", "test","trending")
+// 3. Get current locale from Lingver
+            val currentLocale = Lingver.getInstance().getLocale()
+            val isHindi = currentLocale.language.equals("hi", ignoreCase = true)
+ val englishOrder = listOf(
+            "politics",
+            "crime",
+            "entertainment",
+            "sports",
+            "business",
+            "tech",
+            "science",
+            "automobile",
+            "education",
+            "job news",
+            "yojana"
+        )
+        val hindiOrder = listOf(
+            "राजनीति",
+            "अपराध",
+            "मनोरंजन",
+            "खेल",
+            "व्यापार",
+            "टेक्नोलॉजी",
+            "विज्ञान",
+            "ऑटोमोबाइल",
+            "शिक्षा",
+            "रोजगार समाचार",
+            "सरकारी योजनाएं"
+        )
+            val canonicalOrder = if (isHindi) hindiOrder else englishOrder
+            val allLabel = if (isHindi) "सभी" else "All"
+            val orderLookup = canonicalOrder
+                .mapIndexed { index, label -> label.lowercase(Locale.getDefault()) to index }
+                .toMap()
+
+            val remoteLabels = dto.items
                 .flatMap { it.labels }
-                .filter { it.lowercase() !in excludedLabels }
-                .distinct().distinct()
+                .map { it.trim().lowercase(Locale.getDefault()) }
+                .filter { it.isNotEmpty() && it !in excludedLabels }
+                .distinct()
+
+            val sortedLabels = remoteLabels.sortedWith(
+                compareBy({ orderLookup[it] ?: Int.MAX_VALUE }, { it })
+            )
+
+            // 8. Prepend “All” / “सभी”
+            (     listOf(allLabel) + sortedLabels)
+                .map { it.replaceFirstChar(Char::uppercase) }
+
+//            listOf("All") + dto.items
+//                .flatMap { it.labels }
+//                .filter { it.lowercase() !in excludedLabels }
+//                .distinct()
+//                .map { it.replaceFirstChar(Char::uppercase) }   // capitalise
+
         }
     }
 

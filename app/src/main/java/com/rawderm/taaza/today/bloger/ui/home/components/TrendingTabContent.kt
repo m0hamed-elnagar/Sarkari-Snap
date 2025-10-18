@@ -24,6 +24,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
+import com.rawderm.taaza.today.bloger.ui.components.CardStyle
 import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeUiState
@@ -90,6 +91,7 @@ private fun TrendingTabContent(
                     onPostClick = { onAction(HomeActions.OnPostClick(it)) },
                     modifier = Modifier.fillMaxSize(),
                     scrollState = listState,
+                    cardStyle = CardStyle.ALL_FEATURED
                 )
 
                 pagedPosts.loadState.refresh is LoadState.Error ->

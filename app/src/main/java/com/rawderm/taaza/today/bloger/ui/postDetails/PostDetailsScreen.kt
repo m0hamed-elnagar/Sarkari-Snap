@@ -239,6 +239,17 @@ fun PostDetailsScreen(
                             /* everything you already had: hero, title, date, chips, body */
                             PostDetailContent(post = post, onAction = onAction)
                         }
+//                        item {
+//                          SectionWithPaging(
+//                                title = "You may also like",
+//                                pagingItems = relatedPostsPaging,
+//                                maxHeight = 300.dp,
+//                                onPostClick = { related ->
+//                                    onAction(PostDetailsActions.OnRelatedPostClick(related))
+//                                }
+//                            )
+//                        }
+                    }
 //                itemsIndexed(
 //                    items = relatedPostsPaging.itemSnapshotList.items.filterNotNull(),
 //                    key = { index, post -> "related_${post.id}_$index" } // Add prefix and index for uniqueness
@@ -268,7 +279,7 @@ fun PostDetailsScreen(
                 }
             }
         }
-    }
+
 }
 
 @Composable
@@ -333,24 +344,8 @@ private fun LazyItemScope.PostDetailContent(
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = colorResource(R.color.splash_background),
                         labelColor = Color.White
-                    ),
-//                    leadingIcon = {
-//                        Icon(
-//                            painter = painterResource(R.drawable.search_list_svgrepo_com),
-//                            contentDescription = null,
-//                            modifier = Modifier.size(18.dp),
-//                            tint = Color.White
-//                        )
-//                    }
-                )
+                    ))
 
-//                PostChip(
-//                    size = ChipSize.SMALL,
-//                    onClick = { onAction(PostDetailsActions.OnLabelClick(label)) },
-//                    modifier = Modifier.padding(top = 4.dp, end = 2.dp, start = 2.dp)
-//                ) {
-//                    Text(label.uppercase(), style = MaterialTheme.typography.bodyMedium)
-//                }
             }
         }
     }

@@ -29,9 +29,11 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +43,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.filter
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.ui.components.BannerAd
 import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
+import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -54,28 +62,43 @@ fun ShortsScreenRoot(
     viewModel: ShortsViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
-    val shortsPaging = viewModel.uiShorts.collectAsLazyPagingItems()
-    val pagerState = rememberPagerState(initialPage = 0) { shortsPaging.itemCount }
-val targetDate = viewModel.beforeDate.collectAsState()
-    val generation by remember { derivedStateOf { shortsPaging.itemSnapshotList.hashCode() } }
-    LaunchedEffect(generation, targetDate.value) {
-        if (shortsPaging.itemCount > 0 ) {
-            /* find the exact page that matches the date */
-            val index = (0 until shortsPaging.itemCount)
-                .firstOrNull { shortsPaging[it]?.short?.rowDate == targetDate.value }
-                ?: 0   // fallback to first item if not found
-            pagerState.scrollToPage(index)
+    val rawFlow = viewModel.uiShorts          // Flow<PagingData<ShortUiItem>>
+    val failedAdIds = remember { mutableStateSetOf<String>() }
+
+    /* 1. filter the FLOW (not the LazyPagingItems) */
+    val filteredFlow = remember(rawFlow, failedAdIds) {
+        rawFlow.map { pagingData ->
+            pagingData.filter { item ->
+                if (item.isAd) {
+                    // Check if this ad has failed to load
+                    item.adId !in failedAdIds
+                } else {
+                    true
+                }
+            }
         }
     }
 
+    /* 2. collect the already-filtered flow */
+    val shortsPaging = filteredFlow.collectAsLazyPagingItems()
+    val pagerState = rememberPagerState(initialPage = 0) { shortsPaging.itemCount }
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collectLatest {
+            if (shortsPaging.itemCount > 0) {
+                pagerState.scrollToPage(0)
+                viewModel.onScrollToTopConsumed() // acknowledge → sticky reset
+            }
+        }
+    }
+
+
     ShortsScreen(
         shortsPaging = shortsPaging,
-        pagerState,
+        pagerState = pagerState,
+        failedAdIds = failedAdIds,        // pass the failed ad IDs set
         onAction = { action ->
             when (action) {
                 is ShortsActions.OnBackClick -> onBackClicked()
-
-
                 else -> viewModel.onAction(action)
             }
         }
@@ -87,6 +110,7 @@ val targetDate = viewModel.beforeDate.collectAsState()
 fun ShortsScreen(
     shortsPaging: LazyPagingItems<ShortUiItem>,
     pagerState: PagerState,
+    failedAdIds: MutableSet<String>, // Receive the failed ad IDs set
     onAction: (ShortsActions) -> Unit,
 ) {
 
@@ -107,7 +131,7 @@ fun ShortsScreen(
         if (shortsPaging.itemCount == 0) {
             showLoadingInsteadOfEmpty.value = true          // reset in case we come back to 0
             delay(5_000)                 // wait 5s
-            showLoadingInsteadOfEmpty.value = false         // now allow “No posts” to appear
+            showLoadingInsteadOfEmpty.value = false         // now allow "No posts" to appear
         }
     }
     /* 1. empty state */
@@ -140,11 +164,32 @@ fun ShortsScreen(
         flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
         key = { pageIndex ->
             val shortItem = shortsPaging.peek(pageIndex)
-            "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
+            when {
+                shortItem?.isAd == true -> "ad_${shortItem.adId ?: pageIndex}"
+                else                    -> "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
+            }
         }
+
     ) { pageIndex ->
         val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
-        val videoId = remember(shortItem) { shortItem.short.videoId }
+        if (shortItem.isAd) {
+            val adKey = shortItem.adId
+            NativeScreen(
+                onAdResult = { loaded ->
+                    // If ad failed to load, add its ID to the failed set
+//                    adKey?.let {
+//                        if (!loaded && adKey !in failedAdIds) {
+//                       failedAdIds +=adKey
+//                        shortsPaging.refresh()    // drop the row – no scroll, no loop
+//                    }
+//                    }
+
+                }
+            )
+            return@VerticalPager
+
+        }
+        val videoId = remember(shortItem) { shortItem.short?.videoId }
 
         ShortsVideoPage(
             shortItem = shortItem,
@@ -176,13 +221,7 @@ private fun ShortsVideoPage(
             .background(Color.Black)
     ) {
         Column(Modifier.fillMaxSize()) {
-            Spacer(
-                Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .background(Color.Black)
-            )
-
+            BannerAd()
             /* 1. decide what to draw */
             when {
                 videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
@@ -201,30 +240,22 @@ private fun ShortsVideoPage(
             }
 
 
-            /* Bottom black spacer - eats extra height */
-            Spacer(
-                Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .background(Color.Black)
-            )
         }
-        /* Text overlay at bottom */
-        Column(
-            Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
-        ) {
-            Text(
-                shortItem. short.title,
-                color = Color.White,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-//            shortItem.short.description.takeIf { it.isNotBlank() }?.let {
-//                Text(it, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, maxLines = 2)
+//        /* Text overlay at bottom */
+//        Column(
+//            Modifier
+//                .align(Alignment.BottomStart)
+//                .padding(16.dp)
+//        ) {
+//            shortItem.short?.title?.let {
+//                Text(
+//                    it,
+//                    color = Color.White,
+//                    fontSize = 18.sp,
+//                    modifier = Modifier.padding(bottom = 8.dp)
+//                )
 //            }
-        }
+//        }
 
         val suffixShare = stringResource(R.string.share_shorts_suffix)
         /* Action buttons on the right side */
@@ -237,8 +268,8 @@ private fun ShortsVideoPage(
             // Share button
             IconButton(
                 onClick = {
-                    val postUrl = "$appUrl/shorts/" + shortItem.short.rowDate
-                    val postTitle = shortItem.short.title + suffixShare
+                    val postUrl = "$appUrl/shorts/" + shortItem.short?.rowDate
+                    val postTitle = shortItem.short?.title + suffixShare
 
                     systemChooser(context, postTitle, postUrl)
                 },

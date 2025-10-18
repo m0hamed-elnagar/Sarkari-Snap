@@ -16,6 +16,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,14 +25,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.PostList
+import com.rawderm.taaza.today.bloger.ui.components.PostListWithAds
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeUiState
-import kotlinx.coroutines.launch
+import com.rawderm.taaza.today.bloger.ui.home.PostUiItem
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -40,13 +45,15 @@ fun HomeTabWithPullRefresh(
     pagedPosts: LazyPagingItems<Post>,
     onAction: (HomeActions) -> Unit,
     chipListState: LazyListState,
-    listState: LazyListState
+    listState: LazyListState,
+    pagedUiItem: LazyPagingItems<PostUiItem>
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
         onRefresh = {
             onAction(HomeActions.OnRefresh)
             pagedPosts.refresh()
+            pagedUiItem.refresh()
         }
     )
 
@@ -55,9 +62,7 @@ fun HomeTabWithPullRefresh(
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
-        HomeTabContent(
-            state, pagedPosts, onAction, listState, chipListState
-        )
+        HomeTabContent(state, pagedPosts, onAction, listState, chipListState, pagedUiItem)
         PullRefreshIndicator(
             refreshing = state.isRefreshing,
             state = pullRefreshState,
@@ -72,14 +77,15 @@ private fun HomeTabContent(
     pagedPosts: LazyPagingItems<Post>,
     onAction: (HomeActions) -> Unit,
     listState: LazyListState,
-    chipsListState: LazyListState
+    chipsListState: LazyListState,
+    pagedUiItem: LazyPagingItems<PostUiItem>
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val showLoadingInsteadOfEmpty = remember { mutableStateOf(true) }
     LaunchedEffect(pagedPosts.itemCount) {
         if (pagedPosts.itemCount == 0) {
             showLoadingInsteadOfEmpty.value = true          // reset in case we come back to 0
-            kotlinx.coroutines.delay(5_000)                 // wait 5s
+            delay(5_000)                 // wait 5s
             showLoadingInsteadOfEmpty.value = false         // now allow “No posts” to appear
         }
     }
@@ -89,10 +95,6 @@ private fun HomeTabContent(
             selectedLabel = state.selectedLabel,
             onLabelSelected = { label ->
                 Log.d("debug", "AnimatedChipBar: Label selected $label")
-                coroutineScope.launch {
-                    listState.animateScrollToItem(0)
-                    chipsListState.animateScrollToItem(0)
-                }
                 onAction(HomeActions.OnLabelSelected(label))
             },
             modifier = Modifier
@@ -101,26 +103,21 @@ private fun HomeTabContent(
             chipsListState = chipsListState
         )
 
-        Box(
-            Modifier
-                .fillMaxSize()
-                .weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
-            when {
-                pagedPosts.loadState.refresh is LoadState.Loading ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()), // only here
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
 
-                pagedPosts.itemCount > 0 -> PostList(
-                    posts = pagedPosts,
+        when {
+            pagedUiItem.loadState.refresh is LoadState.Loading ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()), // only here
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+
+            pagedUiItem.itemCount > 0 -> PostListWithAds(
+                pagedUiItem = pagedUiItem,
                     onPostClick = { onAction(HomeActions.OnPostClick(it)) },
                     modifier = Modifier.fillMaxSize(),
                     scrollState = listState
@@ -142,17 +139,20 @@ private fun HomeTabContent(
                         }
                     }
 
-                else -> Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+
+            else -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
                     if (showLoadingInsteadOfEmpty.value) {
                         CircularProgressIndicator()
                     } else {
-                        Text("No posts available")
+                        Text(
+                            text = stringResource(R.string.no_posts_available),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }

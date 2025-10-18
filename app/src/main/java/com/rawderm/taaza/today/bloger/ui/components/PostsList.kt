@@ -51,12 +51,11 @@ import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import com.rawderm.taaza.today.bloger.ui.home.PostUiItem
 
 @Composable
-fun PostList(
-    posts: LazyPagingItems<Post>,
-    onPostClick: (Post) -> Unit,
+fun PostListWithAds(
     modifier: Modifier = Modifier,
-    scrollState: LazyListState,
     pagedUiItem: LazyPagingItems<PostUiItem>? = null,
+    onPostClick: (Post) -> Unit,
+    scrollState: LazyListState,
 ) {
     val noOpConnection = remember {
         object : NestedScrollConnection {
@@ -98,23 +97,24 @@ fun PostList(
                 val uiItem = pagedUiItem[index]
 
                 when (uiItem) {
-                    is PostUiItem-> {
+                    is PostUiItem -> {
                         if (uiItem.isAd) {
                             TestBanner2()
                         } else {
-                           uiItem.post?.let { post ->
-                            if (index == 0) {
-                                // ✅ Special layout for the first item
-                                FeaturedPost(
-                                    post = post,
-                                    onClick = { onPostClick(post) }
-                                )
-                            } else {
-                                NormalPost(
-                                    post = post,
-                                    onClick = { onPostClick(post) }
-                                )
-                            }}
+                            uiItem.post?.let { post ->
+                                if (index == 0) {
+                                    // ✅ Special layout for the first item
+                                    FeaturedPost(
+                                        post = post,
+                                        onClick = { onPostClick(post) }
+                                    )
+                                } else {
+                                    NormalPost(
+                                        post = post,
+                                        onClick = { onPostClick(post) }
+                                    )
+                                }
+                            }
                         }
                     }
 
@@ -147,104 +147,71 @@ fun PostList(
         }
     }
 }
-//@Composable
-//fun PostListWithAds(
-//    posts: LazyPagingItems<Post>,
-//    onPostClick: (Post) -> Unit,
-//    modifier: Modifier = Modifier,
-//    scrollState: LazyListState
-//) {
-//    LazyColumn(
-//        state = scrollState,
-//        modifier = modifier.fillMaxSize(),
-//        contentPadding = PaddingValues(vertical = 8.dp),
-//        verticalArrangement = Arrangement.spacedBy(8.dp)
-//    ) {
-//        // Convert paging items to a list with ads inserted
-//        val itemsWithAds = remember(posts.itemSnapshotList) {
-//            buildList {
-//                var postCount = 0
-//                posts.itemSnapshotList.forEach { post ->
-//                    // Insert ad after every 4 posts
-//                    if (postCount > 0 && postCount % 4 == 0) {
-//                        add(ListItem.AdItem("ad_${postCount}"))
-//                    }
-//                    add(ListItem.PostItem(post, postCount))
-//                    postCount++
-//                }
-//            }
-//        }
-//
-//        items(
-//            items = itemsWithAds,
-//            key = { item ->
-//                when (item) {
-//                    is ListItem.AdItem -> item.key
-//                    is ListItem.PostItem -> item.post?.id ?: "post_${item.index}"
-//                }
-//            }
-//        ) { item ->
-//            when (item) {
-//                is ListItem.AdItem -> AdItemComposable()
-//                is ListItem.PostItem -> {
-//                    if (item.post != null) {
-//                        if (item.index == 0) {
-//                            FeaturedPost(item.post) { onPostClick(item.post) }
-//                        } else {
-//                            NormalPost(item.post) { onPostClick(item.post) }
-//                        }
-//                    } else {
-//                        PostPlaceholder()
-//                    }
-//                }
-//            }
-//        }
-//
-//    /* pagination spinner */
-//        item {
-//            if (posts.loadState.append.endOfPaginationReached.not() && posts.itemCount > 0) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp),
-//                    horizontalArrangement = Arrangement.Center
-//                ) {
-//                    CircularProgressIndicator()
-//                }
-//            }
-//        }
-//    }
-//}
 
-// Sealed class for different item types
-sealed class ListItem {
-    data class AdItem(val key: String) : ListItem()
-    data class PostItem(val post: Post?, val index: Int) : ListItem()
-}
+enum class CardStyle { MIXED, ALL_FEATURED, ALL_NORMAL }
 
 @Composable
-private fun LoadingIndicator() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
+fun PostList(
+    posts: LazyPagingItems<Post>,
+    onPostClick: (Post) -> Unit,
+    modifier: Modifier = Modifier,
+    scrollState: LazyListState,
+    cardStyle: CardStyle = CardStyle.MIXED   // <-- new
+
+) {
+    val noOpConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(
+                available: androidx.compose.ui.geometry.Offset,
+                source: NestedScrollSource
+            ) = androidx.compose.ui.geometry.Offset.Zero
+
+            override fun onPostScroll(
+                consumed: androidx.compose.ui.geometry.Offset,
+                available: androidx.compose.ui.geometry.Offset,
+                source: NestedScrollSource
+            ) = androidx.compose.ui.geometry.Offset.Zero
+
+            override suspend fun onPreFling(available: Velocity) = Velocity.Zero
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity) =
+                Velocity.Zero
+        }
     }
-}
 
-// Placeholder composable for loading states
-@Composable
-fun PostPlaceholder() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .background(Color.LightGray.copy(alpha = 0.3f)),
-        contentAlignment = Alignment.Center
+    LazyColumn(
+        state = scrollState,
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(noOpConnection)
+            .clipToBounds(),
+        contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+        items(count = posts.itemCount, key = { idx -> posts[idx]?.id ?: "" }) { index ->
+            val post = posts[index]
+            post?.let {
+            when (cardStyle) {               // <-- choose layout
+                CardStyle.ALL_FEATURED -> FeaturedPost(post, onClick = { onPostClick(post) })
+                CardStyle.ALL_NORMAL -> NormalPost(post, onClick = { onPostClick(post) })
+                CardStyle.MIXED -> if (index == 0) FeaturedPost(
+                    post,
+                    onClick = { onPostClick(post) })
+                else NormalPost(post, onClick = { onPostClick(post) })
+            }
+        }}
+        // Pagination loading indicator
+        item {
+            if (posts.loadState.append.endOfPaginationReached.not() && posts.itemCount > 0) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    androidx.compose.material3.CircularProgressIndicator()
+                }
+            }
+        }
     }
 }
 
