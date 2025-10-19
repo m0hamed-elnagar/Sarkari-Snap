@@ -30,10 +30,10 @@ import kotlinx.coroutines.launch
     Box(
         modifier
     ) {
-    val options = listOf("हिन्दी" to "hi", "English" to "en")
-    AlertDialog(
+        val options = listOf("हिन्दी" to "hi", "English" to "en")
+        AlertDialog(
         onDismissRequest = {},
-        title = { Text("Choose Language") },
+        title = { Text("Choose Language / भाषा चुनें") },
         text = {
             Column {
                 options.forEach { (label, code) ->
