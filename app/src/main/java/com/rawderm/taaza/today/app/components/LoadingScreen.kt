@@ -15,7 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.rawderm.taaza.today.R
 
 @Composable
 fun LoadingScreen() {
@@ -38,7 +40,7 @@ fun LoadingScreen() {
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Loading configuration...",
+                text = stringResource(R.string.loading_configuration),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )

@@ -16,13 +16,13 @@
     <string name="trending">Trending</string>
     <string name="categories">categories</string>
     <string name="pages">pages</string>
-    <string name="empty" translatable="false"/>
+    <string name="empty" translatable="false" />
     <string name="more">More</string>
-    <string name="instagram_link">https://instagram.com/taazatodayhindi</string>
-    <string name="whatsapp_link">https://whatsapp.com/channel/0029VbBVucL1iUxWkpLNuq0v</string>
-    <string name="facebook_link">https://facebook.com/taazatodayhindi   </string>
-    <string name="telegram_link">https://t.me/TaazaTodayHindi</string>
-    <string name="x_link">https://x.com/taazatodayhindi</string>
+    <string name="instagram_link">https://instagram.com/taaza_today</string>
+    <string name="whatsapp_link">https://whatsapp.com/channel/0029Vb7QOLWAu3aOQ1f61m2M</string>
+    <string name="facebook_link">https://facebook.com/taazatoday</string>
+    <string name="telegram_link">https://t.me/taazatoday</string>
+    <string name="x_link">https://x.com/taazatoday</string>
     <string name="app_url">https://taaza-today.web.app</string>
     <string name="read_full_news">\nपूरी खबर पढ़ें 👇\n</string>
     <string name="article_title">Article</string>
@@ -53,9 +53,17 @@
     <string name="Pages">Pages</string>
     <string name="follow_us_on">Follow us on</string>
     <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/190535731829050983</string>
-
-    <!-- Non-translatable URL bases (best practice: do not localize URLs) -->
-    <string name="blogger_id" >2640395952322331775</string>
+    <string name="blogger_id">2640395952322331775</string>
+    <string name="loading_configuration">Loading configuration...</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="check_connection_and_try_again">Please check your connection and try again.</string>
+    <string name="app_temporarily_stopped">the app temporarily stopped – please try again later.</string>
+    <string name="could_not_load_pages">Could not load pages</string>
+    <string name="copied">Copied!</string>
+    <string name="share_app">Share App</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="messenger">Messenger</string>
+    <string name="download_successful_restart">Downloaded successful restarting the app in 5 seconds.</string>
     <string name="blogger_shorts_base_url" translatable="false">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
     <string name="youtube_embed_base" translatable="false">https://www.youtube.com/embed/</string>
     <string name="blogger_video_play_base" translatable="false">https://video.blogger.com/video-play.mp4?contentId=</string>

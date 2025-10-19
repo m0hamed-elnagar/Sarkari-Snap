@@ -15,12 +15,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.rawderm.taaza.today.R
 
 @Composable
 fun NoInternetScreen(
-    msg: String = "No internet connection",
+    msg: String = stringResource(R.string.no_internet_connection),
     onRetry: () -> Unit
 ) {
     Box(
@@ -47,13 +49,13 @@ fun NoInternetScreen(
 
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Please check your connection and try again.",
+                    text = stringResource(R.string.check_connection_and_try_again),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(16.dp))
                 Button(onClick = onRetry) {
-                    Text("Retry")
+                    Text(stringResource(R.string.retry))
                 }
             }
         }

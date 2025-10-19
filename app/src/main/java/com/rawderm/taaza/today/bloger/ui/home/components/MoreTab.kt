@@ -77,12 +77,12 @@ fun MoreTabScreen(
         item { SectionTitle(stringResource(R.string.follow_us_on)) }
         item { SocialIconRow() }
 
-        item { SectionTitle("Share App") }
+        item { SectionTitle(stringResource(R.string.share_app)) }
         item { ShareAppLinkRow(appLink) }
         item {
             CardRow(
                 icon = painterResource(R.drawable.ic_whatsapp),
-                title = "WhatsApp",
+                title = stringResource(R.string.whatsapp),
                 color = R.color.whatsapp,
                 textColor = Color.White,
                 iconColor = Color.White,
@@ -93,7 +93,7 @@ fun MoreTabScreen(
         item {
             CardRow(
                 icon = painterResource(R.drawable.messenger),
-                title = "Messenger",
+                title = stringResource(R.string.messenger),
                 color = R.color.messenger,
                 textColor = Color.White,
                 iconColor = Color.White,
@@ -106,7 +106,7 @@ fun MoreTabScreen(
         item {
             CardRow(
                 imageVector = Icons.Default.Share,
-                title = "Share",
+                title = stringResource(R.string.share),
                 color = R.color.share,
                 iconColor = Color.White,
                 textColor = Color.White,
@@ -138,7 +138,7 @@ fun MoreTabScreen(
             is androidx.paging.LoadState.Error -> {
                 item {
                     Text(
-                        text = "Could not load pages",
+                        text = stringResource(R.string.could_not_load_pages),
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
@@ -295,11 +295,11 @@ fun ShareAppLinkRow(
     val context = LocalContext.current
     val resolved = link ?: stringResource(R.string.share_app_link)
     var justCopied by remember { mutableStateOf(false) }
-
+val copied =stringResource(R.string.copied)
     // run toast only once
     LaunchedEffect(justCopied) {
         if (justCopied) {
-            Toast.makeText(context, "Copied!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, copied, Toast.LENGTH_SHORT).show()
             justCopied = false
         }
     }

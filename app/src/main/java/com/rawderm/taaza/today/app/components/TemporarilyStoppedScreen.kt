@@ -15,8 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.rawderm.taaza.today.R
 
 @Composable
 fun TemporarilyStoppedScreen(onRetry: () -> Unit) {
@@ -37,14 +39,14 @@ fun TemporarilyStoppedScreen(onRetry: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "the app temporarily stopped – please try again later.",
+                    text = stringResource(R.string.app_temporarily_stopped),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
 
                 Spacer(Modifier.height(16.dp))
                 Button(onClick = onRetry) {
-                    Text("Retry")
+                    Text(stringResource(R.string.retry))
                 }
             }
         }

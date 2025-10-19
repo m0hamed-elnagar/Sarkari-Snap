@@ -30,6 +30,7 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
+import com.rawderm.taaza.today.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -138,7 +139,7 @@ class MainActivity : ComponentActivity() {
     private fun restartSnackbar() {
         Toast.makeText(
             this,
-            "Downloaded successful restarting the app in 5 seconds.",
+            getString(R.string.download_successful_restart),
             Toast.LENGTH_LONG
         ).show()
         lifecycleScope.launch {

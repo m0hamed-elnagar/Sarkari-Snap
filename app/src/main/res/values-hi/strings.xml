@@ -54,5 +54,25 @@
     <string name="follow_us_on">हमें फॉलो करें </string>
     <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
     <string name="blogger_id" >190535731829050983</string>
+<string name="loading_configuration">कॉन्फ़िगरेशन लोड हो रहा है...</string>
+<string name="no_internet_connection">इंटरनेट कनेक्शन नहीं है</string>
+<string name="check_connection_and_try_again">कृपया अपना कनेक्शन जांचें और दोबारा प्रयास करें।</string>
+    <string name="app_temporarily_stopped">ऐप अस्थायी रूप से बंद है – कृपया बाद में पुनः प्रयास करें।</string>
+<string name="could_not_load_pages">पेज लोड नहीं हो सके</string>
+<string name="copied">कॉपी किया गया!</string>
+<string name="share_app">ऐप शेयर करें</string>
+<string name="whatsapp">व्हाट्सएप</string>
+<string name="messenger">मैसेंजर</string>
+<string name="download_successful_restart">डाउनलोड सफल, ऐप 5 सेकंड में रीस्टार्ट होगी।</string>
+<string name="no_shorts_yet">अभी कोई शॉर्ट्स उपलब्ध नहीं हैं\n</string>
+<string name="share_via">इस माध्यम से शेयर करें\n</string>
+    <string name="blogger_shorts_base_url" translatable="false">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
+    <string name="youtube_embed_base" translatable="false">https://www.youtube.com/embed/</string>
+    <string name="blogger_video_play_base" translatable="false">https://video.blogger.com/video-play.mp4?contentId=</string>
+    <string name="blogger_referer" translatable="false">https://taazatodayhindi.blogspot.com/</string>
+    <string name="twitter_intent_base" translatable="false">https://twitter.com/intent/tweet</string>
+    <string name="facebook_share_base" translatable="false">https://www.facebook.com/sharer/sharer.php</string>
+    <string name="share_app_link" translatable="false">https://taaza-today.web.app</string>
+
 
 </resources>
