@@ -9,5 +9,5 @@ sealed interface PostDetailsActions {
     data class OnLinkClicked(val url: String) : PostDetailsActions
     data class OnRelatedPostClick(val post: Post) : PostDetailsActions
     data class OnLabelClick(val label: String) : PostDetailsActions
-    data class OnDeepLinkArrived(val postId: String) : PostDetailsActions
+    data class OnDeepLinkArrived(val lang : String,val postId: String) : PostDetailsActions
 }

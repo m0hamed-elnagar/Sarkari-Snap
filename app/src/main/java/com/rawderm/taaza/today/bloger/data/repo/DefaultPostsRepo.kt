@@ -44,32 +44,6 @@ class DefaultPostsRepo(
 // 3. Get current locale from Lingver
             val currentLocale = Lingver.getInstance().getLocale()
             val isHindi = currentLocale.language.equals("hi", ignoreCase = true)
- val englishOrder = listOf(
-            "politics",
-            "crime",
-            "entertainment",
-            "sports",
-            "business",
-            "tech",
-            "science",
-            "automobile",
-            "education",
-            "job news",
-            "yojana"
-        )
-        val hindiOrder = listOf(
-            "राजनीति",
-            "अपराध",
-            "मनोरंजन",
-            "खेल",
-            "व्यापार",
-            "टेक्नोलॉजी",
-            "विज्ञान",
-            "ऑटोमोबाइल",
-            "शिक्षा",
-            "रोजगार समाचार",
-            "सरकारी योजनाएं"
-        )
             val canonicalOrder = if (isHindi) hindiOrder else englishOrder
             val allLabel = if (isHindi) "सभी" else "All"
             val orderLookup = canonicalOrder
@@ -226,3 +200,30 @@ class DefaultPostsRepo(
 
 
 }
+
+val englishOrder = listOf(
+    "politics",
+    "crime",
+    "entertainment",
+    "sports",
+    "business",
+    "tech",
+    "science",
+    "automobile",
+    "education",
+    "job news",
+    "yojana"
+)
+val hindiOrder = listOf(
+    "राजनीति",
+    "अपराध",
+    "मनोरंजन",
+    "खेल",
+    "व्यापार",
+    "टेक्नोलॉजी",
+    "विज्ञान",
+    "ऑटोमोबाइल",
+    "शिक्षा",
+    "रोजगार समाचार",
+    "सरकारी योजनाएं"
+)

@@ -54,7 +54,7 @@ class LanguageManager(
 
     private val _restartPending = MutableStateFlow(false)
     val restartPending: StateFlow<Boolean> = _restartPending.asStateFlow()
-    suspend fun setLanguage(language: String) {
+    suspend fun setLanguage(language: String, activity: Activity? = null) {
         languageMutex.withLock {
             try {
                 Log.d("LANG", "LanguageManager.setLanguage() called: $language")
@@ -70,11 +70,21 @@ class LanguageManager(
                 /* 3.  tell Lingver */
                 Lingver.getInstance().setLocale(context, language)
                 Log.d("LanguageManager", "Language set to: $language")
+                
+                // Set restart pending flag instead of directly recreating
+                _restartPending.value = true
+                activity?.recreate()
             } catch (e: Exception) {
                 Log.e("LanguageManager", "Failed to set language: $language", e)
                 throw e
             }
-            (context as Activity).recreate()
+        }
+    }
+
+    fun recreateActivity(activity: Activity?) {
+        if (_restartPending.value) {
+            _restartPending.value = false
+            activity?.recreate()
         }
     }
 }

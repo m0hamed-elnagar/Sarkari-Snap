@@ -8,10 +8,8 @@ sealed interface HomeActions {
     data class OnPostClick(val post: Post) : HomeActions
     data class OnPageClick(val page: Page) : HomeActions
     data class OnLabelSelected(val label: String) : HomeActions
-    data class ChangeLanguage(val language: String) : HomeActions
     object OnRefresh : HomeActions
     object OnLoading : HomeActions
-    object OnShortsClick : HomeActions
 
 
 }

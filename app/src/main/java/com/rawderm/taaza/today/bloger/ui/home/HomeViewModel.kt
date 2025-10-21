@@ -1,6 +1,7 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -173,24 +174,12 @@ class HomeViewModel(
 
             is HomeActions.OnRefresh -> refreshAll()
             is HomeActions.OnLoading -> _state.update { it.copy(isLoading = true) }
-            is HomeActions.ChangeLanguage -> changeLanguage(action.language)
             // Remove OnNextPage logic (Paging 3 handles this)
             else -> Unit
         }
     }
 
-    fun changeLanguage(language: String) {
-        viewModelScope.launch {
-            try {
-                Log.d("HomeViewModel", "Changing language to: $language")
-                languageManager.setLanguage(language)
-                Log.d("HomeViewModel", "Language changed successfully to: $language")
 
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "Failed to change language", e)
-            }
-        }
-    }
 
     fun refreshAll() {
         viewModelScope.launch {

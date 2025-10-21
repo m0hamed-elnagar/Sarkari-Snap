@@ -367,7 +367,7 @@ private fun LazyItemScope.PostDetailContent(
 
         )
     }
-    NativeScreen()
+    NativeScreen(modifier = Modifier.fillMaxWidth())
 }
 
 @Composable

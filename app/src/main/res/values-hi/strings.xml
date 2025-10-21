@@ -73,6 +73,10 @@
     <string name="twitter_intent_base" translatable="false">https://twitter.com/intent/tweet</string>
     <string name="facebook_share_base" translatable="false">https://www.facebook.com/sharer/sharer.php</string>
     <string name="share_app_link" translatable="false">https://taaza-today.web.app</string>
-
-
+    
+    <!-- Language confirmation dialog -->
+    <string name="change_language_title">भाषा बदलें</string>
+    <string name="change_language_message">क्या आप ऐप की भाषा %1$s में बदलना चाहते हैं?</string>
+    <string name="accept">स्वीकार करें</string>
+    <string name="decline">अस्वीकार करें</string>
 </resources>

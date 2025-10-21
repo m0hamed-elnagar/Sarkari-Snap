@@ -1,6 +1,7 @@
 package com.rawderm.taaza.today.bloger.ui.home.components
 
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
     onDismiss: () -> Unit
 ) {
     val localContext = LocalContext.current
+    val activity = LocalActivity.current
     Box(
         modifier
     ) {
@@ -43,7 +45,7 @@ import kotlinx.coroutines.launch
                         onClick = {
                             scope.launch {
                                 LanguageDataStore(localContext).markFirstLaunchDone()
-                                languageManager.setLanguage(code)
+                                languageManager.setLanguage(code,activity)
                                 onDismiss()
                             }
                         }

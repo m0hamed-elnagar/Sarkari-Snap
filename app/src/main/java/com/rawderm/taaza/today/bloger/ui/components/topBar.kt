@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.bloger.ui.components
 
 import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,8 +51,9 @@ fun TopBar(
     languageManager: LanguageManager,
     onAction: (HomeActions) -> Unit
 ) {
-    val context = LocalContext.current
-    val locale = remember { Lingver.getInstance().getLocale().language }
+
+val activity= LocalActivity.current
+val locale = remember { Lingver.getInstance().getLocale().language }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +128,9 @@ fun TopBar(
                                 // Use the new approach with recreate instead of custom restart
                                 val scope = MainScope()
                                 scope.launch {
-                                    languageManager.setLanguage("en")
+                                    languageManager.setLanguage("en",activity)
+                                    onAction(HomeActions.OnRefresh)
+
                                 }
 
                                 expanded = false
@@ -158,7 +162,8 @@ fun TopBar(
                                 Log.d("LANG", "changeLanguage() invoked: hi")
                                 val scope = MainScope()
                                 scope.launch {
-                                    languageManager.setLanguage("hi")
+                                    languageManager.setLanguage("hi",  activity)
+                                    onAction(HomeActions.OnRefresh)
                                 }
 
                                 expanded = false

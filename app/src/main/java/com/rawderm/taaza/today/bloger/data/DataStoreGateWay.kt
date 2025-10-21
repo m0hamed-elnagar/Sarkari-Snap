@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -29,6 +30,8 @@ class LanguageDataStore(private val context: Context) {
     companion object {
         val LANGUAGE_KEY = stringPreferencesKey("selected_language")
         val FIRST_LAUNCH_KEY  = booleanPreferencesKey("is_first_launch")   // NEW
+        val PENDING_LANG_KEY = stringPreferencesKey("pending_deep_link_language")
+        val PENDING_INTENT_KEY = stringPreferencesKey("pending_intent_uri")
 
     }
 
@@ -48,7 +51,41 @@ class LanguageDataStore(private val context: Context) {
 
     suspend fun getLanguage(): String {
         return context.dataStore.data.map { preferences ->
-            preferences[LANGUAGE_KEY] ?: "hi" // Default to Hindi
+            val lang = preferences[LANGUAGE_KEY] ?: "hi" // Default to Hindi
+            Log.d("LanguageDataStore", "getLanguage returning: $lang")
+            lang
         }.first()
     }
+    
+    // New methods for deep link language handling
+    suspend fun savePendingIntent(lang: String, intentUri: String) = context.dataStore.edit {
+        Log.d("LanguageDataStore", "Saving pending intent language: $lang, uri: $intentUri")
+        it[PENDING_LANG_KEY] = lang
+        it[PENDING_INTENT_KEY] = intentUri
+    }
+
+    suspend fun getPendingIntent(): String? = 
+        context.dataStore.data.map {
+            val intent = it[PENDING_INTENT_KEY]
+            Log.d("LanguageDataStore", "getPendingIntent returning: $intent")
+            intent
+        }.firstOrNull()
+
+    suspend fun clearPendingIntent() = context.dataStore.edit {
+        Log.d("LanguageDataStore", "Clearing pending intent")
+        it.remove(PENDING_LANG_KEY)
+        it.remove(PENDING_INTENT_KEY)
+    }
+    
+    @Deprecated("Use savePendingIntent instead", ReplaceWith("savePendingIntent(lang, routeJson)"))
+    suspend fun savePendingDeepLinkLanguage(lang: String, routeJson: String) = savePendingIntent(lang, routeJson)
+    
+    @Deprecated("Use getPendingIntent instead", ReplaceWith("getPendingIntent()"))
+    suspend fun getPendingDeepLinkLanguage(): String? = getPendingIntent()
+    
+    @Deprecated("Use getPendingIntent instead", ReplaceWith("getPendingIntent()"))
+    suspend fun getPendingDeepLinkRoute(): String? = getPendingIntent()
+    
+    @Deprecated("Use clearPendingIntent instead", ReplaceWith("clearPendingIntent()"))
+    suspend fun clearPendingDeepLinkLanguage() = clearPendingIntent()
 }

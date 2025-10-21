@@ -1,5 +1,7 @@
 package com.rawderm.taaza.today.app
 
+import android.app.Activity
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -10,7 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
@@ -19,16 +25,19 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.app.BloggerApplication.Companion.isWorking
 import com.rawderm.taaza.today.app.components.TemporarilyStoppedScreen
+import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.ui.SelectedPostViewModel
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeScreenRoot
 import com.rawderm.taaza.today.bloger.ui.home.HomeViewModel
+import com.rawderm.taaza.today.bloger.ui.home.components.LanguageConfirmDialog
 import com.rawderm.taaza.today.bloger.ui.labeled.LabeledPostsViewModel
 import com.rawderm.taaza.today.bloger.ui.labeled.LabeledScreenRoot
 import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsScreenRoot
@@ -39,6 +48,8 @@ import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -64,6 +75,54 @@ fun App(navController: NavHostController) {
 private fun AppNavigation(navController: NavHostController) {
     val context = LocalContext.current
     val appUrl = context.getString(R.string.app_url) // get the string outside composable
+    val languageManager = koinInject<LanguageManager>()
+    val currentLang by languageManager.currentLanguage.collectAsState()
+    
+    // State for language confirmation dialog
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var pendingDeepLinkData by remember { mutableStateOf<Pair<String, String>?>(null) } // lang to switch to, postId
+    val scope = rememberCoroutineScope()
+
+    // Handle language switching from deep link
+    LaunchedEffect(showLanguageDialog) {
+        if (!showLanguageDialog && pendingDeepLinkData != null) {
+            val (targetLang, postId) = pendingDeepLinkData!!
+            // Navigate to the post with the new language
+            navController.navigate(Route.PostDetails(targetLang, postId)) {
+                popUpTo<Route.BlogGraph> { inclusive = false }
+                launchSingleTop = true
+            }
+            pendingDeepLinkData = null
+        }
+    }
+
+    if (showLanguageDialog && pendingDeepLinkData != null) {
+        val (targetLang, _) = pendingDeepLinkData!!
+        LanguageConfirmDialog(
+            modifier = androidx.compose.ui.Modifier,
+            context = context,
+            languageManager = languageManager,
+            scope = scope,
+            requestedLang = targetLang,
+            onAccept = {
+                showLanguageDialog = false
+                scope.launch {
+                    pendingDeepLinkData?.let { (_, postId) ->
+                        // Navigate to the post with current language
+                        navController.navigate(Route.PostDetails(currentLang, postId)) {
+                            popUpTo<Route.BlogGraph> { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                    pendingDeepLinkData = null
+                }
+            },
+            onDecline = {
+                showLanguageDialog = false
+
+            }
+        )
+    }
 
     NavHost(
         navController = navController,
@@ -74,13 +133,23 @@ private fun AppNavigation(navController: NavHostController) {
         popExitTransition = { fadeOut(tween(800)) }
     ) {
 
-        navigation<Route.BlogGraph>(startDestination = Route.BlogHome::class) {
+        navigation<Route.BlogGraph>(
+            startDestination = Route.BlogHome::class,
+            deepLinks = listOf(
+                navDeepLink { uriPattern = context.getString(R.string.app_url) + "/" }
+            )
+        ) {
             composable<Route.BlogHome>(
                 deepLinks = listOf(
+
                     navDeepLink {
                         uriPattern = "$appUrl/shorts/{date}"
                         action = "android.intent.action.VIEW"
+                    }, navDeepLink {
+                        uriPattern = "$appUrl/{lang}/shorts/{date}"
+                        action = "android.intent.action.VIEW"
                     }
+
                 ))
             { entry ->
                 val route = entry.toRoute<Route.BlogHome>()
@@ -93,7 +162,7 @@ private fun AppNavigation(navController: NavHostController) {
                     if (!date.isNullOrBlank()) {
                         shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(date))
                         homeVM.onAction(HomeActions.OnTabSelected(2))
-                        Log . d ("Date", "AppNavigation: $date")
+                        Log.d("Date", "AppNavigation: $date")
 
                     }
                 }
@@ -101,7 +170,7 @@ private fun AppNavigation(navController: NavHostController) {
                     viewModel = homeVM,
                     onPostClick = { post ->
                         sharedVM.selectPost(post)
-                        navController.navigate(Route.PostDetails(post.id)) {
+                        navController.navigate(Route.PostDetails(currentLang, postId = post.id)) {
                             launchSingleTop = true
                         }
                     },
@@ -112,23 +181,34 @@ private fun AppNavigation(navController: NavHostController) {
                         }
                     },
 
-                )
+                    )
             }
             composable<Route.PostDetails>(
                 deepLinks = listOf(
                     navDeepLink {
-                        uriPattern = "$appUrl/post/{postId}"
+                        uriPattern = "$appUrl/{lang}/post/{postId}"
                         action = "android.intent.action.VIEW"
                     }
                 )) { entry ->
-                val route = entry.toRoute<Route.PostDetails>()   // navigation-compose helper
+                val route = entry.toRoute<Route.PostDetails>()
+                val lang = route.lang
                 val postId = route.postId
                 val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
                 val detailsVM = koinViewModel<PostDetailsViewModel>()
                 val selected by sharedVM.selectedPost.collectAsState()
-                LaunchedEffect(postId) {
-                    detailsVM.onAction(PostDetailsActions.OnDeepLinkArrived(postId))
+
+                // Check if the language in the deep link matches the current language
+                LaunchedEffect(lang, currentLang, postId) {
+                    if (lang != currentLang) {
+                        // Show language confirmation dialog
+                        pendingDeepLinkData = lang to postId
+                        showLanguageDialog = true
+                    } else {
+                        // Language matches, proceed normally
+                        detailsVM.onAction(PostDetailsActions.OnDeepLinkArrived(lang, postId))
+                    }
                 }
+                
                 LaunchedEffect(selected) {
                     selected?.let { detailsVM.onAction(PostDetailsActions.OnSelectedPostChange(it)) }
                 }
@@ -138,7 +218,12 @@ private fun AppNavigation(navController: NavHostController) {
                     onBackClicked = { navController.navigateUp() },
                     onOpenPost = { newPost ->
                         sharedVM.selectPost(newPost)
-                        navController.navigate(Route.PostDetails(newPost.id)) {
+                        navController.navigate(
+                            Route.PostDetails(
+                                currentLang,
+                                postId = newPost.id
+                            )
+                        ) {
                             popUpTo<Route.PostDetails> { inclusive = true }
                             launchSingleTop = true
                         }
@@ -186,45 +271,6 @@ private fun AppNavigation(navController: NavHostController) {
                     onBackClicked = { navController.navigateUp() },
                 )
             }
-//            composable<Route.LinkToShorts>(
-//                deepLinks = listOf(
-//                    navDeepLink {
-//                        uriPattern = "$appUrl/shorts/{date}"
-//                        action = "android.intent.action.VIEW"
-//                    }
-//                ),
-//                enterTransition = {
-//                    // Bottom → Top animation
-//                    slideIntoContainer(
-//                        AnimatedContentTransitionScope.SlideDirection.Up,
-//                        animationSpec = tween(100)
-//                    )
-//                },
-//                exitTransition = {
-//                    slideOutOfContainer(
-//                        AnimatedContentTransitionScope.SlideDirection.Down,
-//                        animationSpec = tween(100)
-//                    )
-//                }
-//            ) { entry ->
-//
-//                val route = entry.toRoute<Route.LinkToShorts>()
-//                val date = route.date
-//
-//                val shortsViewModel = koinViewModel<ShortsViewModel>()
-//
-//                LaunchedEffect(date) {
-//                    if (date.isNotEmpty()) {
-//                        shortsViewModel.onAction(ShortsActions.OnDeepLinkArrived(date))
-//                        Log.d("Date", "AppNavigation: $date")
-//                    }
-//                }
-//
-//                ShortsScreenRoot(
-//                    viewModel = shortsViewModel,
-//                    onBackClicked = { navController.navigateUp() },
-//                )
-//            }
 
             composable<Route.LabeledPosts> { entry ->
                 val labeledVM = koinViewModel<LabeledPostsViewModel>()
@@ -236,7 +282,7 @@ private fun AppNavigation(navController: NavHostController) {
                     onBackClick = { navController.navigateUp() },
                     onPostClick = { post ->
                         sharedVM.selectPost(post)
-                        navController.navigate(Route.PostDetails(post.id)) {
+                        navController.navigate(Route.PostDetails(currentLang, postId = post.id)) {
                             popUpTo<Route.PostDetails> { inclusive = true }
                             launchSingleTop = true
                         }

@@ -1,5 +1,6 @@
 package com.rawderm.taaza.today.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -31,8 +34,13 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.data.LanguageDataStore
+import com.rawderm.taaza.today.bloger.data.LanguageManager
+import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -42,6 +50,11 @@ class MainActivity : ComponentActivity() {
     private val updateType = AppUpdateType.FLEXIBLE // Consider using FLEXIBLE for better UX
 
     private val updateCheckedThisSession = AtomicBoolean(false)
+    
+    private val languageDataStore by inject<LanguageDataStore>()
+    private val languageManager by inject<LanguageManager>()
+    private lateinit var navController: NavHostController
+
 
     // Fixed update launcher - proper implementation
     private val updateLauncher = registerForActivityResult(
@@ -58,6 +71,32 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        // 1. Parse the link that started the app
+        val deepLinkLang = intent?.data?.pathSegments?.firstOrNull {
+            it.length == 2          // "en", "hi", "es" ...
+        }
+
+        Log.d("DeepLink", "Deep link language: $deepLinkLang")
+
+        // 2. If link contains a language != current -> save it
+        if (deepLinkLang != null) {
+            // Get current language directly from datastore to avoid timing issues
+            val currentLanguage = runBlocking { languageDataStore.getLanguage() }
+            Log.d("DeepLink", "Current language: $currentLanguage")
+
+            if (deepLinkLang != currentLanguage) {
+                Log.d("DeepLink", "Saving pending deep link language: $deepLinkLang")
+                lifecycleScope.launch {
+                    // We'll handle this in the AppNavigation composable now
+                }
+            } else {
+                Log.d("DeepLink", "Deep link language is same as current language, not saving")
+            }
+        } else {
+            Log.d("DeepLink", "No deep link language found")
+        }
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.Black.toArgb()),
             navigationBarStyle = SystemBarStyle.dark(Color.Black.toArgb())
@@ -67,7 +106,9 @@ class MainActivity : ComponentActivity() {
             loadNativeAd()
         }
         setContent {
-            App(rememberNavController())
+            navController = rememberNavController()
+
+            App(navController)
         }
         appUpdateManager = AppUpdateManagerFactory.create(this)
 
@@ -83,6 +124,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent?.let { newIntent ->
+            // 1. make it the intent that every lifecycle method will see from now on
+            setIntent(newIntent)
+
+            // 3. let Navigation handle the deep link
+            navController.handleDeepLink(newIntent)
+        }
+    }
     override fun onResume() {
         super.onResume()
 

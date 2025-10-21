@@ -74,5 +74,10 @@
     <string name="share_via" translatable="false">Share via\n</string>
     <string name="no_shorts_yet" translatable="false">no Shorts to show\n</string>
     <string name="app_link" translatable="false">https://play.google.com/store/apps/details?id=com.rawderm.taaza.today</string>
-
+    
+    <!-- Language confirmation dialog -->
+    <string name="change_language_title">Change Language</string>
+    <string name="change_language_message">Do you want to change the app language to %1$s?</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>
