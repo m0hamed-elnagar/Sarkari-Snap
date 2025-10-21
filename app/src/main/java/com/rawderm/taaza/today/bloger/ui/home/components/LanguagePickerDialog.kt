@@ -1,7 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.home.components
 
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +13,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import kotlinx.coroutines.CoroutineScope
@@ -22,11 +22,11 @@ import kotlinx.coroutines.launch
 @Composable
  fun LanguagePickerDialog(
     modifier: Modifier,
-    context: Context,
     languageManager: LanguageManager,
     scope: CoroutineScope,
     onDismiss: () -> Unit
 ) {
+    val localContext = LocalContext.current
     Box(
         modifier
     ) {
@@ -42,8 +42,8 @@ import kotlinx.coroutines.launch
                         colors = ButtonDefaults.textButtonColors(),
                         onClick = {
                             scope.launch {
-                                LanguageDataStore(context).markFirstLaunchDone()
-                                languageManager.setLanguageAndRestart(code, context)
+                                LanguageDataStore(localContext).markFirstLaunchDone()
+                                languageManager.setLanguage(code)
                                 onDismiss()
                             }
                         }

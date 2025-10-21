@@ -3,7 +3,6 @@ package com.rawderm.taaza.today.core.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import com.rawderm.taaza.today.R
 
 object ShareUtils {
@@ -29,17 +28,6 @@ object ShareUtils {
             }
         )
 
-    fun facebook(context: Context, text: String, url: String) =
-        shareOrBrowser(
-            context,
-            text,
-            url,
-            pkg = "com.facebook.katana",
-            browserUrl = {
-                "${context.getString(R.string.facebook_share_base)}?" +
-                        "u=${Uri.encode(url)}&quote=${Uri.encode(text)}"
-            }
-        )
 
     fun systemChooser(context: Context, text: String, url: String) =
         genericShare(context, text, url)

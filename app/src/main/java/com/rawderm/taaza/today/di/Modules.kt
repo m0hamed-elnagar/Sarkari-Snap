@@ -24,6 +24,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -33,12 +34,14 @@ val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     single<HttpClientEngine> { OkHttp.create() }
     single { LanguageDataStore(get())    }
-    single{     LanguageManager(get(), get()).apply {
-        // Initialize on creation
-        CoroutineScope(Dispatchers.IO).launch {
-            initialize()
-        }
-    } }
+    single { 
+        LanguageManager(get(), get()).apply {
+            // Initialize synchronously to ensure it's ready when needed
+            runBlocking {
+                initialize()
+            }
+        } 
+    }
     single<RemotePostDataSource> {
         val context = get<android.content.Context>()
         val blogId = context.getString(R.string.blogger_id)

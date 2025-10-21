@@ -46,57 +46,35 @@ class LanguageManager(
     }
 
     // Thread-safe language getter
-    fun getLanguage(): String = _currentLanguage.get()
+    fun getLanguage(): String {
+        val lang = _currentLanguage.get()
+        Log.d("LanguageManager", "getLanguage returning: $lang")
+        return lang
+    }
 
     private val _restartPending = MutableStateFlow(false)
     val restartPending: StateFlow<Boolean> = _restartPending.asStateFlow()
-suspend fun setLanguage(language: String) {
-    languageMutex.withLock {
-        try {
-            Log.d("LANG", "LanguageManager.setLanguage() called: $language")
+    suspend fun setLanguage(language: String) {
+        languageMutex.withLock {
+            try {
+                Log.d("LANG", "LanguageManager.setLanguage() called: $language")
 
-            /* 1.  save to disk and wait until fsync returns */
-            languageDataStore.saveLanguage(language)
-            Log.d("LANG", "DataStore write confirmed for: $language")
+                /* 1.  save to disk and wait until fsync returns */
+                languageDataStore.saveLanguage(language)
+                Log.d("LANG", "DataStore write confirmed for: $language")
 
-            /* 2.  now update in-memory state */
-            _currentLanguage.set(language)
-            _languageFlow.value = language
+                /* 2.  now update in-memory state */
+                _currentLanguage.set(language)
+                _languageFlow.value = language
 
-            /* 3.  tell Lingver */
-            Lingver.getInstance().setLocale(context, language)
-            Log.d("LanguageManager", "Language set to: $language")
-        } catch (e: Exception) {
-            Log.e("LanguageManager", "Failed to set language: $language", e)
-            throw e
+                /* 3.  tell Lingver */
+                Lingver.getInstance().setLocale(context, language)
+                Log.d("LanguageManager", "Language set to: $language")
+            } catch (e: Exception) {
+                Log.e("LanguageManager", "Failed to set language: $language", e)
+                throw e
+            }
+            (context as Activity).recreate()
         }
-    }
-}
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-  fun setLanguageAndRestart(language: String, context: Context) {
-    // 1. INSTANT feedback on MAIN thread
-    _restartPending.value = true
-    Lingver.getInstance().setLocale(context, language) // UI reflects change now
-
-    // 2. real write on IO thread
-    appScope.launch {
-        Log.d("LANG", "App-scope starting write for: $language")
-        languageDataStore.saveLanguage(language)   // suspend, but no .first()
-        Log.d("LANG", "App-scope write finished, restarting")
-        _restartPending.value = false
-        restartApp(context)
-    }
-}
-    fun restartApp(context: Context) {
-        val activity = context as Activity
-        val intent = Intent(activity, activity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-        }
-        val options = ActivityOptions.makeCustomAnimation(activity, 0, 0)
-        activity.finish()
-        activity.startActivity(intent, options.toBundle())
-
     }
 }

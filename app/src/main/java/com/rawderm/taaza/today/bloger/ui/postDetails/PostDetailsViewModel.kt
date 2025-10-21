@@ -1,5 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.postDetails
 
+import android.app.Activity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -71,8 +72,7 @@ class PostDetailsViewModel(
 
             is PostDetailsActions.OnDeepLinkArrived -> {
                 viewModelScope.launch {
-                    fetchPostDetails (action.postId)
-
+                fetchPostDetails (action.postId)
                 }
             }
             is PostDetailsActions.OnPostFavoriteClick -> {

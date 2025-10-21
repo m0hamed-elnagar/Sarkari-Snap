@@ -1,5 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -77,7 +78,6 @@ fun HomeScreenRoot(
                 Modifier
                     .fillMaxSize()
                     .background(White),
-                context,
                 languageManager,
                 scope
             ) {}

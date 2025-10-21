@@ -34,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberUpdatedState
@@ -61,6 +62,7 @@ import coil3.request.placeholder
 import coil3.size.Scale
 import coil3.size.Size
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.FavoriteToggleIcon
 import com.rawderm.taaza.today.bloger.ui.components.PostList
@@ -75,6 +77,8 @@ import com.rawderm.taaza.today.core.utils.ShareUtils.telegram
 import com.rawderm.taaza.today.core.utils.ShareUtils.twitter
 import com.rawderm.taaza.today.core.utils.ShareUtils.whatsApp
 import com.rawderm.taaza.today.core.utils.openUrlInCustomTab
+import com.yariksoffice.lingver.Lingver
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -178,7 +182,9 @@ fun PostDetailsScreen(
         floatingActionButton = {
             state.post?.let { postToShare ->
                 ShareExpandableFab(onShareClick = { target ->
-                    val postUrl = "$appUrl/post/" + postToShare.id
+
+
+                    val postUrl = "$appUrl/" + Lingver.getInstance().getLocale().language + "/post/" + postToShare.id
                     val postTitle = postToShare.title + readFullNews
                     when (target) {
                         ShareTarget.WHATSAPP -> whatsApp(context, postTitle, postUrl)

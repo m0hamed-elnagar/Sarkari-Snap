@@ -1,5 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.components
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,6 +41,8 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.yariksoffice.lingver.Lingver
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,7 +123,11 @@ fun TopBar(
                                 }
                                 onAction(HomeActions.OnLoading)
                                 Log.d("LANG", "changeLanguage() invoked: en")
-                                languageManager.setLanguageAndRestart("en", context)
+                                // Use the new approach with recreate instead of custom restart
+                                val scope = MainScope()
+                                scope.launch {
+                                    languageManager.setLanguage("en")
+                                }
 
                                 expanded = false
                             }
@@ -149,7 +156,10 @@ fun TopBar(
 
                                 // Restart the app to ensure language change is applied everywhere
                                 Log.d("LANG", "changeLanguage() invoked: hi")
-                                languageManager.setLanguageAndRestart("hi", context)
+                                val scope = MainScope()
+                                scope.launch {
+                                    languageManager.setLanguage("hi")
+                                }
 
                                 expanded = false
                             }
