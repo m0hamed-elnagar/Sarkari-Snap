@@ -1,6 +1,5 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
-import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -53,6 +52,7 @@ fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onPostClick: (Post) -> Unit,
     onPagesClick: (Page) -> Unit,
+    shortsViewModel: ShortsViewModel,
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
@@ -89,6 +89,7 @@ fun HomeScreenRoot(
             trendingPosts = trendingPosts,
             pages = pages,
             languageManager,
+            shortsViewModel ,
             pagerState,
             scope,
             pagedUiItem = pagedUiItem,
@@ -120,6 +121,7 @@ fun HomeScreen(
     trendingPosts: LazyPagingItems<Post>,
     pages: LazyPagingItems<Page>,
     languageManager: LanguageManager,
+    shortsViewModel: ShortsViewModel,
     pagerState: PagerState,
     scope: CoroutineScope,
     onAction: (HomeActions) -> Unit,
@@ -130,7 +132,6 @@ fun HomeScreen(
     // --- Per-label LazyListState map ---
     val labelListStates = remember { mutableMapOf<String, LazyListState>() }
     val currentListState = labelListStates.getOrPut(state.selectedLabel) { LazyListState() }
-    val shortsViewModel = koinViewModel<ShortsViewModel>()
     val settledPage = pagerState.settledPage
 
     LaunchedEffect(settledPage) {

@@ -48,14 +48,6 @@ fun LanguageConfirmDialog(
             else -> requestedLang
         }
 
-        // Check if we need to recreate the activity after language change
-        var needRecreate by remember { mutableStateOf(false) }
-
-//        LaunchedEffect(languageManager.restartPending.collectAsState().value) {
-//            if (languageManager.restartPending.value && needRecreate) {
-//                languageManager.recreateActivity(activity)
-//            }
-//        }
         
         AlertDialog(
             onDismissRequest = {},
@@ -73,7 +65,6 @@ fun LanguageConfirmDialog(
                     onClick = {
                         scope.launch {
                             languageManager.setLanguage(requestedLang,activity)
-                            needRecreate = true
                             onAccept()
                         }
                     },

@@ -77,9 +77,7 @@ fun NativeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-//            .height(320.dp) // Fixed height to ensure space is reserved
             .background(Color.White)
-//            .padding(8.dp)
     ) {
         when {
             isLoading -> {
@@ -121,7 +119,7 @@ fun NativeScreen(
 
             nativeAd != null -> {
                 // Success state
-                DisplayNativeAdView(nativeAd!!)
+                DisplayNativeAdView(nativeAd!!,modifier)
             }
         }
     }

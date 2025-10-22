@@ -40,9 +40,9 @@ import com.rawderm.taaza.today.bloger.ui.components.ads.compose_util.NativeAdSto
 import com.rawderm.taaza.today.bloger.ui.components.ads.compose_util.NativeAdView
 
 @Composable
-fun DisplayNativeAdView(nativeAd: NativeAd) {
-    NativeAdView(nativeAd) {
-        Box(Modifier.fillMaxSize()) {
+fun DisplayNativeAdView(nativeAd: NativeAd, modifier: Modifier = Modifier) {
+    NativeAdView(nativeAd,modifier) {
+        Box(modifier) {
 
             /* 1. full-screen media (background) */
             NativeAdMediaView(Modifier.fillMaxSize())

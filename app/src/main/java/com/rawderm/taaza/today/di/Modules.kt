@@ -46,7 +46,7 @@ val sharedModule = module {
         val context = get<android.content.Context>()
         val blogId = context.getString(R.string.blogger_id)
         Log.d("urlTest", "blogid: $blogId ")
-        KtorRemoteBlogDataSource(get(), blogId)
+        KtorRemoteBlogDataSource(get(), blogId,get())
     }
     singleOf(::DefaultPostsRepo)
         .bind<PostsRepo>()
