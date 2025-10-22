@@ -23,5 +23,7 @@ interface PostsRepo {
    suspend fun getPostById(postId: String) : Result<Post, DataError.Remote>
     fun getPagedShorts(): Flow<PagingData<Post>>
     fun getShortsBeforeDate(afterDate: String?): Flow<PagingData<Short>>
+    // New method that accepts a language parameter
+    fun getShortsBeforeDateWithLanguage(afterDate: String?, language: String): Flow<PagingData<Short>>
     fun observeFavoriteShortIds(): Flow<Set<String>>
 }

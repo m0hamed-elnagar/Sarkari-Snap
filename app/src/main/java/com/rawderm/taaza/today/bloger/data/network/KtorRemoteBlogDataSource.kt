@@ -3,6 +3,7 @@ package com.rawderm.taaza.today.bloger.data.network
 import android.annotation.SuppressLint
 import android.util.Log
 import com.rawderm.taaza.today.BuildConfig
+import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.dto.BloggerResponse
 import com.rawderm.taaza.today.bloger.data.dto.LabelsResponse
 import com.rawderm.taaza.today.bloger.data.dto.PageDto
@@ -16,6 +17,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.runBlocking
 import java.time.OffsetDateTime
 
 private const val BASE_URL =
@@ -30,17 +32,22 @@ private const val BASE_URL_english =
 class KtorRemoteBlogDataSource(
     private val httpClient: HttpClient,
     private val baseUrl: String,
+    private val languageDataStore: LanguageDataStore
 ) : RemotePostDataSource {
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
      fun getBaseUrl(): String {
-        val lang = Lingver.getInstance().getLocale().language // e.g. "hi" or "en"
-        return when (lang) {
-            "en" -> BASE_URL_english
-            "hi" -> BASE_URL
-            else -> BASE_URL // fallback
+         var url = baseUrl
+         runBlocking {
+        val lang = languageDataStore.getLanguage() // e.g. "hi" or "en"
+         when (lang) {
+            "en" ->url  = BASE_URL_english
+            "hi" -> url  =BASE_URL
+            else -> url  =BASE_URL // fallback
         }
+             Log.d("lang", "getBaseUrl: $lang ")
     }
+     return url}
     override suspend fun getPostsAfterDate(
         limit: Int,
         label: String? ,
@@ -137,6 +144,35 @@ class KtorRemoteBlogDataSource(
 
         return safeCall<BloggerResponse> {
             httpClient.get("${getBaseUrl()}/posts") {
+                parameter("key", apiKey)
+                parameter("maxResults", limit)
+                parameter("labels", "Video")
+
+                // all posts updated before this post
+                parameter("endDate", beforeDate)
+                pageToken?.let { parameter("pageToken", it) }
+                parameter("orderBy", "updated")
+                parameter("fields", "nextPageToken,items(id,updated,url,title,content,labels)")
+            }.body()
+        }
+    }
+    
+    override suspend fun getShortsBeforeDateWithLanguage(
+        limit: Int,
+        label: String?,
+        beforeDate: String?,
+        pageToken: String?,
+        language: String
+    ): Result<BloggerResponse, DataError.Remote> {
+        // Determine the base URL based on the language parameter
+        val baseUrl = when (language) {
+            "en" -> BASE_URL_english
+            "hi" -> BASE_URL
+            else -> BASE_URL // fallback to default
+        }
+
+        return safeCall<BloggerResponse> {
+            httpClient.get("$baseUrl/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 parameter("labels", "Video")

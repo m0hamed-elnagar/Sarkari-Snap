@@ -53,6 +53,7 @@ fun BannerAd(
     adView: AdView?=null
 
 ) {
+
     val context = LocalContext.current
     val adView = remember {
         adView?:

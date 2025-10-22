@@ -20,3 +20,19 @@ fun shortsBeforeDatePagingSource(
     getUpdated = { it.updated },
     mapToDomain = { it.toShort() }
 )
+
+fun shortsBeforeDatePagingSourceWithLanguage(
+    remote: RemotePostDataSource,
+    endDate: String?,
+    language: String
+): ContentPagingSource<Short> = beforeDatePagingSource(
+    initialEndDate = endDate,
+    fetch = { loadSize, end ->
+        when (val res = remote.getShortsBeforeDateWithLanguage(loadSize, "", end, null, language)) {
+            is Result.Success -> Result.Success(res.data.items)
+            is Result.Error -> Result.Error(res.error)
+        }
+    },
+    getUpdated = { it.updated },
+    mapToDomain = { it.toShort() }
+)

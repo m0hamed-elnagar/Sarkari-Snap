@@ -39,4 +39,13 @@ interface RemotePostDataSource {
         beforeDate: String?,
         pageToken: String? = null
     ): Result<BloggerResponse, DataError.Remote>
+    
+    // New method that accepts a language parameter
+    suspend fun getShortsBeforeDateWithLanguage(
+        limit: Int,
+        label: String? = null,
+        beforeDate: String?,
+        pageToken: String? = null,
+        language: String
+    ): Result<BloggerResponse, DataError.Remote>
 }

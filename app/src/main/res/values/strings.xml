@@ -80,4 +80,5 @@
     <string name="change_language_message">Do you want to change the app language to %1$s?</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="something_went_wrong">somthing went wrong</string>
 </resources>

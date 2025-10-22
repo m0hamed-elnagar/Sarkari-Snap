@@ -121,7 +121,7 @@ fun ShortsScreenRoot(
 fun ShortsScreen(
     shortsPaging: LazyPagingItems<ShortUiItem>,
     pagerState: PagerState,
-    failedAdIds: MutableSet<String>, // Receive the failed ad IDs set
+    failedAdIds: MutableSet<String>,
     isRefreshing: Boolean = false,
     onAction: (ShortsActions) -> Unit,
 ) {
@@ -146,82 +146,105 @@ fun ShortsScreen(
             showLoadingInsteadOfEmpty.value = false         // now allow "No posts" to appear
         }
     }
-    /* 1. empty state */
-    if (shortsPaging.itemCount == 0) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center
-        ) {
-            if (showLoadingInsteadOfEmpty.value) {
-                CircularProgressIndicator()
-            } else {
-
-                Text(
-                    text = stringResource(R.string.no_shorts_yet),
-                    color = Color.White,
-                    fontSize = 18.sp
-                )
-            }
-        }
-        return   // do not draw the pager at all
-    }
-    
-    // Pull to refresh for Shorts
-    val pullRefreshState = rememberPullRefreshState(isRefreshing, { onAction(ShortsActions.OnRefresh) }
+       val pullRefreshState = rememberPullRefreshState(isRefreshing, { onAction(ShortsActions.OnRefresh) }
     )
-    
     Box(
         modifier = Modifier
-            .pullRefresh(pullRefreshState)
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)          // gesture surface
+            .background(Color.Black)
     ) {
-        VerticalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize(),
-            pageSpacing = 0.dp,
-            beyondViewportPageCount = 3,
-            userScrollEnabled = true,
-            flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
-            key = { pageIndex ->
-                val shortItem = shortsPaging.peek(pageIndex)
-                when {
-                    shortItem?.isAd == true -> "ad_${shortItem.adId ?: pageIndex}"
-                    else                    -> "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
+/* 1. empty state */
+if (shortsPaging.itemCount == 0) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            when {
+                shortsPaging.loadState.refresh is LoadState.Loading ||
+                showLoadingInsteadOfEmpty.value -> {
+                    CircularProgressIndicator()
+                }
+
+                shortsPaging.loadState.refresh is LoadState.Error -> {
+                    Text(
+                        text = stringResource(R.string.something_went_wrong),
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    androidx.compose.material3.Button(onClick = { shortsPaging.retry() }) {
+                        Text(text = stringResource(R.string.retry))
+                    }
+                }
+
+                else -> {
+                    Text(
+                        text = stringResource(R.string.no_shorts_yet),
+                        color = Color.White,
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    androidx.compose.material3.Button(onClick = { onAction(ShortsActions.OnRefresh) }) {
+                        Text(text = stringResource(R.string.retry))
+                    }
                 }
             }
-
-        ) { pageIndex ->
-            val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
-            if (shortItem.isAd) {
-                val adKey = shortItem.adId
-                NativeScreen(
-                    onAdResult = { loaded ->
-                        // If ad failed to load, add its ID to the failed set
-    //                    adKey?.let {
-    //                        if (!loaded && adKey !in failedAdIds) {
-    //                       failedAdIds +=adKey
-    //                        shortsPaging.refresh()    // drop the row – no scroll, no loop
-    //                    }
-    //                    }
-
-                    }
-                )
-                return@VerticalPager
-
-            }
-            val videoId = remember(shortItem) { shortItem.short?.videoId }
-
-            ShortsVideoPage(
-                shortItem = shortItem,
-                videoId = videoId,
-                isSelected = pageIndex == settledPage,
-                settledPage = settledPage,
-                pageIndex = pageIndex,
-                onAction = onAction
-            )
         }
-        
+    }
+} else {
+
+    VerticalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxSize(),
+        pageSpacing = 0.dp,
+        beyondViewportPageCount = 3,
+        userScrollEnabled = true,
+        flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
+        key = { pageIndex ->
+            val shortItem = shortsPaging.peek(pageIndex)
+            when {
+                shortItem?.isAd == true -> "ad_${shortItem.adId ?: pageIndex}"
+                else                    -> "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
+            }
+        }
+
+    ) { pageIndex ->
+        val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
+        if (shortItem.isAd) {
+            val adKey = shortItem.adId
+            NativeScreen(
+                nativeAdUnitID = "ca-app-pub-7395572779611582/5835976761",
+                onAdResult = { loaded ->
+                    // If ad failed to load, add its ID to the failed set
+//                    adKey?.let {
+//                        if (!loaded && adKey !in failedAdIds) {
+//                       failedAdIds +=adKey
+//                        shortsPaging.refresh()    // drop the row – no scroll, no loop
+//                    }
+//                    }
+
+                }
+            )
+            return@VerticalPager
+
+        }
+        val videoId = remember(shortItem) { shortItem.short?.videoId }
+
+        ShortsVideoPage(
+            shortItem = shortItem,
+            videoId = videoId,
+            isSelected = pageIndex == settledPage,
+            settledPage = settledPage,
+            pageIndex = pageIndex,
+            onAction = onAction
+        )
+    }}
+
         PullRefreshIndicator(
             refreshing = isRefreshing,
             state = pullRefreshState,
@@ -232,43 +255,43 @@ fun ShortsScreen(
 
 @Composable
 private fun ShortsVideoPage(
-    shortItem: ShortUiItem,
-    videoId: String?,
-    isSelected: Boolean,
-    settledPage: Int,
-    pageIndex: Int,
-    onAction: (ShortsActions) -> Unit
+shortItem: ShortUiItem,
+videoId: String?,
+isSelected: Boolean,
+settledPage: Int,
+pageIndex: Int,
+onAction: (ShortsActions) -> Unit
 ) {
-    // Local state for like (you might want to move this to ViewModel)
-    val isLiked = shortItem.isFavorite
-    val context = LocalContext.current
-    val appUrl = context.getString(R.string.app_url)
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-        Column(Modifier.fillMaxSize()) {
-            BannerAd()
-            /* 1. decide what to draw */
-            when {
-                videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
-                abs(pageIndex - settledPage) <= 2 -> {
-                    YouTubeShortsPlayer(
-                        videoIds = listOf(videoId),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .aspectRatio(9f / 16f),
-                        autoPlay = isSelected,   // NEW flag
-                        onVideoEnd = { /* optional scroll to next */ }
-                    )
-                }
-
-                else -> PlaceholderBox(stringResource(R.string.loading_ellipsis))
+// Local state for like (you might want to move this to ViewModel)
+val isLiked = shortItem.isFavorite
+val context = LocalContext.current
+val appUrl = context.getString(R.string.app_url)
+Box(
+    Modifier
+        .fillMaxSize()
+        .background(Color.Black)
+) {
+    Column(Modifier.fillMaxSize()) {
+        BannerAd("ca-app-pub-7395572779611582/3592956801")
+        /* 1. decide what to draw */
+        when {
+            videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
+            abs(pageIndex - settledPage) <= 2 -> {
+                YouTubeShortsPlayer(
+                    videoIds = listOf(videoId),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .aspectRatio(9f / 16f),
+                    autoPlay = isSelected,   // NEW flag
+                    onVideoEnd = { /* optional scroll to next */ }
+                )
             }
 
-
+            else -> PlaceholderBox(stringResource(R.string.loading_ellipsis))
         }
+
+
+    }
 //        /* Text overlay at bottom */
 //        Column(
 //            Modifier
@@ -285,72 +308,72 @@ private fun ShortsVideoPage(
 //            }
 //        }
 
-        val suffixShare = stringResource(R.string.share_shorts_suffix)
-        /* Action buttons on the right side */
-        Column(
+    val suffixShare = stringResource(R.string.share_shorts_suffix)
+    /* Action buttons on the right side */
+    Column(
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = 16.dp, bottom = 100.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Share button
+        IconButton(
+            onClick = {
+
+                val postTitle = shortItem.short?.title + suffixShare
+                val postUrl = "$appUrl/" + Lingver.getInstance().getLocale().language +"/shorts/" + shortItem.short?.rowDate
+                systemChooser(context, postTitle, postUrl)
+            },
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 100.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(48.dp)
+                .padding(horizontal = 2.dp)
         ) {
-            // Share button
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = stringResource(R.string.share),
+                tint = Color.White,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.padding(8.dp))
+
+        // Like button with count
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             IconButton(
                 onClick = {
-
-                    val postTitle = shortItem.short?.title + suffixShare
-                    val postUrl = "$appUrl/" + Lingver.getInstance().getLocale().language +"/shorts/" + shortItem.short?.rowDate
-                    systemChooser(context, postTitle, postUrl)
+                    onAction(ShortsActions.OnPostFavoriteClick(shortItem))
                 },
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(horizontal = 2.dp)
+                modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = stringResource(R.string.share),
-                    tint = Color.White,
+                    imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = stringResource(R.string.like),
+                    tint = if (isLiked) Color.White else Color.White,
                     modifier = Modifier.size(32.dp)
                 )
             }
-
-            Spacer(modifier = Modifier.padding(8.dp))
-
-            // Like button with count
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                IconButton(
-                    onClick = {
-                        onAction(ShortsActions.OnPostFavoriteClick(shortItem))
-                    },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = stringResource(R.string.like),
-                        tint = if (isLiked) Color.White else Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
-
-
-            Spacer(modifier = Modifier.padding(8.dp))
-
         }
 
 
+        Spacer(modifier = Modifier.padding(8.dp))
+
     }
+
+
+}
 }
 
 @Composable
 private fun PlaceholderBox(text: String) {
-    /* swap with any shimmer / circular spinner you like */
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .aspectRatio(9f / 16f)
-            .background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text, color = Color.White, fontSize = 16.sp)
-    }
+/* swap with any shimmer / circular spinner you like */
+Box(
+    Modifier
+        .fillMaxWidth()
+        .aspectRatio(9f / 16f)
+        .background(Color.Black),
+    contentAlignment = Alignment.Center
+) {
+    Text(text, color = Color.White, fontSize = 16.sp)
+}
 }

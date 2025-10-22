@@ -99,7 +99,7 @@ fun PostListWithAds(
                 when (uiItem) {
                     is PostUiItem -> {
                         if (uiItem.isAd) {
-                            TestBanner2()
+                           BannerAd(adUnitId = "ca-app-pub-7395572779611582/6858599226")
                         } else {
                             uiItem.post?.let { post ->
                                 if (index == 0) {

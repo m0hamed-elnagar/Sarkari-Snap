@@ -79,4 +79,5 @@
     <string name="change_language_message">क्या आप ऐप की भाषा %1$s में बदलना चाहते हैं?</string>
     <string name="accept">स्वीकार करें</string>
     <string name="decline">अस्वीकार करें</string>
+    <string name="something_went_wrong">somthing went wrong</string>
 </resources>

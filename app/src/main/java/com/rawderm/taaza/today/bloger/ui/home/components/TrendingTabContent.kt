@@ -121,7 +121,7 @@ private fun TrendingTabContent(
         }
 
         // Banner at the bottom
-        BannerAd(
+        BannerAd("ca-app-pub-7395572779611582/3592956801"
         )
     }
 }

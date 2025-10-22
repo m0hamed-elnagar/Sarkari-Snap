@@ -77,15 +77,6 @@ class LanguageDataStore(private val context: Context) {
         it.remove(PENDING_INTENT_KEY)
     }
     
-    @Deprecated("Use savePendingIntent instead", ReplaceWith("savePendingIntent(lang, routeJson)"))
-    suspend fun savePendingDeepLinkLanguage(lang: String, routeJson: String) = savePendingIntent(lang, routeJson)
-    
-    @Deprecated("Use getPendingIntent instead", ReplaceWith("getPendingIntent()"))
-    suspend fun getPendingDeepLinkLanguage(): String? = getPendingIntent()
-    
-    @Deprecated("Use getPendingIntent instead", ReplaceWith("getPendingIntent()"))
-    suspend fun getPendingDeepLinkRoute(): String? = getPendingIntent()
-    
-    @Deprecated("Use clearPendingIntent instead", ReplaceWith("clearPendingIntent()"))
-    suspend fun clearPendingDeepLinkLanguage() = clearPendingIntent()
+
+
 }

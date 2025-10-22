@@ -1,21 +1,12 @@
 package com.rawderm.taaza.today.bloger.data
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.yariksoffice.lingver.Lingver
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicReference
@@ -70,7 +61,6 @@ class LanguageManager(
                 /* 3.  tell Lingver */
                 Lingver.getInstance().setLocale(context, language)
                 Log.d("LanguageManager", "Language set to: $language")
-                
                 // Set restart pending flag instead of directly recreating
                 _restartPending.value = true
                 activity?.recreate()
@@ -87,4 +77,28 @@ class LanguageManager(
             activity?.recreate()
         }
     }
+}
+object PendingDeepLinkStorage {
+    private const val PREFS = "deep_link_prefs"
+    private const val KEY_TYPE = "type"   // "post" | "short"
+    private const val KEY_DATA   = "data"
+    private const val KEY_LANG = "lang"
+
+    fun save(ctx: Context, type: String, data: String, lang: String) =
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_TYPE, type)
+            .putString(KEY_DATA, data)
+            .putString(KEY_LANG, lang)
+            .apply()
+
+    fun consume(ctx: Context): Triple<String,String,String>? {
+        val p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val type = p.getString(KEY_TYPE, null) ?: return null
+        val id   = p.getString(KEY_DATA, null)   ?: return null
+        val lang = p.getString(KEY_LANG, null) ?: return null
+        p.edit().clear().apply()
+        return Triple(type, id, lang)
+    }
+
 }

@@ -245,6 +245,8 @@ fun PostDetailsScreen(
                             /* everything you already had: hero, title, date, chips, body */
                             PostDetailContent(post = post, onAction = onAction)
                         }
+                item {         NativeScreen(nativeAdUnitID = "ca-app-pub-7395572779611582/9691461291", modifier = Modifier.heightIn(400.dp).fillMaxSize())}
+
 //                        item {
 //                          SectionWithPaging(
 //                                title = "You may also like",
@@ -282,6 +284,7 @@ fun PostDetailsScreen(
 //                }
 
                     }
+
                 }
             }
         }
@@ -367,7 +370,6 @@ private fun LazyItemScope.PostDetailContent(
 
         )
     }
-    NativeScreen(modifier = Modifier.fillMaxWidth())
 }
 
 @Composable

@@ -59,7 +59,9 @@ internal fun <T : Any, D> beforeDatePagingSource(
 }
 
  fun addOneSecond(timestamp: String): String {
-        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+     if (timestamp.isBlank()) return timestamp
+
+     val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
         val dateTime = OffsetDateTime.parse(timestamp, formatter)
         return dateTime.plusSeconds(1).format(formatter)
 

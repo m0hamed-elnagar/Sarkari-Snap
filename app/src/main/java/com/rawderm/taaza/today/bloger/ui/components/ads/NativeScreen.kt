@@ -28,7 +28,7 @@ import com.google.android.gms.ads.nativead.NativeAd
 @Composable
 fun NativeScreen(
     modifier: Modifier = Modifier,
-    nativeAdUnitID: String = "ca-app-pub-7395572779611582/5930969860",
+    nativeAdUnitID: String = "ca-app-pub-7395572779611582/3507915065",
     testNativeAdUnitID: String = "ca-app-pub-3940256099942544/2247696110",
     onAdResult: (loaded: Boolean) -> Unit = {}
 ) {

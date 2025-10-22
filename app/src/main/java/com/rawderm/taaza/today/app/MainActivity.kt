@@ -6,14 +6,23 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.AdListener
@@ -36,7 +45,8 @@ import com.google.android.play.core.ktx.isImmediateUpdateAllowed
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
-import com.yariksoffice.lingver.Lingver
+import com.rawderm.taaza.today.bloger.data.PendingDeepLinkStorage
+import com.rawderm.taaza.today.bloger.ui.home.components.LanguageConfirmDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -76,22 +86,36 @@ class MainActivity : ComponentActivity() {
         val deepLinkLang = intent?.data?.pathSegments?.firstOrNull {
             it.length == 2          // "en", "hi", "es" ...
         }
+        
+        val data = intent?.data?.pathSegments?.getOrNull(2) // Get the date segment if it exists
+        val pendingType= when {
+            data != null && intent?.data?.pathSegments?.contains("shorts") == true -> "short"
+            data != null  -> "post"
+                else -> ""
+            }
 
-        Log.d("DeepLink", "Deep link language: $deepLinkLang")
+
+        Log.d("DeepLink", "Deep link language: $deepLinkLang, date: $data")
+        val currentLanguage = runBlocking { languageDataStore.getLanguage() }
 
         // 2. If link contains a language != current -> save it
         if (deepLinkLang != null) {
             // Get current language directly from datastore to avoid timing issues
-            val currentLanguage = runBlocking { languageDataStore.getLanguage() }
             Log.d("DeepLink", "Current language: $currentLanguage")
 
-            if (deepLinkLang != currentLanguage) {
-                Log.d("DeepLink", "Saving pending deep link language: $deepLinkLang")
-                lifecycleScope.launch {
-                    // We'll handle this in the AppNavigation composable now
-                }
+            if (deepLinkLang != currentLanguage && !data.isNullOrBlank()) {
+                Log.d("DeepLink", "Saving pending deep link language: $deepLinkLang with date: $data")
+                // Save the deep link data for later use
+                PendingDeepLinkStorage.save(
+                    ctx = this,
+                    type = pendingType,
+                    data = data,
+                    lang = deepLinkLang
+                )
+                // Clear the intent data to prevent reprocessing
+                intent.data = null
             } else {
-                Log.d("DeepLink", "Deep link language is same as current language, not saving")
+                Log.d("DeepLink", "Deep link language is same as current language or date is blank, not saving")
             }
         } else {
             Log.d("DeepLink", "No deep link language found")
@@ -106,9 +130,19 @@ class MainActivity : ComponentActivity() {
             loadNativeAd()
         }
         setContent {
-            navController = rememberNavController()
+            var showLangGate by remember { mutableStateOf(true) }   // 1. start with gate open
 
-            App(navController)
+            if (showLangGate) {
+                LanguageGate(                                       // 2. dialog only
+                    deepLinkLang = deepLinkLang,
+                    currentLang  = currentLanguage,
+                    languageManager = languageManager,
+                    onPassed = { showLangGate = false }            // 3. close gate
+                )
+            } else {
+                navController = rememberNavController()
+                App(navController)                                 // 4. real app
+            }
         }
         appUpdateManager = AppUpdateManagerFactory.create(this)
 
@@ -129,12 +163,38 @@ class MainActivity : ComponentActivity() {
         intent?.let { newIntent ->
             // 1. make it the intent that every lifecycle method will see from now on
             setIntent(newIntent)
-
+            Log.d("DeepLink", "New intent: $newIntent")
             // 3. let Navigation handle the deep link
             navController.handleDeepLink(newIntent)
         }
     }
-    override fun onResume() {
+@Composable
+private fun LanguageGate(
+    deepLinkLang: String?,
+    currentLang: String,
+    languageManager: LanguageManager,
+    onPassed: () -> Unit
+) {
+    // nothing to do → skip gate immediately
+    if (deepLinkLang == null || deepLinkLang == currentLang ) {
+        LaunchedEffect(Unit) { onPassed() }
+        return
+    }
+
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    LanguageConfirmDialog(
+        modifier = Modifier,
+        context = ctx,
+        languageManager = languageManager,
+        scope = scope,
+        requestedLang = deepLinkLang,
+        onAccept = {
+            onPassed()
+        },
+        onDecline = { onPassed() }
+    )
+}    override fun onResume() {
         super.onResume()
 
         appUpdateManager

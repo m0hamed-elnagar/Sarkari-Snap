@@ -194,7 +194,7 @@ fun MoreTabScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-BannerAd()
+BannerAd("ca-app-pub-7395572779611582/3592956801")
                 Spacer(Modifier.height(4.dp))
 //                Text(
 //                    text = "Made by",

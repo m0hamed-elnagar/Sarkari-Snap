@@ -18,6 +18,7 @@ import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
+import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSourceWithLanguage
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
@@ -188,6 +189,19 @@ class DefaultPostsRepo(
             }
         ).flow
 
+    }
+    
+    override fun getShortsBeforeDateWithLanguage(afterDate: String?, language: String): Flow<PagingData<Short>> {
+        return Pager(
+            config = PagingConfig(pageSize = 6, enablePlaceholders = false),
+            pagingSourceFactory = {
+                shortsBeforeDatePagingSourceWithLanguage(
+                    remotePostDataSource,
+                    afterDate,
+                    language
+                )
+            }
+        ).flow
     }
 
     override suspend fun getPage(pageId: String): Result<Page, DataError.Remote> =

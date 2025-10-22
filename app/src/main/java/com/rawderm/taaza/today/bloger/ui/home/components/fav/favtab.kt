@@ -108,7 +108,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
                         // Banner at bottom of videos tab
                         BannerAd(
-                            adUnitId = "ca-app-pub-7395572779611582/6858599226",
+                            adUnitId = "ca-app-pub-7395572779611582/3592956801",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
@@ -148,7 +148,7 @@ import org.koin.compose.viewmodel.koinViewModel
                             }
                         }
                         BannerAd(
-                            adUnitId = "ca-app-pub-7395572779611582/6858599226",
+                            adUnitId = "ca-app-pub-7395572779611582/3592956801",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
