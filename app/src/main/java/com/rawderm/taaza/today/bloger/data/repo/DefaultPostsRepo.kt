@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.sqlite.SQLiteException
+import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.database.FavoritePostDao
 import com.rawderm.taaza.today.bloger.data.database.ShortDao
 import com.rawderm.taaza.today.bloger.data.mappers.toDomain
@@ -13,12 +14,12 @@ import com.rawderm.taaza.today.bloger.data.mappers.toPostEntity
 import com.rawderm.taaza.today.bloger.data.mappers.toShort
 import com.rawderm.taaza.today.bloger.data.mappers.toShortEntity
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
-import com.rawderm.taaza.today.bloger.data.paging.shortsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSourceWithLanguage
+import com.rawderm.taaza.today.bloger.data.paging.shortsPagingSource
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
@@ -27,7 +28,6 @@ import com.rawderm.taaza.today.core.domain.DataError
 import com.rawderm.taaza.today.core.domain.EmptyResult
 import com.rawderm.taaza.today.core.domain.Result
 import com.rawderm.taaza.today.core.domain.map
-import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.Locale
@@ -35,16 +35,17 @@ import java.util.Locale
 class DefaultPostsRepo(
     private val remotePostDataSource: RemotePostDataSource,
     private val postDao: FavoritePostDao,
-    private val shortDao: ShortDao
+    private val shortDao: ShortDao,
+    private val languageDataStore: LanguageDataStore,
 ) : PostsRepo {
 
 
     override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
-        return remotePostDataSource.getUniqueLabels().map { dto ->
+        val lang = languageDataStore.getLanguageSync()
+
+        return remotePostDataSource.getUniqueLabels(currentLang =lang).map { dto ->
             val excludedLabels = setOf("shorts", "video", "test 1", "test","trending")
-// 3. Get current locale from Lingver
-            val currentLocale = Lingver.getInstance().getLocale()
-            val isHindi = currentLocale.language.equals("hi", ignoreCase = true)
+            val isHindi = lang.equals("hi", ignoreCase = true)
             val canonicalOrder = if (isHindi) hindiOrder else englishOrder
             val allLabel = if (isHindi) "सभी" else "All"
             val orderLookup = canonicalOrder
@@ -61,16 +62,23 @@ class DefaultPostsRepo(
                 compareBy({ orderLookup[it] ?: Int.MAX_VALUE }, { it })
             )
 
-            // 8. Prepend “All” / “सभी”
+            // 8. Prepend "All" / "सभी"
             (     listOf(allLabel) + sortedLabels)
                 .map { it.replaceFirstChar(Char::uppercase) }
 
-//            listOf("All") + dto.items
-//                .flatMap { it.labels }
-//                .filter { it.lowercase() !in excludedLabels }
-//                .distinct()
-//                .map { it.replaceFirstChar(Char::uppercase) }   // capitalise
 
+        }
+    }
+
+    override fun getLabelsFlow(): Flow<List<String>> {
+        return kotlinx.coroutines.flow.flow {
+            val result = getLabels()
+            if (result is Result.Success) {
+                emit(result.data)
+            } else {
+                // Emit empty list in case of error
+                emit(emptyList())
+            }
         }
     }
 

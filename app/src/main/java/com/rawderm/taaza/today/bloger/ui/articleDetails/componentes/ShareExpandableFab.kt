@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails.componentes
+package com.rawderm.taaza.today.bloger.ui.articleDetails.componentes
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.updateTransition

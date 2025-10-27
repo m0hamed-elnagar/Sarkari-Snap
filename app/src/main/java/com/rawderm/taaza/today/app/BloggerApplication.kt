@@ -4,7 +4,6 @@ package com.rawderm.taaza.today.app
 import android.app.Application
 import android.util.Log
 import android.webkit.WebView
-import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics

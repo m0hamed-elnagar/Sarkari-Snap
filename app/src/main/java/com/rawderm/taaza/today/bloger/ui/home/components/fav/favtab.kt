@@ -40,7 +40,6 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Short
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
 import com.rawderm.taaza.today.bloger.ui.components.PostListStatic
-import com.rawderm.taaza.today.bloger.ui.components.TestBanner
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeUiState
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions

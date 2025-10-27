@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.paging.compose.LazyPagingItems
@@ -30,13 +32,13 @@ import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.bloger.ui.components.BottomTab
+import com.rawderm.taaza.today.bloger.ui.components.BottomTabRow
+import com.rawderm.taaza.today.bloger.ui.components.LanguagePickerDialog
 import com.rawderm.taaza.today.bloger.ui.components.TopBar
-import com.rawderm.taaza.today.bloger.ui.home.components.BottomTab
-import com.rawderm.taaza.today.bloger.ui.home.components.BottomTabRow
 import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
-import com.rawderm.taaza.today.bloger.ui.home.components.LanguagePickerDialog
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
-import com.rawderm.taaza.today.bloger.ui.home.components.TrendingTabContentPullRefresh
+import com.rawderm.taaza.today.bloger.ui.home.components.QuickTabContentPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteTabContent
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
@@ -52,12 +54,13 @@ fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onPostClick: (Post) -> Unit,
     onPagesClick: (Page) -> Unit,
+    onQuickClick: (String) -> Unit,
     shortsViewModel: ShortsViewModel,
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     val pagedUiItem = viewModel.pagedUiModels.collectAsLazyPagingItems()
-    val trendingPosts = viewModel.trendingPosts.collectAsLazyPagingItems()
+    val quickPosts = viewModel.quickPosts.collectAsLazyPagingItems()
     val pages = viewModel.pages.collectAsLazyPagingItems()
     val languageManager: LanguageManager = koinInject()
     val pagerState = rememberPagerState { tabs.size } // ← dynamic count
@@ -86,7 +89,7 @@ fun HomeScreenRoot(
         HomeScreen(
             state = state, // Pass state argument
             pagedPosts = pagedPosts,
-            trendingPosts = trendingPosts,
+            quickPosts = quickPosts,
             pages = pages,
             languageManager,
             shortsViewModel ,
@@ -96,6 +99,7 @@ fun HomeScreenRoot(
             onAction = { action ->
                 when (action) {
                     is HomeActions.OnPostClick -> onPostClick(action.post)
+                    is HomeActions.OnQuickClick -> onQuickClick(action.postId)
                     is HomeActions.OnPageClick -> onPagesClick(action.page)
                     is HomeActions.OnTabSelected -> { ->
                         if (state.selectedTabIndex != action.index) {
@@ -118,7 +122,7 @@ fun HomeScreenRoot(
 fun HomeScreen(
     state: HomeUiState,
     pagedPosts: LazyPagingItems<Post>,
-    trendingPosts: LazyPagingItems<Post>,
+    quickPosts: LazyPagingItems<Post>,
     pages: LazyPagingItems<Page>,
     languageManager: LanguageManager,
     shortsViewModel: ShortsViewModel,
@@ -151,7 +155,7 @@ fun HomeScreen(
             }
         }, bottomBar = {
             BottomTabRow(
-                modifier = Modifier,
+                modifier = Modifier.background(Black).navigationBarsPadding().background(White),
                 pagerState = pagerState,
                 scope = scope,
                 tabs = tabs)
@@ -173,8 +177,8 @@ fun HomeScreen(
                         pagedUiItem = pagedUiItem
                     )
 
-                    BottomTab.TRENDING -> TrendingTabContentPullRefresh(
-                        state, trendingPosts, pages, onAction
+                    BottomTab.QUICKS -> QuickTabContentPullRefresh(
+                        state, quickPosts, onAction
                     )
 
                     BottomTab.SHORTS -> {

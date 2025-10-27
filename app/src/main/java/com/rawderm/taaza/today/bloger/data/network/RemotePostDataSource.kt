@@ -16,7 +16,7 @@ interface RemotePostDataSource {
         pageToken: String? = null
     ): Result<BloggerResponse, DataError.Remote>
 
-    suspend fun getUniqueLabels(limit: Int = 50): Result<LabelsResponse, DataError.Remote>
+    suspend fun getUniqueLabels(limit: Int = 50, currentLang: String): Result<LabelsResponse, DataError.Remote>
 
     suspend fun getPages(): Result<PagesResponse, DataError.Remote>
     suspend fun getPage(pageId: String): Result<PageDto, DataError.Remote>

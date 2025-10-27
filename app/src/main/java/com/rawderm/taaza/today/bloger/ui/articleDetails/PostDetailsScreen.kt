@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails
+package com.rawderm.taaza.today.bloger.ui.articleDetails
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -34,7 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberUpdatedState
@@ -62,15 +61,14 @@ import coil3.request.placeholder
 import coil3.size.Scale
 import coil3.size.Size
 import com.rawderm.taaza.today.R
-import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.NoPostState
+import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.PermanentHtmlContent2
+import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.ShareExpandableFab
+import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.ShareTarget
 import com.rawderm.taaza.today.bloger.ui.components.FavoriteToggleIcon
 import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
-import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.NoPostState
-import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
-import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareExpandableFab
-import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.ShareTarget
 import com.rawderm.taaza.today.core.utils.ShareUtils.messenger
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import com.rawderm.taaza.today.core.utils.ShareUtils.telegram
@@ -78,7 +76,6 @@ import com.rawderm.taaza.today.core.utils.ShareUtils.twitter
 import com.rawderm.taaza.today.core.utils.ShareUtils.whatsApp
 import com.rawderm.taaza.today.core.utils.openUrlInCustomTab
 import com.yariksoffice.lingver.Lingver
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

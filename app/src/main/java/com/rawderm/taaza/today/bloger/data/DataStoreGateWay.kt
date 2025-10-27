@@ -1,27 +1,16 @@
 package com.rawderm.taaza.today.bloger.data
 
-import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.datastore.preferences.core.edit
-import com.yariksoffice.lingver.Lingver
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "language_prefs")
 
@@ -29,7 +18,7 @@ class LanguageDataStore(private val context: Context) {
 
     companion object {
         val LANGUAGE_KEY = stringPreferencesKey("selected_language")
-        val FIRST_LAUNCH_KEY  = booleanPreferencesKey("is_first_launch")   // NEW
+        val FIRST_LAUNCH_KEY = booleanPreferencesKey("is_first_launch")   // NEW
         val PENDING_LANG_KEY = stringPreferencesKey("pending_deep_link_language")
         val PENDING_INTENT_KEY = stringPreferencesKey("pending_intent_uri")
 
@@ -41,6 +30,7 @@ class LanguageDataStore(private val context: Context) {
     suspend fun markFirstLaunchDone() {
         context.dataStore.edit { it[FIRST_LAUNCH_KEY] = false }
     }
+
     suspend fun saveLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
@@ -56,7 +46,13 @@ class LanguageDataStore(private val context: Context) {
             lang
         }.first()
     }
-    
+
+  suspend  fun getLanguageSync(): String = runCatching {
+        context.dataStore.data
+            .map { it[LANGUAGE_KEY] ?: "hi" }  // same default you already use
+            .first()                           // blocks until first value arrives
+    }.getOrElse { "hi" }
+
     // New methods for deep link language handling
     suspend fun savePendingIntent(lang: String, intentUri: String) = context.dataStore.edit {
         Log.d("LanguageDataStore", "Saving pending intent language: $lang, uri: $intentUri")
@@ -64,7 +60,7 @@ class LanguageDataStore(private val context: Context) {
         it[PENDING_INTENT_KEY] = intentUri
     }
 
-    suspend fun getPendingIntent(): String? = 
+    suspend fun getPendingIntent(): String? =
         context.dataStore.data.map {
             val intent = it[PENDING_INTENT_KEY]
             Log.d("LanguageDataStore", "getPendingIntent returning: $intent")
@@ -76,7 +72,6 @@ class LanguageDataStore(private val context: Context) {
         it.remove(PENDING_LANG_KEY)
         it.remove(PENDING_INTENT_KEY)
     }
-    
 
 
 }

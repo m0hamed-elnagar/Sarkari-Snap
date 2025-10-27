@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.home.components
+package com.rawderm.taaza.today.bloger.ui.components
 
 
 import androidx.activity.compose.LocalActivity

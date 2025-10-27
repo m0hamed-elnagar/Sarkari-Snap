@@ -1,6 +1,5 @@
 package com.rawderm.taaza.today.bloger.data.network
 
-import android.annotation.SuppressLint
 import android.util.Log
 import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
@@ -12,13 +11,10 @@ import com.rawderm.taaza.today.bloger.data.dto.PostDto
 import com.rawderm.taaza.today.core.data.safeCall
 import com.rawderm.taaza.today.core.domain.DataError
 import com.rawderm.taaza.today.core.domain.Result
-import com.yariksoffice.lingver.Lingver
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import kotlinx.coroutines.runBlocking
-import java.time.OffsetDateTime
 
 private const val BASE_URL =
     "https://www.googleapis.com/blogger/v3/blogs/190535731829050983"
@@ -36,18 +32,16 @@ class KtorRemoteBlogDataSource(
 ) : RemotePostDataSource {
 
     private val apiKey = BuildConfig.BLOGGER_API_KEY
-     fun getBaseUrl(): String {
-         var url = baseUrl
-         runBlocking {
-        val lang = languageDataStore.getLanguage() // e.g. "hi" or "en"
-         when (lang) {
-            "en" ->url  = BASE_URL_english
-            "hi" -> url  =BASE_URL
-            else -> url  =BASE_URL // fallback
+    private suspend fun getBaseUrl(): String {
+        val lang = languageDataStore.getLanguageSync() // e.g. "hi" or "en"
+        val url = when (lang) {
+            "en" -> BASE_URL_english
+            "hi" -> BASE_URL
+            else -> BASE_URL // fallback
         }
-             Log.d("lang", "getBaseUrl: $lang ")
+        Log.d("lang", "getBaseUrl: $lang ")
+        return url
     }
-     return url}
     override suspend fun getPostsAfterDate(
         limit: Int,
         label: String? ,
@@ -100,9 +94,13 @@ class KtorRemoteBlogDataSource(
         }
     }
 
-    override suspend fun getUniqueLabels(limit: Int): Result<LabelsResponse, DataError.Remote> {
+    override suspend fun getUniqueLabels(limit: Int, currentLang: String): Result<LabelsResponse, DataError.Remote> {
         return safeCall<LabelsResponse> {
-            httpClient.get("${getBaseUrl()}/posts") {
+            val isHindi = currentLang.equals("hi", ignoreCase = true)
+
+
+            val baseUrl = if (isHindi){BASE_URL}else BASE_URL_english
+            httpClient.get("${baseUrl}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
                 parameter("fields", "nextPageToken,items(labels)")

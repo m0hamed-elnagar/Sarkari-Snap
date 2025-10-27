@@ -51,8 +51,6 @@ import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
-import com.rawderm.taaza.today.bloger.ui.components.TestBanner
-import com.rawderm.taaza.today.bloger.ui.components.TestBanner2
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.core.utils.ShareUtils.messenger
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser

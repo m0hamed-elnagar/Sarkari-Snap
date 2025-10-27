@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails.componentes
+package com.rawderm.taaza.today.bloger.ui.articleDetails.componentes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.rawderm.taaza.today.R
 
 @Composable

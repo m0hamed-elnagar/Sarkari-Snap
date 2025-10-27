@@ -41,8 +41,8 @@ import coil3.request.placeholder
 import coil3.size.Scale
 import coil3.size.Size
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
-import com.rawderm.taaza.today.bloger.ui.postDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.rawderm.taaza.today.core.utils.openUrlInCustomTab
 import org.koin.compose.viewmodel.koinViewModel

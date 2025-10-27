@@ -1,18 +1,12 @@
 package com.rawderm.taaza.today.bloger.ui.home
 
 import android.util.Log
-import androidx.activity.compose.LocalActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.nativead.NativeAd
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
@@ -36,7 +30,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.forEach
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,7 +39,16 @@ class HomeViewModel(
 ) : ViewModel() {
 
     // Use LanguageManager's current language flow
-    private val lang: Flow<String> = languageManager.currentLanguage
+    private val lang= languageManager.currentLanguage
+        .onEach {
+            fetchLabels()
+
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            ""
+        )
 
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state
@@ -60,42 +62,6 @@ class HomeViewModel(
             _state.value
         )
 
-    private val _nativeAds = MutableStateFlow<List<NativeAd>>(emptyList())
-    val nativeAds: StateFlow<List<NativeAd>> = _nativeAds
-    private var adLoader: AdLoader? = null
-
-    init {
-//        preloadNativeAds()
-    }
-
-//    private fun preloadNativeAds() {
-//        val builder = AdLoader.Builder(
-//            getApplicationContext(),
-//            "ca-app-pub-7395572779611582/5930969860" // ✅ your ad unit
-//        )
-//
-//        builder.forNativeAd { ad ->
-//            _nativeAds.value = _nativeAds.value + ad
-//        }
-//
-//        adLoader = builder
-//            .withAdListener(object : AdListener() {
-//                override fun onAdFailedToLoad(error: LoadAdError) {
-//                    Log.e("AdLoader", "Failed: ${error.message}")
-//                }
-//            })
-//            .build()
-//
-//        // Load 3–5 ads ahead of time
-//        repeat(5) {
-//            adLoader?.loadAd(AdRequest.Builder().build())
-//        }
-//    }
-
-    override fun onCleared() {
-        super.onCleared()
-        _nativeAds.value.forEach { it.destroy() }
-    }
 
     // Paging 3: Expose paged posts for the current label
     private val _currentLabel = MutableStateFlow(_state.value.selectedLabel)
@@ -115,9 +81,9 @@ class HomeViewModel(
         PagingData.empty()
     )
 
-    val trendingPosts: Flow<PagingData<Post>> = lang.flatMapLatest { language ->
+    val quickPosts: Flow<PagingData<Post>> = lang.flatMapLatest { language ->
         Log.d("HomeViewModel", "Creating trending posts flow with language: $language")
-        repo.getPagedPosts("Trending")
+        repo.getPagedPosts("Quiks")
             .cachedIn(viewModelScope)
     }.stateIn(
         viewModelScope,
@@ -155,6 +121,7 @@ class HomeViewModel(
     )
 
     private var observeFavoritesJob: Job? = null
+    private var observeLabelsJob: Job? = null
 
     fun onAction(action: HomeActions) {
         when (action) {

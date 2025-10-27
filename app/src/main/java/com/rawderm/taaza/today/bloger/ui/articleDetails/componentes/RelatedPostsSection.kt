@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails.componentes
+package com.rawderm.taaza.today.bloger.ui.articleDetails.componentes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

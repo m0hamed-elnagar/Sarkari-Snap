@@ -16,11 +16,12 @@ interface PostsRepo {
     suspend fun markPostAsFavorite(post: Post): EmptyResult<DataError.Local>
     suspend fun removePostFromFavorites(postId: String)
     suspend fun getLabels(): Result<List<String>, DataError.Remote>
+    fun getLabelsFlow(): Flow<List<String>> // Add flow-based labels method
     fun getPagedPosts(label: String? = null): Flow<PagingData<Post>>
-     fun getPages(): Flow<PagingData<Page>>
+    fun getPages(): Flow<PagingData<Page>>
     fun getPostsAfterDate(label: String?, afterDate: String?): Flow<PagingData<Post>>
     suspend fun getPage(pageId: String): Result<Page, DataError.Remote>
-   suspend fun getPostById(postId: String) : Result<Post, DataError.Remote>
+    suspend fun getPostById(postId: String) : Result<Post, DataError.Remote>
     fun getPagedShorts(): Flow<PagingData<Post>>
     fun getShortsBeforeDate(afterDate: String?): Flow<PagingData<Short>>
     // New method that accepts a language parameter

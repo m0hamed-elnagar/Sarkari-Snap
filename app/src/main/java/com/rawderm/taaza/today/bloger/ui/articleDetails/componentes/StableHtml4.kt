@@ -1,8 +1,8 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails.componentes
+package com.rawderm.taaza.today.bloger.ui.articleDetails.componentes
+
 
 import android.content.Context
 import android.graphics.Color.TRANSPARENT
-import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -19,34 +19,40 @@ import java.util.WeakHashMap
 
 
 @Composable
-fun StableHtmlContent3(
+fun StableHtmlContent4(
     html: String,
     postId: String, // ← Add this
     onLinkClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val webViewKey = remember(postId) { "webview_$postId" }
-    val cachedHeight = remember { WebViewCache2.getCachedHeight(webViewKey) }
+    val webViewKey = remember(postId) { "webview_$postId" } // ← Use postId
+    val cachedHeight = remember { WebViewCache3.getCachedHeight(webViewKey) }
 
     // Estimate initial height based on content length to prevent jumps
     val estimatedHeight = remember(html) {
-        val lines = (html.length / 100).coerceAtLeast(10)
-        (lines * 24).dp
+        val contentLength = html.length
+        val estimatedLines = (contentLength / 100).coerceAtLeast(10) // Rough estimation
+        (estimatedLines * 24).dp // 24dp per line estimate
     }
 
     val actualHeight = remember { mutableStateOf(cachedHeight?.dp ?: estimatedHeight) }
 
-    val currentOnLinkClicked = remember(webViewKey) { { url: String -> onLinkClicked(url) } }
+    val currentOnLinkClicked = remember(webViewKey) {
+        object : (String) -> Unit {
+            override fun invoke(url: String) = onLinkClicked(url)
+        }
+    }
 
     val webView = remember(webViewKey) {
-        WebViewCache2.getOrCreateWebViewWithHeightCallback(
+        WebViewCache3.getOrCreateWebViewWithHeightCallback(
             context,
             webViewKey,
             html,
             currentOnLinkClicked,
-            onHeightMeasured = { px ->
-                val newHeightDp = (px / context.resources.displayMetrics.density).dp
+            onHeightMeasured = { height ->
+                // Only update if significantly different to prevent micro-adjustments
+                val newHeightDp = (height / context.resources.displayMetrics.density).dp
                 if (kotlin.math.abs(newHeightDp.value - actualHeight.value.value) > 50) {
                     actualHeight.value = newHeightDp
                 }
@@ -59,12 +65,14 @@ fun StableHtmlContent3(
             .fillMaxWidth()
             .height(actualHeight.value),
         factory = { webView },
-        update = { WebViewCache2.saveScrollPosition(webViewKey, it) }
+        update = { view ->
+            WebViewCache3.saveScrollPosition(webViewKey, view)
+        }
     )
 }
 
 // Enhanced WebViewCache with height measurement
-object WebViewCache2 {
+object WebViewCache3 {
     private val cache = WeakHashMap<String, WebViewHolder>()
     private val heightCache = mutableMapOf<String, Int>()
 
@@ -82,6 +90,7 @@ object WebViewCache2 {
         onLinkClicked: (String) -> Unit,
         onHeightMeasured: ((Int) -> Unit)? = null
     ): WebView {
+
         val holder = cache.getOrPut(key) {
             val webView = WebView(context).apply {
                 setBackgroundColor(TRANSPARENT)
@@ -104,41 +113,68 @@ object WebViewCache2 {
                         view: WebView?,
                         request: WebResourceRequest?
                     ): Boolean {
-                        request?.url?.let { uri -> onLinkClicked(uri.toString()) }
+                        request?.url?.let { uri ->
+                            onLinkClicked(uri.toString())
+                        }
                         return true
                     }
-                }
 
-                /*  continuous height listener  */
-                addContentHeightListener { px ->
-                    heightCache[key] = px
-                    cache[key]?.measuredHeight = px
-                    onHeightMeasured?.invoke(px)
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        // Measure height after page is loaded
+                        view?.post {
+                            view.evaluateJavascript("document.body.scrollHeight") { heightStr ->
+                                try {
+                                    val height = heightStr.replace("\"", "").toIntOrNull()
+                                    if (height != null && height > 0) {
+                                        // Convert to pixels
+                                        val densityDpi = context.resources.displayMetrics.densityDpi
+                                        val heightInPixels = (height * densityDpi / 160f).toInt()
+
+                                        heightCache[key] = heightInPixels
+                                        onHeightMeasured?.invoke(heightInPixels)
+
+                                        // Store in holder as well
+                                        cache[key]?.measuredHeight = heightInPixels
+                                    }
+                                } catch (e: Exception) {
+                                    // Fallback to view's measured height
+                                    val fallbackHeight = view.height
+                                    if (fallbackHeight > 0) {
+                                        heightCache[key] = fallbackHeight
+                                        onHeightMeasured?.invoke(fallbackHeight)
+                                        cache[key]?.measuredHeight = fallbackHeight
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 loadHtmlContent(html, context)
             }
 
-        WebViewHolder(webView)
-    }
+            WebViewHolder(webView)
+        }
 
-    // Detach if already attached
-    (holder.webView.parent as? android.view.ViewGroup)?.removeView(holder.webView)
+        // Detach if already attached
+        (holder.webView.parent as? android.view.ViewGroup)?.removeView(holder.webView)
 
+        // Restore scroll position and report cached height
         holder.webView.post {
             holder.webView.scrollTo(holder.scrollX, holder.scrollY)
         }
-        heightCache[key]?.let { h ->
-            onHeightMeasured?.invoke(h)
-            holder.measuredHeight = h
+        heightCache[key]?.let { cachedHeight ->
+            onHeightMeasured?.invoke(cachedHeight)
+            holder.measuredHeight = cachedHeight
         }
 
-    return holder.webView
-}
+        return holder.webView
+    }
     fun saveScrollPosition(key: String, webView: WebView) {
-        cache[key]?.apply {
-            scrollX = webView.scrollX
-            scrollY = webView.scrollY
+        cache[key]?.let { holder ->
+            holder.scrollX = webView.scrollX
+            holder.scrollY = webView.scrollY
         }
     }
 
@@ -148,7 +184,10 @@ object WebViewCache2 {
         val cleanedHtml = html
             .replace(Regex("background-color:[^;]+;?"), "")
             .replace(Regex("<p>(&nbsp;|\\s)*</p>"), "")
-            .replace(Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"), "")
+            .replace(
+                Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"),
+                ""
+            )
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
 
@@ -166,12 +205,26 @@ object WebViewCache2 {
                         background-color: transparent;
                         word-wrap: break-word;
                         overflow-wrap: break-word;
+                        /* Prevent content jumping */
                         min-height: 100px;
                     }
-                    a { color: #1976d2; text-decoration: none; }
-                    img { max-width: 100%; height: auto; display: block; margin: 10px 0; }
-                    * { max-width: 100%; }
-                    p, div, h1, h2, h3, h4, h5, h6 { margin: 8px 0; }
+                    a {
+                        color: #1976d2;
+                        text-decoration: none;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                        display: block;
+                        margin: 10px 0;
+                    }
+                    * {
+                        max-width: 100%;
+                    }
+                    /* Ensure consistent spacing */
+                    p, div, h1, h2, h3, h4, h5, h6 {
+                        margin: 8px 0;
+                    }
                 </style>
             </head>
             <body>$cleanedHtml</body>
@@ -180,21 +233,4 @@ object WebViewCache2 {
 
         this.loadDataWithBaseURL(null, fullHtml, "text/html", "UTF-8", null)
     }
-}
-
-internal fun WebView.addContentHeightListener(onHeight: (Int) -> Unit) {
-    // Always use the polling fallback – works on every API level
-    val runnable = object : Runnable {
-        override fun run() {
-            if (isAttachedToWindow) {
-                onHeight(contentHeight)
-                postDelayed(this, 200L)
-            }
-        }
-    }
-   addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-    override fun onViewAttachedToWindow(v: View) { runnable.run() }
-    override fun onViewDetachedFromWindow(v: View) { removeCallbacks(runnable) }
-})
-    post { onHeight(contentHeight) }
 }

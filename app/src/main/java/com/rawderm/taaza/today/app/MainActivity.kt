@@ -6,10 +6,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -46,7 +49,8 @@ import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.data.PendingDeepLinkStorage
-import com.rawderm.taaza.today.bloger.ui.home.components.LanguageConfirmDialog
+import com.rawderm.taaza.today.bloger.ui.components.LanguageConfirmDialog
+import com.rawderm.taaza.today.bloger.ui.components.LanguagePickerDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -131,6 +135,15 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             var showLangGate by remember { mutableStateOf(true) }   // 1. start with gate open
+            var showLanguagePicker by remember { mutableStateOf(false) } // For unconditional language picker
+
+            // Check if this is first launch to show language picker
+            LaunchedEffect(Unit) {
+                val isFirstLaunch = languageDataStore.isFirstLaunch()
+                if (isFirstLaunch) {
+                    showLanguagePicker = true
+                }
+            }
 
             if (showLangGate) {
                 LanguageGate(                                       // 2. dialog only
@@ -138,6 +151,14 @@ class MainActivity : ComponentActivity() {
                     currentLang  = currentLanguage,
                     languageManager = languageManager,
                     onPassed = { showLangGate = false }            // 3. close gate
+                )
+            } else if (showLanguagePicker) {
+                // Show language picker dialog unconditionally
+                ShowLanguagePickerDialog(
+                    languageManager = languageManager,
+                    onLanguageSelected = { 
+                        showLanguagePicker = false
+                    }
                 )
             } else {
                 navController = rememberNavController()
@@ -157,6 +178,28 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    @Composable
+    private fun ShowLanguagePickerDialog(
+        languageManager: LanguageManager,
+        onLanguageSelected: () -> Unit
+    ) {
+
+        Box(Modifier
+            .fillMaxSize()
+            .background(White)) {
+            LanguagePickerDialog(
+                Modifier
+                    .fillMaxSize()
+                    .background(White),
+                languageManager,
+                rememberCoroutineScope()
+            ) {}
+            onLanguageSelected()
+        }
+    }
+
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

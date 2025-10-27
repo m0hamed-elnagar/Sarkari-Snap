@@ -3,7 +3,7 @@ package com.rawderm.taaza.today.bloger.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.rawderm.taaza.today.bloger.ui.postDetails.PostDetailsState
+import com.rawderm.taaza.today.bloger.ui.articleDetails.PostDetailsState
 
 @Preview(showBackground = true)
 @Composable

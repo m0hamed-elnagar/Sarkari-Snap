@@ -1,6 +1,5 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails
+package com.rawderm.taaza.today.bloger.ui.articleDetails
 
-import android.app.Activity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

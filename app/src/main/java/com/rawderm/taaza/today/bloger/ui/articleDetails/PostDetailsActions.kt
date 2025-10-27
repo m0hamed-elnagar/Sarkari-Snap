@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.postDetails
+package com.rawderm.taaza.today.bloger.ui.articleDetails
 
 import com.rawderm.taaza.today.bloger.domain.Post
 

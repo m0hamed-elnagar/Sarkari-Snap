@@ -31,7 +31,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
-import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.bloger.ui.components.PostListWithAds
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
 import com.rawderm.taaza.today.bloger.ui.home.HomeUiState

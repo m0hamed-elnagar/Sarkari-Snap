@@ -42,11 +42,10 @@ GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/6247905
 ### Retrieve a single post (replace POST_ID with a real post ID)
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/847919335082049403?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 ### Retrieve a single post (replace POST_ID with a real post ID)
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
     &maxResults=5
-    &labels=Tech
-    &startDate=2025-09-11T11:07:24-07:00
+    &labels=Quick
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
 ### getting the vedio from the post content
