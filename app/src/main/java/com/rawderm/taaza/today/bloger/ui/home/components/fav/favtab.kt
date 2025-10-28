@@ -52,6 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
     state: HomeUiState,
     onAction: (HomeActions) -> Unit,
     homePagerState: PagerState,
+    //todo add Callback
     shortsVM: ShortsViewModel = koinViewModel()
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })

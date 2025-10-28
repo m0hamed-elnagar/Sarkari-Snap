@@ -26,7 +26,7 @@ fun shortsBeforeDatePagingSourceWithLanguage(
 ): ContentPagingSource<Short> = beforeDatePagingSource(
     initialEndDate = endDate,
     fetch = { loadSize, end ->
-        when (val res = remote.getShortsBeforeDateWithLanguage(loadSize, "", end, null, language)) {
+        when (val res = remote.getPostsBeforeDateWithLanguage(loadSize, "Video", end, null, language)) {
             is Result.Success -> Result.Success(res.data.items)
             is Result.Error -> Result.Error(res.error)
         }

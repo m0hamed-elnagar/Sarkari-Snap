@@ -38,8 +38,8 @@ import com.rawderm.taaza.today.bloger.ui.components.LanguagePickerDialog
 import com.rawderm.taaza.today.bloger.ui.components.TopBar
 import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
-import com.rawderm.taaza.today.bloger.ui.home.components.QuickTabContentPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteTabContent
+import com.rawderm.taaza.today.bloger.ui.quiks.QuikScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -177,9 +177,16 @@ fun HomeScreen(
                         pagedUiItem = pagedUiItem
                     )
 
-                    BottomTab.QUICKS -> QuickTabContentPullRefresh(
-                        state, quickPosts, onAction
+                    BottomTab.QUICKS ->QuikScreenRoot(
+                        viewModel = koinViewModel(),
+                        onBackClicked = {
+                            onAction(HomeActions.OnTabSelected(0))
+                        },
+                        onQuiickClick = {
+                            onAction(HomeActions.OnQuickClick(it))
+                        }
                     )
+
 
                     BottomTab.SHORTS -> {
                         ShortsScreenRoot(viewModel = shortsViewModel)

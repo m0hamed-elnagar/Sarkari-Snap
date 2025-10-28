@@ -14,12 +14,12 @@ import com.rawderm.taaza.today.bloger.data.mappers.toPostEntity
 import com.rawderm.taaza.today.bloger.data.mappers.toShort
 import com.rawderm.taaza.today.bloger.data.mappers.toShortEntity
 import com.rawderm.taaza.today.bloger.data.network.RemotePostDataSource
+import com.rawderm.taaza.today.bloger.data.paging.QuiksBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.pagesPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.postsPagingSource
 import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSource
 import com.rawderm.taaza.today.bloger.data.paging.shortsBeforeDatePagingSourceWithLanguage
-import com.rawderm.taaza.today.bloger.data.paging.shortsPagingSource
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.domain.PostsRepo
@@ -149,16 +149,6 @@ class DefaultPostsRepo(
         ).flow
     }
 
-    override fun getPagedShorts(): Flow<PagingData<Post>> {
-        return Pager(
-            config = PagingConfig(pageSize = 3, enablePlaceholders = false),
-            pagingSourceFactory = {
-                shortsPagingSource(
-                    remotePostDataSource
-                )
-            }
-        ).flow
-    }
 
     override fun getPages(): Flow<PagingData<Page>> {
         return Pager(
@@ -204,6 +194,18 @@ class DefaultPostsRepo(
             config = PagingConfig(pageSize = 6, enablePlaceholders = false),
             pagingSourceFactory = {
                 shortsBeforeDatePagingSourceWithLanguage(
+                    remotePostDataSource,
+                    afterDate,
+                    language
+                )
+            }
+        ).flow
+    }
+    override fun getQuiksBeforeDateWithLanguage(afterDate: String?, language: String): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(pageSize = 6, enablePlaceholders = false),
+            pagingSourceFactory = {
+                QuiksBeforeDatePagingSource(
                     remotePostDataSource,
                     afterDate,
                     language

@@ -155,7 +155,7 @@ class KtorRemoteBlogDataSource(
         }
     }
     
-    override suspend fun getShortsBeforeDateWithLanguage(
+    override suspend fun getPostsBeforeDateWithLanguage(
         limit: Int,
         label: String?,
         beforeDate: String?,
@@ -173,7 +173,7 @@ class KtorRemoteBlogDataSource(
             httpClient.get("$baseUrl/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
-                parameter("labels", "Video")
+                parameter("labels", label)
 
                 // all posts updated before this post
                 parameter("endDate", beforeDate)

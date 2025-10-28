@@ -41,7 +41,7 @@ interface RemotePostDataSource {
     ): Result<BloggerResponse, DataError.Remote>
     
     // New method that accepts a language parameter
-    suspend fun getShortsBeforeDateWithLanguage(
+    suspend fun getPostsBeforeDateWithLanguage(
         limit: Int,
         label: String? = null,
         beforeDate: String?,

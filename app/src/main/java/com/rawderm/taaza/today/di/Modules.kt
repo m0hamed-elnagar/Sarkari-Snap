@@ -17,6 +17,7 @@ import com.rawderm.taaza.today.bloger.ui.articleDetails.PostDetailsViewModel
 import com.rawderm.taaza.today.bloger.ui.home.HomeViewModel
 import com.rawderm.taaza.today.bloger.ui.labeled.LabeledPostsViewModel
 import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
+import com.rawderm.taaza.today.bloger.ui.quiks.QuiksViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import com.rawderm.taaza.today.core.data.HttpClientFactory
 import io.ktor.client.engine.HttpClientEngine
@@ -64,6 +65,7 @@ val sharedModule = module {
     viewModelOf(::SelectedPostViewModel)
     viewModelOf(::ShortsViewModel)
     viewModelOf(::LabeledPostsViewModel)
+    viewModelOf(::QuiksViewModel)
 
 
 }
