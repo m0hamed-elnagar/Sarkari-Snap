@@ -137,8 +137,6 @@ private fun QuikTabContent(
             }
         }
 
-        // Ad banner exactly like in trending
-//        BannerAd(adUnitId = "ca-app-pub-7395572779611582/3592956801")
     }
 }
 
@@ -159,7 +157,7 @@ fun PostFullScreenList(
                 val quikItem = posts.peek(index)
                 when{
                     quikItem?.isAd == true -> "ad_${quikItem.adId?:index}"
-                    else  -> "page_${index}_post_${quikItem?.quik?.id ?: "null"}"
+                        else      -> "post_${quikItem!!.quik!!.id}"
 
                 }
                }

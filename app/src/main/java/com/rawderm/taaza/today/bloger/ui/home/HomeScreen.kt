@@ -40,6 +40,7 @@ import com.rawderm.taaza.today.bloger.ui.home.components.HomeTabWithPullRefresh
 import com.rawderm.taaza.today.bloger.ui.home.components.MoreTabScreen
 import com.rawderm.taaza.today.bloger.ui.home.components.fav.FavoriteTabContent
 import com.rawderm.taaza.today.bloger.ui.quiks.QuikScreenRoot
+import com.rawderm.taaza.today.bloger.ui.quiks.QuiksViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -56,11 +57,11 @@ fun HomeScreenRoot(
     onPagesClick: (Page) -> Unit,
     onQuickClick: (String) -> Unit,
     shortsViewModel: ShortsViewModel,
+    quikViewModel: QuiksViewModel,
 ) {
     val state by viewModel.state.collectAsState()
     val pagedPosts = viewModel.pagedPosts.collectAsLazyPagingItems()
     val pagedUiItem = viewModel.pagedUiModels.collectAsLazyPagingItems()
-    val quickPosts = viewModel.quickPosts.collectAsLazyPagingItems()
     val pages = viewModel.pages.collectAsLazyPagingItems()
     val languageManager: LanguageManager = koinInject()
     val pagerState = rememberPagerState { tabs.size } // ← dynamic count
@@ -87,14 +88,14 @@ fun HomeScreenRoot(
         }
     } else {
         HomeScreen(
-            state = state, // Pass state argument
+            state = state,
             pagedPosts = pagedPosts,
-            quickPosts = quickPosts,
             pages = pages,
             languageManager,
             shortsViewModel ,
             pagerState,
             scope,
+            quikViewModel=quikViewModel,
             pagedUiItem = pagedUiItem,
             onAction = { action ->
                 when (action) {
@@ -122,14 +123,14 @@ fun HomeScreenRoot(
 fun HomeScreen(
     state: HomeUiState,
     pagedPosts: LazyPagingItems<Post>,
-    quickPosts: LazyPagingItems<Post>,
     pages: LazyPagingItems<Page>,
     languageManager: LanguageManager,
     shortsViewModel: ShortsViewModel,
     pagerState: PagerState,
     scope: CoroutineScope,
     onAction: (HomeActions) -> Unit,
-    pagedUiItem: LazyPagingItems<PostUiItem>
+    pagedUiItem: LazyPagingItems<PostUiItem>,
+    quikViewModel: QuiksViewModel
 ) {
 
     val chipListState = remember { LazyListState() }
@@ -178,7 +179,7 @@ fun HomeScreen(
                     )
 
                     BottomTab.QUICKS ->QuikScreenRoot(
-                        viewModel = koinViewModel(),
+                        viewModel = quikViewModel,
                         onBackClicked = {
                             onAction(HomeActions.OnTabSelected(0))
                         },

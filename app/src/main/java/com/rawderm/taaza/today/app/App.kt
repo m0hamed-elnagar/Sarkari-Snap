@@ -1,6 +1,8 @@
 package com.rawderm.taaza.today.app
 
+import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,6 +28,7 @@ import androidx.navigation.toRoute
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.app.BloggerApplication.Companion.isWorking
 import com.rawderm.taaza.today.app.components.TemporarilyStoppedScreen
+import com.rawderm.taaza.today.bloger.data.DeepLinkHandler
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.data.PendingDeepLinkStorage
 import com.rawderm.taaza.today.bloger.ui.SelectedPostViewModel
@@ -39,11 +42,22 @@ import com.rawderm.taaza.today.bloger.ui.labeled.LabeledPostsViewModel
 import com.rawderm.taaza.today.bloger.ui.labeled.LabeledScreenRoot
 import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
+import com.rawderm.taaza.today.bloger.ui.quiks.QuiksActions
+import com.rawderm.taaza.today.bloger.ui.quiks.QuiksViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+data class DeepLink(
+    val type: String,   // "post", "short", "quiks", ...
+    val id: String,     // date / post-id / short-id
+    val lang: String    // "en", "hi", ...
+) {
+    /** Returns true if the link contains the minimum required data. */
+    val isValid: Boolean
+        get() = type.isNotBlank() && id.isNotBlank() && lang.isNotBlank()
+}
 
 @Composable
 fun App(navController: NavHostController) {
@@ -67,30 +81,45 @@ private fun AppNavigation(navController: NavHostController) {
     val currentLang by languageManager.currentLanguage.collectAsState()
     val homeVM: HomeViewModel = koinViewModel<HomeViewModel>()
     val shortsViewModel = koinViewModel<ShortsViewModel>()
+    val quikViewModel = koinViewModel<QuiksViewModel>()
     var showLanguageDialog by remember { mutableStateOf(false) }
     var pendingDeepLinkData by remember { mutableStateOf<Pair<String, String>?>(null) }
-    LaunchedEffect(Unit) {
-        PendingDeepLinkStorage.consume(context)?.let { (type, id, lang) ->
-            if (type.isNullOrEmpty())return@LaunchedEffect
-            when (type) {
-                "post" -> {
-                    Log.d("deeplink", "AppNavigation: "+ id+lang)
-                    navController.navigate(Route.PostDetails(lang, id)) {
-                        popUpTo<Route.BlogGraph> { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-                "short" -> {
-                    if (id.isBlank()) return@let
-                    Log.d("deeplink", "AppNavigation: "+ id+lang)
-
-                    shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(id, lang))
-                    homeVM.onAction(HomeActions.OnTabSelected(2))
-                }
-                else ->{}
-            }
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        PendingDeepLinkStorage.consume(context)?.let { (type, id, lang) ->
+//        Log.d("deeplink", "AppNavigation: "+ type+id+lang)
+//
+//            if (type.isNullOrEmpty())return@LaunchedEffect
+//            when (type) {
+//                "post" -> {
+//                    Log.d("deeplink", "AppNavigation: "+ id+lang)
+//                    navController.navigate(Route.PostDetails(lang, id)) {
+//                        popUpTo<Route.BlogGraph> { inclusive = true }
+//                        launchSingleTop = true
+//                    }
+//                }
+//                "short" -> {
+//                    Log.d("deeplink", "AppNavigation: "+ id+lang)
+//
+//                    shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(id, lang))
+//                    homeVM.onAction(HomeActions.OnTabSelected(2))
+//                }
+//                "quiks"->{
+//                    Log.d("deeplink", "AppNavigation: "+ id+lang)
+//
+//                    shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(id, lang))
+//                    homeVM.onAction(HomeActions.OnTabSelected(1))
+//
+//                }
+//
+//                else ->{
+////                    homeVM.onAction(HomeActions.OnTabSelected(1))
+//                    Log.d("deeplink", "AppNavigation: "+ id+lang)
+//
+//                }
+//
+//            }
+//        }
+//    }
 
 
     NavHost(
@@ -111,44 +140,62 @@ private fun AppNavigation(navController: NavHostController) {
             composable<Route.BlogHome>(
                 deepLinks = listOf(
                     navDeepLink {
-                        uriPattern = "$appUrl/{lang}/shorts/{date}"
+                        uriPattern = "$appUrl/{lang}/{type}/{date}"
                         action = "android.intent.action.VIEW"
-                    }
+                    },
+//                    navDeepLink {
+//                        uriPattern = "$appUrl/{lang}/{type}/{date}"
+//                        action = "android.intent.action.VIEW"
+//                    },
                 )
-                )
+            )
             { entry ->
                 val route = entry.toRoute<Route.BlogHome>()
                 var date = route.date
                 val lang = route.lang
-
+                val type = entry.toRoute<Route.BlogHome>().type
                 val sharedVM = entry.sharedKoinViewModel<SelectedPostViewModel>(navController)
 
 
                 var showLangDialog by remember { mutableStateOf(false) }
                 var pendingShortsDate by remember { mutableStateOf<String?>(null) }
-
-
+                val activity = LocalActivity.current
                 LaunchedEffect(Unit) { sharedVM.selectPost(null) }
-                LaunchedEffect(date) {
-                    if (!date.isNullOrBlank()) {
-                        shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(date!!, lang))
-                        homeVM.onAction(HomeActions.OnTabSelected(2))
-                        Log.d("Date", "AppNavigation: $date")
-                        date = null
+LaunchedEffect(date) {
+    if (!date.isNullOrBlank() && !DeepLinkHandler.consumed) {
+        DeepLinkHandler.consumed = true  // ✅ Prevent future triggers
 
+        when (type) {
+            "shorts" -> {
+                shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(date!!, lang))
+                homeVM.onAction(HomeActions.OnTabSelected(2))
+            }
+            "quiks" -> {
+                quikViewModel.onAction(QuiksActions.OnGetShortsByDate(date!!, lang))
+                homeVM.onAction(HomeActions.OnTabSelected(1))
+            }
+            else -> homeVM.onAction(HomeActions.OnTabSelected(0))
+        }
 
-                    }
-                }
+        Log.d("DeepLink", "Handled deep link: type=$type, date=$date, lang=$lang")
+
+        activity?.intent = Intent(activity.intent).apply { data = null }
+        date = null
+    } else if (DeepLinkHandler.consumed) {
+        Log.d("DeepLink", "Skipping already handled deep link")
+    }
+}
                 HomeScreenRoot(
                     viewModel = homeVM,
                     shortsViewModel = shortsViewModel,
+                    quikViewModel = quikViewModel,
                     onPostClick = { post ->
                         sharedVM.selectPost(post)
                         navController.navigate(Route.PostDetails(currentLang, post.id)) {
                             launchSingleTop = true
                         }
                     },
-                    onQuickClick = {postId->
+                    onQuickClick = { postId ->
                         navController.navigate(Route.PostDetails(currentLang, postId)) {
                             launchSingleTop = true
                         }

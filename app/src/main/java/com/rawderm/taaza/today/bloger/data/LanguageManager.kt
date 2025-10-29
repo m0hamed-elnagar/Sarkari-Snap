@@ -3,6 +3,7 @@ package com.rawderm.taaza.today.bloger.data
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import com.rawderm.taaza.today.app.DeepLink
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -91,7 +92,6 @@ object PendingDeepLinkStorage {
             .putString(KEY_DATA, data)
             .putString(KEY_LANG, lang)
             .apply()
-
     fun consume(ctx: Context): Triple<String,String,String>? {
         val p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val type = p.getString(KEY_TYPE, null) ?: return null
@@ -100,5 +100,24 @@ object PendingDeepLinkStorage {
         p.edit().clear().apply()
         return Triple(type, id, lang)
     }
+    /* ---------- read-only ---------- */
+    fun get(ctx: Context): DeepLink? =
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .let { prefs ->
+                val type = prefs.getString(KEY_TYPE, null).orEmpty()
+                val id   = prefs.getString(KEY_DATA, null).orEmpty()
+                val lang = prefs.getString(KEY_LANG, null).orEmpty()
 
+                DeepLink(type, id, lang).takeIf { it.isValid }
+            }
+
+    /* ---------- clear ---------- */
+    fun clear(ctx: Context) =
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
+}
+object DeepLinkHandler {
+    var consumed = false
 }

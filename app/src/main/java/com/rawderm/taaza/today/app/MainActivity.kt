@@ -46,6 +46,7 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.data.DeepLinkHandler
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.data.PendingDeepLinkStorage
@@ -64,7 +65,7 @@ class MainActivity : ComponentActivity() {
     private val updateType = AppUpdateType.FLEXIBLE // Consider using FLEXIBLE for better UX
 
     private val updateCheckedThisSession = AtomicBoolean(false)
-    
+
     private val languageDataStore by inject<LanguageDataStore>()
     private val languageManager by inject<LanguageManager>()
     private lateinit var navController: NavHostController
@@ -90,40 +91,45 @@ class MainActivity : ComponentActivity() {
         val deepLinkLang = intent?.data?.pathSegments?.firstOrNull {
             it.length == 2          // "en", "hi", "es" ...
         }
-        
-        val data = intent?.data?.pathSegments?.getOrNull(2) // Get the date segment if it exists
-        val pendingType= when {
-            data != null && intent?.data?.pathSegments?.contains("shorts") == true -> "short"
-            data != null  -> "post"
-                else -> ""
-            }
+//        val pendingType =
+//            intent?.data?.pathSegments?.getOrNull(1) // Get the date segment if it exists
+//        Log.d("DeepLink", "Deep link type: $pendingType")
+//        val data = intent?.data?.pathSegments?.getOrNull(2) // Get the date segment if it exists
 
 
-        Log.d("DeepLink", "Deep link language: $deepLinkLang, date: $data")
+//        Log.d("DeepLink", "Deep link language: $deepLinkLang, date: $data")
         val currentLanguage = runBlocking { languageDataStore.getLanguage() }
 
         // 2. If link contains a language != current -> save it
-        if (deepLinkLang != null) {
-            // Get current language directly from datastore to avoid timing issues
-            Log.d("DeepLink", "Current language: $currentLanguage")
-
-            if (deepLinkLang != currentLanguage && !data.isNullOrBlank()) {
-                Log.d("DeepLink", "Saving pending deep link language: $deepLinkLang with date: $data")
-                // Save the deep link data for later use
-                PendingDeepLinkStorage.save(
-                    ctx = this,
-                    type = pendingType,
-                    data = data,
-                    lang = deepLinkLang
-                )
-                // Clear the intent data to prevent reprocessing
-                intent.data = null
-            } else {
-                Log.d("DeepLink", "Deep link language is same as current language or date is blank, not saving")
-            }
-        } else {
-            Log.d("DeepLink", "No deep link language found")
-        }
+//        if (deepLinkLang != null) {
+//            // Get current language directly from datastore to avoid timing issues
+//            Log.d("DeepLink", "Current language: $currentLanguage")
+//
+//            if (deepLinkLang != currentLanguage && !data.isNullOrBlank()) {
+//                Log.d(
+//                    "DeepLink",
+//                    "Saving pending deep link language: $deepLinkLang with date: $data"
+//                )
+//                // Save the deep link data for later use
+//                PendingDeepLinkStorage.save(
+//                    ctx = this,
+//                    type = pendingType?: "unknown",
+//                    data = data,
+//                    lang = deepLinkLang
+//                )
+//                // Clear the intent data to prevent reprocessing
+//                intent.data = null
+//            } else {
+//                Log.d(
+//                    "DeepLink",
+//                    "Deep link language is same as current language or date is blank, not saving"
+//                )
+//
+//
+//            }
+//        } else {
+//            Log.d("DeepLink", "No deep link language found")
+//        }
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.Black.toArgb()),
@@ -148,7 +154,7 @@ class MainActivity : ComponentActivity() {
             if (showLangGate) {
                 LanguageGate(                                       // 2. dialog only
                     deepLinkLang = deepLinkLang,
-                    currentLang  = currentLanguage,
+                    currentLang = currentLanguage,
                     languageManager = languageManager,
                     onPassed = { showLangGate = false }            // 3. close gate
                 )
@@ -156,7 +162,7 @@ class MainActivity : ComponentActivity() {
                 // Show language picker dialog unconditionally
                 ShowLanguagePickerDialog(
                     languageManager = languageManager,
-                    onLanguageSelected = { 
+                    onLanguageSelected = {
                         showLanguagePicker = false
                     }
                 )
@@ -185,9 +191,11 @@ class MainActivity : ComponentActivity() {
         onLanguageSelected: () -> Unit
     ) {
 
-        Box(Modifier
-            .fillMaxSize()
-            .background(White)) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(White)
+        ) {
             LanguagePickerDialog(
                 Modifier
                     .fillMaxSize()
@@ -200,80 +208,81 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent?.let { newIntent ->
+        DeepLinkHandler.consumed = false
+
+        intent.let { newIntent ->
             // 1. make it the intent that every lifecycle method will see from now on
             setIntent(newIntent)
+                    DeepLinkHandler.consumed = false
+
             Log.d("DeepLink", "New intent: $newIntent")
             // 3. let Navigation handle the deep link
             navController.handleDeepLink(newIntent)
         }
     }
-@Composable
-private fun LanguageGate(
-    deepLinkLang: String?,
-    currentLang: String,
-    languageManager: LanguageManager,
-    onPassed: () -> Unit
-) {
-    // nothing to do → skip gate immediately
-    if (deepLinkLang == null || deepLinkLang == currentLang ) {
-        LaunchedEffect(Unit) { onPassed() }
-        return
+
+    @Composable
+    private fun LanguageGate(
+        deepLinkLang: String?,
+        currentLang: String,
+        languageManager: LanguageManager,
+        onPassed: () -> Unit
+    ) {
+        // nothing to do → skip gate immediately
+        if (deepLinkLang == null || deepLinkLang == currentLang) {
+            LaunchedEffect(Unit) { onPassed() }
+            return
+        }
+
+        val ctx = LocalContext.current
+        val scope = rememberCoroutineScope()
+        LanguageConfirmDialog(
+            modifier = Modifier,
+            context = ctx,
+            languageManager = languageManager,
+            scope = scope,
+            requestedLang = deepLinkLang,
+            onAccept = {
+                onPassed()
+            },
+            onDecline = { onPassed()
+                DeepLinkHandler.consumed = true  }
+        )
     }
 
-    val ctx = LocalContext.current
-    val scope = rememberCoroutineScope()
-    LanguageConfirmDialog(
-        modifier = Modifier,
-        context = ctx,
-        languageManager = languageManager,
-        scope = scope,
-        requestedLang = deepLinkLang,
-        onAccept = {
-            onPassed()
-        },
-        onDecline = { onPassed() }
-    )
-}    override fun onResume() {
+    override fun onResume() {
         super.onResume()
-
-        appUpdateManager
-            .appUpdateInfo
-            .addOnSuccessListener { info ->
-                when {
-                    info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
-                            && updateType == AppUpdateType.IMMEDIATE->  startUpdateFlow(info)
-
-                    info.installStatus() == InstallStatus.DOWNLOADED -> restartSnackbar()
-                }
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            when {
+                info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                        && updateType == AppUpdateType.IMMEDIATE -> startUpdateFlow(info)
+                info.installStatus() == InstallStatus.DOWNLOADED -> restartSnackbar()
             }
+        }
     }
-    private val installStateUpdatedListener: InstallStateUpdatedListener = InstallStateUpdatedListener { state ->
-        when (state.installStatus()) {
-            InstallStatus.DOWNLOADED -> {
-                restartSnackbar()
 
-            }
-            InstallStatus.INSTALLED -> {
-                appUpdateManager.unregisterListener(installStateUpdatedListener)
-            }
-            else -> { /* Handle other states if needed */ }
+    private val installStateUpdatedListener: InstallStateUpdatedListener  = InstallStateUpdatedListener { state ->
+        when (state.installStatus()) {
+            InstallStatus.DOWNLOADED -> restartSnackbar()
+            InstallStatus.INSTALLED  -> appUpdateManager.unregisterListener(installStateUpdatedListener)
+            else                       -> Unit
         }
     }
 
     private fun checkForAppUpdate() {
-        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
-            val available = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-            val allowed = when (updateType) {
-                AppUpdateType.FLEXIBLE -> info.isFlexibleUpdateAllowed
-                AppUpdateType.IMMEDIATE -> info.isImmediateUpdateAllowed
-                else -> false
+        appUpdateManager.appUpdateInfo
+            .addOnSuccessListener { info ->
+                val avail = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                val allowed = when (updateType) {
+                    AppUpdateType.FLEXIBLE -> info.isFlexibleUpdateAllowed
+                    AppUpdateType.IMMEDIATE-> info.isImmediateUpdateAllowed
+                    else                   -> false
+                }
+                if (avail && allowed) startUpdateFlow(info)
             }
-            if (available && allowed) startUpdateFlow(info)
-        }.addOnFailureListener { Timber.e(it, "Update check failed") }
+            .addOnFailureListener { Timber.e(it, "Update check failed") }
     }
 
     private fun startUpdateFlow(info: AppUpdateInfo) {
@@ -291,15 +300,8 @@ private fun LanguageGate(
     }
 
     private fun restartSnackbar() {
-        Toast.makeText(
-            this,
-            getString(R.string.download_successful_restart),
-            Toast.LENGTH_LONG
-        ).show()
-        lifecycleScope.launch {
-            delay(5_000)
-            appUpdateManager.completeUpdate()
-        }
+        Toast.makeText(this, getString(R.string.download_successful_restart), Toast.LENGTH_LONG).show()
+        lifecycleScope.launch { delay(5_000); appUpdateManager.completeUpdate() }
     }
 
     private fun loadNativeAd() {

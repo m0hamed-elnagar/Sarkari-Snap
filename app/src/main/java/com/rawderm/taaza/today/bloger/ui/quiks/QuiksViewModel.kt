@@ -33,19 +33,16 @@ class QuiksViewModel(private val postsRepo: PostsRepo,
     private val _beforeDate = MutableStateFlow(
         OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     )
-        private val _language = MutableStateFlow<String?>(null)
-    private val dateAndLanguage = combine(_beforeDate, _language) { date, lang ->
-        date to lang
+    private val lang = languageManager.currentLanguage
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), "")
+
+    private val dateAndLanguage = combine(_beforeDate, lang) { date, language ->
+        date to language
     }
     val quiks: Flow<PagingData<Post>> =
         dateAndLanguage
             .flatMapLatest { (date, lang) ->
-                if (lang != null) {
-                    postsRepo.getQuiksBeforeDateWithLanguage(date, lang)
-                } else {
-                    postsRepo.getQuiksBeforeDateWithLanguage(date,languageManager.getLanguage())
-                }
-            }
+                    postsRepo.getQuiksBeforeDateWithLanguage(date, lang)        }
             .cachedIn(viewModelScope)
             .stateIn(
                 viewModelScope,
@@ -80,9 +77,7 @@ class QuiksViewModel(private val postsRepo: PostsRepo,
             is QuiksActions.OnGetShortsByDate -> {
                 action.date.let { isoDate ->
                     _beforeDate.value = addOneSecond(isoDate)        // <- triggers shorts re-load
-                    // Set the language if provided
-                    action.lang?.let { _language.value = it }
-                }
+                                    }
             }
 
 
@@ -90,15 +85,8 @@ class QuiksViewModel(private val postsRepo: PostsRepo,
                 viewModelScope.launch {
                     // Update state to show refreshing
                     _state.value = _state.value.copy(isRefreshing = true)
-
-                    // Reset the date to now and clear the language
                     resetDate()
-                    _language.value = null // Reset language to use default behavior
-
-                    // Small delay to make the refresh indicator visible
                     delay(500)
-
-                    // Update state to hide refreshing
                     _state.value = _state.value.copy(isRefreshing = false)
                 }
             }

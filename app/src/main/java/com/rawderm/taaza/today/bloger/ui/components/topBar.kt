@@ -1,5 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.components
 
+import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
@@ -126,6 +127,8 @@ val locale = remember { Lingver.getInstance().getLocale().language }
                                 // Use the new approach with recreate instead of custom restart
                                 val scope = MainScope()
                                 scope.launch {
+                                    activity?.intent = Intent(activity.intent).apply { this@apply.data = null}
+
                                     languageManager.setLanguage("en",activity)
                                     onAction(HomeActions.OnRefresh)
 
@@ -160,6 +163,7 @@ val locale = remember { Lingver.getInstance().getLocale().language }
                                 Log.d("LANG", "changeLanguage() invoked: hi")
                                 val scope = MainScope()
                                 scope.launch {
+                                    activity?.intent = Intent(activity.intent).apply { this@apply.data = null}
                                     languageManager.setLanguage("hi",  activity)
                                     onAction(HomeActions.OnRefresh)
                                 }

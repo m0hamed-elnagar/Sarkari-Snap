@@ -15,8 +15,6 @@ class ContentPagingSource<T : Any>(
 
 
     override fun getRefreshKey(state: PagingState<String, T>): String? {
-        val anchor = state.anchorPosition ?: return null
-        val anchorPage = state.closestPageToPosition(anchor)
-        return anchorPage?.prevKey ?: anchorPage?.nextKey
+    return null
     }
 }

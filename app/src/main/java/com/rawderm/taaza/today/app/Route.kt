@@ -6,7 +6,7 @@ sealed interface Route {
     @Serializable
     data object BlogGraph : Route
     @Serializable
-    data class BlogHome(val lang: String = "hi", val date: String? = null) : Route
+    data class BlogHome(val lang: String = "hi",val type :String?= null, val date: String? = null) : Route
 
     @Serializable
     data class PostDetails(val lang: String = "hi", val postId: String) : Route

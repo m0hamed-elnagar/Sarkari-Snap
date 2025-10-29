@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
@@ -57,7 +58,7 @@ enum class BottomTab(
     @param:DrawableRes val iconRes: Int? = null
 ) {
     HOME(R.string.home, Icons.Default.Home),
-    QUICKS(R.string.trending, iconRes = R.drawable.quick),
+    QUICKS(R.string.quiks, iconRes = R.drawable.quik2),
 
     // ----- middle gap -----
     SHORTS(R.string.empty, Icons.Default.Add),
@@ -119,6 +120,34 @@ fun BottomTabRow(
                                     .size(56.dp)
                             )
                         }
+                    }
+                    BottomTab.QUICKS -> {
+                        Tab(
+                            selected = selected,
+                            onClick = { scope.launch { pagerState.scrollToPage(index) } }) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                val icon = tab.icon ?: ImageVector.vectorResource(tab.iconRes!!)
+
+                                Icon(
+                                    painter = rememberVectorPainter(icon),
+                                    contentDescription = null,
+                                    tint = if (selected) selectedColor else unselectedColor,
+                                    modifier = Modifier .graphicsLayer(
+                                        translationX = -2f
+                                    )
+                                        .size(32.dp)
+                                )
+                                Text(
+                                    text = stringResource(tab.labelRes),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (selected) selectedColor else unselectedColor
+                                )
+                            }
+                        }
+
                     }
 
                     else -> {

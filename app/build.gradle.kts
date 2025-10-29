@@ -189,6 +189,7 @@ dependencies {
     implementation(libs.lingver)
     // ads
     implementation("com.google.android.gms:play-services-ads:24.7.0")
+    implementation("com.google.ads.mediation:inmobi:10.8.8.1")
 
     //google play update check
     implementation(libs.app.update.ktx)
