@@ -219,7 +219,11 @@ class MainActivity : ComponentActivity() {
 
             Log.d("DeepLink", "New intent: $newIntent")
             // 3. let Navigation handle the deep link
-            navController.handleDeepLink(newIntent)
+            if (this::navController.isInitialized) {
+                navController.handleDeepLink(intent)
+            } else {
+                Log.w("DeepLink", "NavController not initialized yet, skipping deep link")
+            }
         }
     }
 

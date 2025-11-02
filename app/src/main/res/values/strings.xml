@@ -81,4 +81,10 @@
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="something_went_wrong">somthing went wrong</string>
+    <string name="videos_you_save_will_appear_here">Videos you save will appear here</string>
+    <string name="no_favorite_videos">No Favorite Videos</string>
+    <string name="videos">Videos</string>
+    <string name="articles">Articles</string>
+    <string name="read_more">Read More</string>
+    <string name="breaking_news">🚨 BREAKING NEWS</string>
 </resources>

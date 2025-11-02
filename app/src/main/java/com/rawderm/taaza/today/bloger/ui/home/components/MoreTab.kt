@@ -3,6 +3,7 @@ package com.rawderm.taaza.today.bloger.ui.home.components
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,9 +61,11 @@ import com.rawderm.taaza.today.core.utils.ShareUtils.whatsApp
 fun MoreTabScreen(
     pages: LazyPagingItems<Page>,
     onAction: (HomeActions) -> Unit,
+    onBackClicked: () -> Unit,
 
 
     ) {
+    BackHandler { onBackClicked()}
     val context = LocalContext.current
     val appLink = stringResource(R.string.app_link)
     val appName = stringResource(R.string.app_name)

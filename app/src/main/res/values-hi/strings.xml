@@ -16,7 +16,7 @@
     <string name="quiks">क्विक्स्</string>
     <string name="categories">श्रेणियाँ</string>
     <string name="pages">पेजेज़</string>
-    <string name="empty" translatable="false"/>
+    <string name="empty" translatable="false" />
     <string name="more">और देखें</string>
     <string name="instagram_link">https://instagram.com/taazatodayhindi</string>
     <string name="whatsapp_link">https://whatsapp.com/channel/0029VbBVucL1iUxWkpLNuq0v</string>
@@ -53,19 +53,19 @@
     <string name="Pages">पेज़</string>
     <string name="follow_us_on">हमें फॉलो करें </string>
     <string name="BasrUrl">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
-    <string name="blogger_id" >190535731829050983</string>
-<string name="loading_configuration">कॉन्फ़िगरेशन लोड हो रहा है...</string>
-<string name="no_internet_connection">इंटरनेट कनेक्शन नहीं है</string>
-<string name="check_connection_and_try_again">कृपया अपना कनेक्शन जांचें और दोबारा प्रयास करें।</string>
+    <string name="blogger_id">190535731829050983</string>
+    <string name="loading_configuration">कॉन्फ़िगरेशन लोड हो रहा है...</string>
+    <string name="no_internet_connection">इंटरनेट कनेक्शन नहीं है</string>
+    <string name="check_connection_and_try_again">कृपया अपना कनेक्शन जांचें और दोबारा प्रयास करें।</string>
     <string name="app_temporarily_stopped">ऐप अस्थायी रूप से बंद है – कृपया बाद में पुनः प्रयास करें।</string>
-<string name="could_not_load_pages">पेज लोड नहीं हो सके</string>
-<string name="copied">कॉपी किया गया!</string>
-<string name="share_app">ऐप शेयर करें</string>
-<string name="whatsapp">व्हाट्सएप</string>
-<string name="messenger">मैसेंजर</string>
-<string name="download_successful_restart">डाउनलोड सफल, ऐप 5 सेकंड में रीस्टार्ट होगी।</string>
-<string name="no_shorts_yet">अभी कोई शॉर्ट्स उपलब्ध नहीं हैं\n</string>
-<string name="share_via">इस माध्यम से शेयर करें\n</string>
+    <string name="could_not_load_pages">पेज लोड नहीं हो सके</string>
+    <string name="copied">कॉपी किया गया!</string>
+    <string name="share_app">ऐप शेयर करें</string>
+    <string name="whatsapp">व्हाट्सएप</string>
+    <string name="messenger">मैसेंजर</string>
+    <string name="download_successful_restart">डाउनलोड सफल, ऐप 5 सेकंड में रीस्टार्ट होगी।</string>
+    <string name="no_shorts_yet">अभी कोई शॉर्ट्स उपलब्ध नहीं हैं\n</string>
+    <string name="share_via">इस माध्यम से शेयर करें\n</string>
     <string name="blogger_shorts_base_url" translatable="false">https://www.googleapis.com/blogger/v3/blogs/2640395952322331775</string>
     <string name="youtube_embed_base" translatable="false">https://www.youtube.com/embed/</string>
     <string name="blogger_video_play_base" translatable="false">https://video.blogger.com/video-play.mp4?contentId=</string>
@@ -73,11 +73,15 @@
     <string name="twitter_intent_base" translatable="false">https://twitter.com/intent/tweet</string>
     <string name="facebook_share_base" translatable="false">https://www.facebook.com/sharer/sharer.php</string>
     <string name="share_app_link" translatable="false">https://taaza-today.web.app</string>
-    
-    <!-- Language confirmation dialog -->
     <string name="change_language_title">भाषा बदलें</string>
     <string name="change_language_message">क्या आप ऐप की भाषा %1$s में बदलना चाहते हैं?</string>
     <string name="accept">स्वीकार करें</string>
     <string name="decline">अस्वीकार करें</string>
-    <string name="something_went_wrong">somthing went wrong</string>
+    <string name="something_went_wrong">कुछ गलत हो गया</string>
+    <string name="videos_you_save_will_appear_here">आपके द्वारा सहेजे गए वीडियो यहाँ दिखाई देंगे</string>
+    <string name="no_favorite_videos">कोई पसंदीदा वीडियो नहीं</string>
+    <string name="videos">वीडियो</string>
+    <string name="articles">लेख</string>
+    <string name="read_more">और पढ़ें </string>
+    <string name="breaking_news">🚨 ब्रेकिंग न्यूज़</string>
 </resources>

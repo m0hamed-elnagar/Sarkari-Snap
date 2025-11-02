@@ -10,7 +10,7 @@ fun postsPagingSource(
     remote: RemotePostDataSource,
     label: String?
 ): ContentPagingSource<Post> = ContentPagingSource { key, loadSize ->
-    val excludedLabels = if (label == "Quiks")emptySet() else setOf("shorts", "video", "test 1", "test")
+    val excludedLabels =  setOf("shorts", "video", "test 1", "test")
 
     when (val res = remote.getPosts(loadSize, label, key)) {
         is Result.Success -> PagingSource.LoadResult.Page(

@@ -190,12 +190,23 @@ fun HomeScreen(
 
 
                     BottomTab.SHORTS -> {
-                        ShortsScreenRoot(viewModel = shortsViewModel)
+                        ShortsScreenRoot(viewModel = shortsViewModel,
+                            onBackClicked = {
+                                onAction(HomeActions.OnTabSelected(0))
+                            })
                     }
 
                     BottomTab.FAVORITES -> FavoriteTabContent(
-                        state, onAction, pagerState, shortsViewModel)
-                    BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction)
+                        state, onAction, shortsVM = shortsViewModel,
+                        onBackClicked = {
+                            onAction(HomeActions.OnTabSelected(0))
+                        })
+
+                    BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction,
+                        onBackClicked = {
+                        onAction(HomeActions.OnTabSelected(0))
+                    })
+
                 }
             }
         }

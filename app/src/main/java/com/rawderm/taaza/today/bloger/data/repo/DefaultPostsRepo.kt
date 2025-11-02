@@ -44,7 +44,7 @@ class DefaultPostsRepo(
         val lang = languageDataStore.getLanguageSync()
 
         return remotePostDataSource.getUniqueLabels(currentLang =lang).map { dto ->
-            val excludedLabels = setOf("shorts", "video", "test 1", "test","trending")
+            val excludedLabels = setOf("shorts", "video", "test 1", "test","trending","quik","quiks","quick")
             val isHindi = lang.equals("hi", ignoreCase = true)
             val canonicalOrder = if (isHindi) hindiOrder else englishOrder
             val allLabel = if (isHindi) "सभी" else "All"

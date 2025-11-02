@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,6 +45,7 @@ import androidx.paging.compose.LazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import com.rawderm.taaza.today.bloger.ui.home.PostUiItem
 
 @Composable
@@ -95,21 +97,26 @@ fun PostListWithAds(
                 when (uiItem) {
                     is PostUiItem -> {
                         if (uiItem.isAd) {
-                            BannerAd(adUnitId = "ca-app-pub-7395572779611582/6858599226")
+//                            BannerAd(adUnitId = "ca-app-pub-7395572779611582/6858599226")
+                            NativeScreen(
+                                nativeAdUnitID = "ca-app-pub-7395572779611582/2939768964",
+                                modifier = Modifier.heightIn(400.dp).fillMaxSize(),
+                        onAdResult = { loaded ->
+                                })
                         } else {
                             uiItem.post?.let { post ->
-                                if (index == 0) {
+//                                if (index == 0) {
                                     // ✅ Special layout for the first item
                                     FeaturedPost(
                                         post = post,
                                         onClick = { onPostClick(post) }
                                     )
-                                } else {
-                                    NormalPost(
-                                        post = post,
-                                        onClick = { onPostClick(post) }
-                                    )
-                                }
+//                                } else {
+//                                    NormalPost(
+//                                        post = post,
+//                                        onClick = { onPostClick(post) }
+//                                    )
+//                                }
                             }
                         }
                     }

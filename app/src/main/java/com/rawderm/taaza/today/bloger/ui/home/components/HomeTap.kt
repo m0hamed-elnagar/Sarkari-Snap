@@ -79,7 +79,6 @@ private fun HomeTabContent(
     chipsListState: LazyListState,
     pagedUiItem: LazyPagingItems<PostUiItem>
 ) {
-    val scope = rememberCoroutineScope()
     val showLoadingInsteadOfEmpty = remember { mutableStateOf(true) }
     LaunchedEffect(pagedPosts.itemCount) {
         if (pagedPosts.itemCount == 0) {
@@ -130,11 +129,11 @@ private fun HomeTabContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("Failed to load posts")
+                        Text(stringResource(R.string.failed_to_load_posts))
                         Button(onClick = {
                             onAction(HomeActions.OnRefresh)
                             pagedPosts.refresh() }) {
-                            Text("Retry")
+                            Text(stringResource(R.string.retry))
                         }
                     }
 

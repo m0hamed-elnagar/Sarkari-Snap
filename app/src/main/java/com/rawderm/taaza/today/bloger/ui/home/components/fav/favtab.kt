@@ -1,6 +1,7 @@
 package com.rawderm.taaza.today.bloger.ui.home.components.fav
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,12 +52,13 @@ import org.koin.compose.viewmodel.koinViewModel
  fun FavoriteTabContent(
     state: HomeUiState,
     onAction: (HomeActions) -> Unit,
-    homePagerState: PagerState,
+    onBackClicked: () -> Unit = {},
     //todo add Callback
     shortsVM: ShortsViewModel = koinViewModel()
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
+    BackHandler { onBackClicked()}
 
     Column(
         modifier = Modifier
@@ -72,12 +74,12 @@ import org.koin.compose.viewmodel.koinViewModel
             Tab(
                 selected = pagerState.currentPage == 0,
                 onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                text = { Text("Articles") }
+                text = { Text(stringResource(R.string.articles)) }
             )
             Tab(
                 selected = pagerState.currentPage == 1,
                 onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                text = { Text("Videos") }
+                text = { Text(stringResource(R.string.videos)) }
             )
         }
 
@@ -176,13 +178,13 @@ fun FavoriteVideosScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "No Favorite Videos",
+                text = stringResource(R.string.no_favorite_videos),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = "Videos you save will appear here",
+                text = stringResource(R.string.videos_you_save_will_appear_here),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,

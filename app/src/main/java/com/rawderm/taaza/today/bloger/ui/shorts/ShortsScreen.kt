@@ -1,5 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.shorts
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -67,6 +68,7 @@ fun ShortsScreenRoot(
     val rawFlow = viewModel.uiShorts          // Flow<PagingData<ShortUiItem>>
     val failedAdIds = remember { mutableStateSetOf<String>() }
     val state by viewModel.state.collectAsStateWithLifecycle()
+    BackHandler { onBackClicked()}
 
     /* 1. filter the FLOW (not the LazyPagingItems) */
     val filteredFlow = remember(rawFlow, failedAdIds) {
@@ -102,7 +104,6 @@ fun ShortsScreenRoot(
         isRefreshing = state.isRefreshing,
         onAction = { action ->
             when (action) {
-                is ShortsActions.OnBackClick -> onBackClicked()
                 else -> viewModel.onAction(action)
             }
         }

@@ -59,7 +59,7 @@ class QuiksViewModel(private val postsRepo: PostsRepo,
                 }
                 .insertSeparators { before, after ->
                     if (after == null || before == null) return@insertSeparators null
-                    if (adCounter.get() % 1 == 0) {
+                    if (adCounter.get() % 4 == 0) {
                         Log.d("adcounter", adCounter.get().toString())
                         adCounter.incrementAndGet()
                         QuikUiItem.ad()

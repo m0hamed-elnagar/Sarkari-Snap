@@ -35,8 +35,8 @@ android {
         applicationId = "com.rawderm.taaza.today"
         minSdk = 26
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.3"
+        versionCode = 9
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val localProps = Properties().apply {
@@ -118,6 +118,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.koin.test)
 
     // Firebase
@@ -190,7 +191,9 @@ dependencies {
     // ads
     implementation("com.google.android.gms:play-services-ads:24.7.0")
     implementation("com.google.ads.mediation:inmobi:10.8.8.1")
-
+    implementation("com.google.ads.mediation:facebook:6.20.0.2")
+    implementation("com.google.ads.mediation:applovin:13.4.0.1")
+    implementation("com.google.ads.mediation:ironsource:9.0.0.1")
     //google play update check
     implementation(libs.app.update.ktx)
     implementation("com.google.android.play:app-update:2.1.0")
