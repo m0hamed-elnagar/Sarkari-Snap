@@ -103,8 +103,10 @@ fun NativeScreen(
                         .background(Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Text(
                             "Ad not available",
                             modifier = Modifier.padding(top = 8.dp),
@@ -117,7 +119,7 @@ fun NativeScreen(
 
             nativeAd != null -> {
                 // Success state
-                DisplayNativeAdView(nativeAd!!,modifier)
+                DisplayNativeAdView(nativeAd!!, modifier)
             }
         }
     }

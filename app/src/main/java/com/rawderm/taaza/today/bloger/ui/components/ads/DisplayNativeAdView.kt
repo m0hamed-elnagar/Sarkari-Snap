@@ -33,7 +33,7 @@ import com.rawderm.taaza.today.bloger.ui.components.ads.compose_util.NativeAdVie
 
 @Composable
 fun DisplayNativeAdView(nativeAd: NativeAd, modifier: Modifier = Modifier) {
-    NativeAdView(nativeAd,modifier) {
+    NativeAdView(nativeAd, modifier) {
         Box(modifier) {
 
             /* 1. full-screen media (background) */

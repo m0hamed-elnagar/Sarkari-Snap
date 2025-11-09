@@ -1,7 +1,9 @@
 package com.rawderm.taaza.today.bloger.ui.quiks
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Html
+import android.util.Log
 import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +24,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,18 +36,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
+import com.rawderm.taaza.today.bloger.ui.articleDetails.AdminNotificationFeature
 import com.rawderm.taaza.today.core.ui.theme.Transparent
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import com.yariksoffice.lingver.Lingver
 
+@SuppressLint("LogNotTimber")
 @Composable
 fun PostFullScreenCard(
     post: Post,
@@ -53,6 +64,8 @@ fun PostFullScreenCard(
     val bgColor = Color(0xFF7E796F)
     val postId = Regex("""\[(\d+)]""").find(post.title)?.groupValues?.get(1)
     val postTitle = post.title.replace(Regex("""\[(\d+)]"""), "")
+    var showSendNotifDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Card(
         modifier = modifier
@@ -144,28 +157,34 @@ fun PostFullScreenCard(
                         .fillMaxSize()
                         .padding(bottom = 80.dp) // Reserve space for the button
                 ) {
-                Text(postTitle, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White,
-                    modifier = Modifier.padding(horizontal = 8.dp))
-                AndroidView(
-                    factory = { ctx ->
-                        TextView(ctx).apply {
-                            textSize = 16f
-                            setTextColor(ctx.getColor(R.color.white))
-                            setPadding(12, 2, 12, 8)
-                            movementMethod = null
-                            isVerticalScrollBarEnabled = false // Disable scroll bars
+                    Text(
+                        postTitle,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    AndroidView(
+                        factory = { ctx ->
+                            TextView(ctx).apply {
+                                textSize = 16f
+                                setTextColor(ctx.getColor(R.color.white))
+                                setPadding(12, 2, 12, 8)
+                                movementMethod = null
+                                isVerticalScrollBarEnabled = false // Disable scroll bars
 
-                        }
-                    },
-                    update = {
-                        it.text = Html.fromHtml(
-                            post.content,
-                            Html.FROM_HTML_SEPARATOR_LINE_BREAK_LIST_ITEM
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )}
+                            }
+                        },
+                        update = {
+                            it.text = Html.fromHtml(
+                                post.content,
+                                Html.FROM_HTML_SEPARATOR_LINE_BREAK_LIST_ITEM
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = Color.White.copy(alpha = .20f),
@@ -182,7 +201,43 @@ fun PostFullScreenCard(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
+                if (BuildConfig.FLAVOR == "admin") {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color.White.copy(alpha = .20f),
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .align(Alignment.BottomEnd)
 
+                            .clickable {
+                                Log.d("TopBar", "Send Notifications clicked")
+                                showSendNotifDialog = true
+                            }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.sent_notifications),
+                            contentDescription = "Notifications",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .size(24.dp),
+                        )
+                    }
+                }
+
+                val appUrl = context.getString(R.string.app_url)
+                val postUrl = "$appUrl/" + Lingver.getInstance()
+                    .getLocale().language + "/post/" + post.id
+                AdminNotificationFeature(
+                    showSendNotifDialog = showSendNotifDialog,
+                    onDismiss = { showSendNotifDialog = false },
+                    initialToken = post.labels.firstOrNull() ?: "",
+                    initialTitle = post.title,
+                    initialBody = "click to open",
+                    initialDeeplink = postUrl,
+                    context = context,
+                    scope = scope
+                )
             }
 
 

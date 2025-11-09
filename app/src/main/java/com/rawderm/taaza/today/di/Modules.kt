@@ -20,6 +20,8 @@ import com.rawderm.taaza.today.bloger.ui.pageDetails.PageDetailsViewModel
 import com.rawderm.taaza.today.bloger.ui.quiks.QuiksViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import com.rawderm.taaza.today.core.data.HttpClientFactory
+import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
+import com.rawderm.taaza.today.core.notifications.ui.notificationsScreen.NotificationsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.runBlocking
@@ -31,20 +33,21 @@ import org.koin.dsl.module
 val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     single<HttpClientEngine> { OkHttp.create() }
-    single { LanguageDataStore(get())    }
-    single { 
-        LanguageManager(get(), get()).apply {
+    single { LanguageDataStore(get()) }
+    single {
+        LanguageManager(get(), get(),get()).apply {
             // Initialize synchronously to ensure it's ready when needed
             runBlocking {
                 initialize()
             }
-        } 
+        }
     }
+    singleOf(::TopicDataStoreManager)
     single<RemotePostDataSource> {
         val context = get<android.content.Context>()
         val blogId = context.getString(R.string.blogger_id)
         Log.d("urlTest", "blogid: $blogId ")
-        KtorRemoteBlogDataSource(get(), blogId,get())
+        KtorRemoteBlogDataSource(get(), blogId, get())
     }
     singleOf(::DefaultPostsRepo)
         .bind<PostsRepo>()
@@ -66,6 +69,6 @@ val sharedModule = module {
     viewModelOf(::ShortsViewModel)
     viewModelOf(::LabeledPostsViewModel)
     viewModelOf(::QuiksViewModel)
-
+viewModelOf(::NotificationsViewModel)
 
 }

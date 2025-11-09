@@ -34,7 +34,10 @@ fun AnnotatedHtmlContent(
         html
             .replace(Regex("background-color:[^;]+;?"), "")
             .replace(Regex("<p>(&nbsp;|\\s)*</p>"), "")
-            .replace(Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"), "")
+            .replace(
+                Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"),
+                ""
+            )
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
     }
@@ -84,18 +87,38 @@ fun AnnotatedHtmlContent(
 
             spanned.getSpans(0, length, Any::class.java).forEach { span ->
                 val start = spanned.getSpanStart(span)
-                val end   = spanned.getSpanEnd(span)
+                val end = spanned.getSpanEnd(span)
                 when (span) {
                     is StyleSpan -> when (span.style) {
-                        Typeface.BOLD  -> addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
-                        Typeface.ITALIC-> addStyle(SpanStyle(fontStyle  = FontStyle.Italic),start, end)
+                        Typeface.BOLD -> addStyle(
+                            SpanStyle(fontWeight = FontWeight.Bold),
+                            start,
+                            end
+                        )
+
+                        Typeface.ITALIC -> addStyle(
+                            SpanStyle(fontStyle = FontStyle.Italic),
+                            start,
+                            end
+                        )
                     }
+
                     is UnderlineSpan ->
                         addStyle(SpanStyle(textDecoration = TextDecoration.Underline), start, end)
-                    is URLSpan   -> {
+
+                    is URLSpan -> {
                         // link colour = primary, NO underline (same as your CSS)
-                        addStyle(SpanStyle(color = primary, textDecoration = TextDecoration.None), start, end)
-                        addStringAnnotation(tag = "url", annotation = span.url, start = start, end = end)
+                        addStyle(
+                            SpanStyle(color = primary, textDecoration = TextDecoration.None),
+                            start,
+                            end
+                        )
+                        addStringAnnotation(
+                            tag = "url",
+                            annotation = span.url,
+                            start = start,
+                            end = end
+                        )
                     }
                 }
             }
@@ -104,9 +127,9 @@ fun AnnotatedHtmlContent(
             val headingRegex = Regex("<h([1-6])>(.*?)</h[1-6]>")
             headingRegex.findAll(spanned.toString()).forEach { match ->
                 val level = match.groupValues[1].toInt()
-                val text  = match.groupValues[2]
+                val text = match.groupValues[2]
                 val start = match.range.first
-                val end   = match.range.last + 1
+                val end = match.range.last + 1
                 val sizeEm = when (level) {
                     1 -> 2.00f
                     2 -> 1.50f

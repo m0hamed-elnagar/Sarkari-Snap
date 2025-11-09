@@ -38,7 +38,10 @@ class WebViewItemViewHolder(
         val cleaned = html
             .replace(Regex("background-color:[^;]+;?"), "")
             .replace(Regex("<p>(&nbsp;|\\s)*</p>"), "")
-            .replace(Regex("(?is)<div[^>]*share|social|button|footer|ads|sponsor[^>]*>.*?</div>"), "")
+            .replace(
+                Regex("(?is)<div[^>]*share|social|button|footer|ads|sponsor[^>]*>.*?</div>"),
+                ""
+            )
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
 

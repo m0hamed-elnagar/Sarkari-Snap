@@ -43,8 +43,9 @@ class DefaultPostsRepo(
     override suspend fun getLabels(): Result<List<String>, DataError.Remote> {
         val lang = languageDataStore.getLanguageSync()
 
-        return remotePostDataSource.getUniqueLabels(currentLang =lang).map { dto ->
-            val excludedLabels = setOf("shorts", "video", "test 1", "test","trending","quik","quiks","quick")
+        return remotePostDataSource.getUniqueLabels(currentLang = lang).map { dto ->
+            val excludedLabels =
+                setOf("shorts", "video", "test 1", "test", "trending", "quik", "quiks", "quick")
             val isHindi = lang.equals("hi", ignoreCase = true)
             val canonicalOrder = if (isHindi) hindiOrder else englishOrder
             val allLabel = if (isHindi) "सभी" else "All"
@@ -63,7 +64,7 @@ class DefaultPostsRepo(
             )
 
             // 8. Prepend "All" / "सभी"
-            (     listOf(allLabel) + sortedLabels)
+            (listOf(allLabel) + sortedLabels)
                 .map { it.replaceFirstChar(Char::uppercase) }
 
 
@@ -93,9 +94,11 @@ class DefaultPostsRepo(
             entities.any { it.id == shortId }
         }
     }
-  override  fun observeFavoriteShortIds(): Flow<Set<String>> =
+
+    override fun observeFavoriteShortIds(): Flow<Set<String>> =
         shortDao.observeIds()
             .map { it.toSet() }
+
     override suspend fun markShortAsFavorite(short: Short): EmptyResult<DataError.Local> {
         return try {
 
@@ -188,8 +191,11 @@ class DefaultPostsRepo(
         ).flow
 
     }
-    
-    override fun getShortsBeforeDateWithLanguage(afterDate: String?, language: String): Flow<PagingData<Short>> {
+
+    override fun getShortsBeforeDateWithLanguage(
+        afterDate: String?,
+        language: String
+    ): Flow<PagingData<Short>> {
         return Pager(
             config = PagingConfig(pageSize = 6, enablePlaceholders = false),
             pagingSourceFactory = {
@@ -201,7 +207,11 @@ class DefaultPostsRepo(
             }
         ).flow
     }
-    override fun getQuiksBeforeDateWithLanguage(afterDate: String?, language: String): Flow<PagingData<Post>> {
+
+    override fun getQuiksBeforeDateWithLanguage(
+        afterDate: String?,
+        language: String
+    ): Flow<PagingData<Post>> {
         return Pager(
             config = PagingConfig(pageSize = 6, enablePlaceholders = false),
             pagingSourceFactory = {

@@ -14,7 +14,7 @@ import com.google.android.gms.ads.nativead.NativeAdOptions
 fun loadNativeAd(
     context: Context,
     onAdLoaded: (NativeAd) -> Unit,
-    nativeAdUnitID: String ,
+    nativeAdUnitID: String,
     onAdFailed: () -> Unit = {}
 ) {
     val TAG = "NativeAd"
@@ -49,7 +49,7 @@ fun loadNativeAd(
                     Log.d(TAG, "Native ad was clicked.")
                 }
             }
-        )        .withNativeAdOptions(nativeAdOptions)   // <── important
+        ).withNativeAdOptions(nativeAdOptions)   // <── important
 
         .build()
     adLoader.loadAd(AdRequest.Builder().build())

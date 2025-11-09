@@ -32,7 +32,10 @@ fun HtmlWebView(
     val cleaned = remember(html) {
         html.replace(Regex("background-color:[^;]+;?"), "")
             .replace(Regex("<p>(&nbsp;|\\s)*</p>"), "")
-            .replace(Regex("(?is)<div[^>]*share|social|button|footer|ads|sponsor[^>]*>.*?</div>"), "")
+            .replace(
+                Regex("(?is)<div[^>]*share|social|button|footer|ads|sponsor[^>]*>.*?</div>"),
+                ""
+            )
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
     }
@@ -73,10 +76,10 @@ fun HtmlWebView(
                 factory = {
                     WebView(context).apply {
                         setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                        isVerticalScrollBarEnabled   = false
+                        isVerticalScrollBarEnabled = false
                         isHorizontalScrollBarEnabled = false
-                        overScrollMode               = WebView.OVER_SCROLL_NEVER
-                        settings.javaScriptEnabled   = false
+                        overScrollMode = WebView.OVER_SCROLL_NEVER
+                        settings.javaScriptEnabled = false
                         webViewClient = object : WebViewClient() {
                             override fun shouldOverrideUrlLoading(
                                 v: WebView?, req: WebResourceRequest?
@@ -92,6 +95,7 @@ fun HtmlWebView(
         }
     }
 }
+
 suspend fun measureHtmlHeight(context: Context, html: String, screenWidth: Int): Int =
     withContext(Dispatchers.Main) {   // WebView must be on main thread
         val latch = CountDownLatch(1)
@@ -99,18 +103,19 @@ suspend fun measureHtmlHeight(context: Context, html: String, screenWidth: Int):
 
         val webView = WebView(context).apply {
             setBackgroundColor(Color.TRANSPARENT)
-            isVerticalScrollBarEnabled   = false
+            isVerticalScrollBarEnabled = false
             isHorizontalScrollBarEnabled = false
-            overScrollMode               = WebView.OVER_SCROLL_NEVER
+            overScrollMode = WebView.OVER_SCROLL_NEVER
             with(settings) {
                 javaScriptEnabled = false
-                useWideViewPort   = true
+                useWideViewPort = true
                 loadWithOverviewMode = true
             }
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String?) {
                     view.post {
-                        height = (view.contentHeight * view.resources.displayMetrics.density).toInt()
+                        height =
+                            (view.contentHeight * view.resources.displayMetrics.density).toInt()
                         latch.countDown()
                     }
                 }

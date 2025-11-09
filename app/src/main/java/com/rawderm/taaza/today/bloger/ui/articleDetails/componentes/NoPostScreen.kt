@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.rawderm.taaza.today.R
 
 @Composable
- fun NoPostState(
+fun NoPostState(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit
 ) {

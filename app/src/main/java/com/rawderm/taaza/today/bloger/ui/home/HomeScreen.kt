@@ -43,6 +43,9 @@ import com.rawderm.taaza.today.bloger.ui.quiks.QuikScreenRoot
 import com.rawderm.taaza.today.bloger.ui.quiks.QuiksViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
+import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
+import com.rawderm.taaza.today.core.notifications.ui.notificationsDialog.TopicPickerDialog2
+import com.rawderm.taaza.today.core.notifications.ui.notificationsScreen.TaazaOnboardingDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -68,6 +71,14 @@ fun HomeScreenRoot(
     val scope = rememberCoroutineScope()
     var showLangDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val manager = remember { TopicDataStoreManager(context) }
+
+    val alreadyShown by manager.hasTopicDialogAlreadyShown().collectAsState(false)
+    if (!alreadyShown) TaazaOnboardingDialog(
+        onDismiss = {
+            scope.launch { manager.markTopicDialogAlreadyShown() }},
+        viewModel = org.koin.androidx.compose.koinViewModel()
+    )
     LaunchedEffect(Unit) {
         // run only once
         if (LanguageDataStore(context).isFirstLaunch()) {
@@ -75,9 +86,11 @@ fun HomeScreenRoot(
         }
     }
     if (showLangDialog) {
-        Box(Modifier
-            .fillMaxSize()
-            .background(White)) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(White)
+        ) {
             LanguagePickerDialog(
                 Modifier
                     .fillMaxSize()
@@ -92,10 +105,10 @@ fun HomeScreenRoot(
             pagedPosts = pagedPosts,
             pages = pages,
             languageManager,
-            shortsViewModel ,
+            shortsViewModel,
             pagerState,
             scope,
-            quikViewModel=quikViewModel,
+            quikViewModel = quikViewModel,
             pagedUiItem = pagedUiItem,
             onAction = { action ->
                 when (action) {
@@ -156,10 +169,14 @@ fun HomeScreen(
             }
         }, bottomBar = {
             BottomTabRow(
-                modifier = Modifier.background(Black).navigationBarsPadding().background(White),
+                modifier = Modifier
+                    .background(Black)
+                    .navigationBarsPadding()
+                    .background(White),
                 pagerState = pagerState,
                 scope = scope,
-                tabs = tabs)
+                tabs = tabs
+            )
         }) { padding ->
         Column(Modifier.fillMaxSize()) {
             HorizontalPager(
@@ -178,7 +195,7 @@ fun HomeScreen(
                         pagedUiItem = pagedUiItem
                     )
 
-                    BottomTab.QUICKS ->QuikScreenRoot(
+                    BottomTab.QUICKS -> QuikScreenRoot(
                         viewModel = quikViewModel,
                         onBackClicked = {
                             onAction(HomeActions.OnTabSelected(0))
@@ -190,7 +207,8 @@ fun HomeScreen(
 
 
                     BottomTab.SHORTS -> {
-                        ShortsScreenRoot(viewModel = shortsViewModel,
+                        ShortsScreenRoot(
+                            viewModel = shortsViewModel,
                             onBackClicked = {
                                 onAction(HomeActions.OnTabSelected(0))
                             })
@@ -202,10 +220,11 @@ fun HomeScreen(
                             onAction(HomeActions.OnTabSelected(0))
                         })
 
-                    BottomTab.MORE -> MoreTabScreen(pages = pages, onAction = onAction,
+                    BottomTab.MORE -> MoreTabScreen(
+                        pages = pages, onAction = onAction,
                         onBackClicked = {
-                        onAction(HomeActions.OnTabSelected(0))
-                    })
+                            onAction(HomeActions.OnTabSelected(0))
+                        })
 
                 }
             }

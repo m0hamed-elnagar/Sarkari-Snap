@@ -16,12 +16,13 @@ fun pagesPagingSource(
         is Result.Success -> {
             val all = res.data.items.map { it.toPage() }
             val sub = all.drop(start).take(loadSize)
-                PagingSource.LoadResult.Page(
+            PagingSource.LoadResult.Page(
                 data = sub,
                 prevKey = null,
                 nextKey = (start + sub.size).takeIf { it < all.size }?.toString()
             )
         }
-        is Result.Error   -> PagingSource.LoadResult.Error(Exception(res.error.toString()))
+
+        is Result.Error -> PagingSource.LoadResult.Error(Exception(res.error.toString()))
     }
 }

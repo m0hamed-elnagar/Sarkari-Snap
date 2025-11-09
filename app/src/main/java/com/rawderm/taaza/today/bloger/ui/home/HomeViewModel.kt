@@ -39,7 +39,7 @@ class HomeViewModel(
 ) : ViewModel() {
 
     // Use LanguageManager's current language flow
-    private val lang= languageManager.currentLanguage
+    private val lang = languageManager.currentLanguage
         .onEach {
             fetchLabels()
 
@@ -99,7 +99,7 @@ class HomeViewModel(
             .insertSeparators { before, after ->
                 // Insert a banner every 3 posts
                 if (before == null) return@insertSeparators null // start of list
-                if (adCounter.get() % 5== 0) {
+                if (adCounter.get() % 5 == 0) {
                     Log.d("adcounter2", adCounter.get().toString())
                     adCounter.incrementAndGet()
                     PostUiItem.ad()
@@ -145,7 +145,6 @@ class HomeViewModel(
             else -> Unit
         }
     }
-
 
 
     fun refreshAll() {

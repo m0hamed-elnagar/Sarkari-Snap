@@ -1,3 +1,117 @@
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=50&fields=nextPageToken,items(labels)
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-11-04T152358.200.json
+
+###
+
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=50&fields=nextPageToken,items(labels)
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2025-11-04T152239.200.json
+
+###
+
+POST https://fcm.googleapis.com/v1/projects/taaza-today/messages:send
+Content-Type: application/json
+Authorization: key  XPX1HMXfrDG5oeVAmgkZDE5ciQuZT6jywNJlhEZ1YKY
+Content-Length: 213
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "message": {
+    "topic": "test",
+    "data": {
+      "title": "Deep Link Test",
+      "body": "Tap to open link",
+      "deeplink": "https://taaza-today.web.app/en/quiks/2025-10-27T05:18:12-07:00"
+    }
+  }
+}
+
+<> 2025-11-03T110801.401.json
+
+###
+
+POST https://fcm.googleapis.com/v1/projects/taaza-today/messages:send
+Content-Type: application/json
+Authorization: key  BJBONka2RXs6Ynbh27MWE2lRRJPRrOWn4oeL8Ra1R3Wzea_p_gHnt3SjdI-PtrrttJUe61pjX3cNc8aooZhFnPM
+Content-Length: 213
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "message": {
+    "topic": "test",
+    "data": {
+      "title": "Deep Link Test",
+      "body": "Tap to open link",
+      "deeplink": "https://taaza-today.web.app/en/quiks/2025-10-27T05:18:12-07:00"
+    }
+  }
+}
+
+<> 2025-11-03T110740.401.json
+
+###
+
+POST https://fcm.googleapis.com/v1/projects/taaza-today/messages:send
+Content-Type: application/json
+Authorization: BJBONka2RXs6Ynbh27MWE2lRRJPRrOWn4oeL8Ra1R3Wzea_p_gHnt3SjdI-PtrrttJUe61pjX3cNc8aooZhFnPM
+Content-Length: 213
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "message": {
+    "topic": "test",
+    "data": {
+      "title": "Deep Link Test",
+      "body": "Tap to open link",
+      "deeplink": "https://taaza-today.web.app/en/quiks/2025-10-27T05:18:12-07:00"
+    }
+  }
+}
+
+<> 2025-11-03T110726.401.json
+
+###
+
+POST https://fcm.googleapis.com/v1/projects/taaza-today/messages:send
+Content-Type: application/json
+Authorization: key 7976a4b748c22bb769cfcc9e0afd2a3c45a443a4
+Content-Length: 213
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "message": {
+    "topic": "test",
+    "data": {
+      "title": "Deep Link Test",
+      "body": "Tap to open link",
+      "deeplink": "https://taaza-today.web.app/en/quiks/2025-10-27T05:18:12-07:00"
+    }
+  }
+}
+
+<> 2025-11-02T155657.401.json
+
+###
+
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Quick&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
 User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 4 Feature Drop | 2025.1.4
 Accept-Encoding: br, deflate, gzip, x-gzip
@@ -385,60 +499,6 @@ User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.
 Accept-Encoding: br, deflate, gzip, x-gzip
 
 <> 2025-09-23T190648.404.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-23T190628.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=https://sarkarisnapz.blogspot.com/&key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-23T190604.404.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=https://sarkarisnapz.blogspot.com/&key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-23T190559.404.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/252207238930334231?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-23T190532.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-22T162833.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/3968644153225120990?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-22T133634.200.json
 
 ###
 

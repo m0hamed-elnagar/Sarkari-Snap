@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,10 +25,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -157,20 +162,20 @@ fun PageDetailsScreen(
                     if (html.isNullOrBlank()) {
 
 
-                            Box(
-                                modifier = Modifier
-                                    .fillParentMaxHeight()   // <-- key: fills remaining LazyColumn height
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp),
-                                contentAlignment = Alignment.Center
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxHeight()   // <-- key: fills remaining LazyColumn height
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp),
+                            contentAlignment = Alignment.Center
 
-                                ) {
-                                Text(
-                                    text = "No content available",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center
-                                )
+                        ) {
+                            Text(
+                                text = "No content available",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
 
                         }
                     } else {
@@ -186,7 +191,18 @@ fun PageDetailsScreen(
 
                 }
                 item {
-                    NativeScreen()
+                    var isAdLoaded by remember { mutableStateOf(false) }
+                    val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
+                    val targetAlpha = if (isAdLoaded) 1f else 0f
+
+                    NativeScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(targetHeight)
+                            .graphicsLayer { alpha = targetAlpha } // hide while tiny
+                    ) { loaded ->
+                        isAdLoaded = loaded
+                    }
                 }
             }
 

@@ -1,6 +1,9 @@
 package com.rawderm.taaza.today.app
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -24,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
@@ -45,16 +50,18 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.DeepLinkHandler
 import com.rawderm.taaza.today.bloger.data.LanguageDataStore
 import com.rawderm.taaza.today.bloger.data.LanguageManager
-import com.rawderm.taaza.today.bloger.data.PendingDeepLinkStorage
 import com.rawderm.taaza.today.bloger.ui.components.LanguageConfirmDialog
 import com.rawderm.taaza.today.bloger.ui.components.LanguagePickerDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
@@ -142,7 +149,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             var showLangGate by remember { mutableStateOf(true) }   // 1. start with gate open
             var showLanguagePicker by remember { mutableStateOf(false) } // For unconditional language picker
+            requestNotificationPermission()
+            val scope = rememberCoroutineScope()
+            scope.launch {
+                Firebase.messaging.subscribeToTopic("test").await()
 
+            }
             // Check if this is first launch to show language picker
             LaunchedEffect(Unit) {
                 val isFirstLaunch = languageDataStore.isFirstLaunch()
@@ -207,6 +219,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
+            }
+        }
+    }
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -215,7 +244,7 @@ class MainActivity : ComponentActivity() {
         intent.let { newIntent ->
             // 1. make it the intent that every lifecycle method will see from now on
             setIntent(newIntent)
-                    DeepLinkHandler.consumed = false
+            DeepLinkHandler.consumed = false
 
             Log.d("DeepLink", "New intent: $newIntent")
             // 3. let Navigation handle the deep link
@@ -251,8 +280,10 @@ class MainActivity : ComponentActivity() {
             onAccept = {
                 onPassed()
             },
-            onDecline = { onPassed()
-                DeepLinkHandler.consumed = true  }
+            onDecline = {
+                onPassed()
+                DeepLinkHandler.consumed = true
+            }
         )
     }
 
@@ -262,18 +293,23 @@ class MainActivity : ComponentActivity() {
             when {
                 info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
                         && updateType == AppUpdateType.IMMEDIATE -> startUpdateFlow(info)
+
                 info.installStatus() == InstallStatus.DOWNLOADED -> restartSnackbar()
             }
         }
     }
 
-    private val installStateUpdatedListener: InstallStateUpdatedListener  = InstallStateUpdatedListener { state ->
-        when (state.installStatus()) {
-            InstallStatus.DOWNLOADED -> restartSnackbar()
-            InstallStatus.INSTALLED  -> appUpdateManager.unregisterListener(installStateUpdatedListener)
-            else                       -> Unit
+    private val installStateUpdatedListener: InstallStateUpdatedListener =
+        InstallStateUpdatedListener { state ->
+            when (state.installStatus()) {
+                InstallStatus.DOWNLOADED -> restartSnackbar()
+                InstallStatus.INSTALLED -> appUpdateManager.unregisterListener(
+                    installStateUpdatedListener
+                )
+
+                else -> Unit
+            }
         }
-    }
 
     private fun checkForAppUpdate() {
         appUpdateManager.appUpdateInfo
@@ -281,8 +317,8 @@ class MainActivity : ComponentActivity() {
                 val avail = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 val allowed = when (updateType) {
                     AppUpdateType.FLEXIBLE -> info.isFlexibleUpdateAllowed
-                    AppUpdateType.IMMEDIATE-> info.isImmediateUpdateAllowed
-                    else                   -> false
+                    AppUpdateType.IMMEDIATE -> info.isImmediateUpdateAllowed
+                    else -> false
                 }
                 if (avail && allowed) startUpdateFlow(info)
             }
@@ -304,7 +340,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun restartSnackbar() {
-        Toast.makeText(this, getString(R.string.download_successful_restart), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.download_successful_restart), Toast.LENGTH_LONG)
+            .show()
         lifecycleScope.launch { delay(5_000); appUpdateManager.completeUpdate() }
     }
 

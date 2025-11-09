@@ -10,6 +10,8 @@ fun Context.checkInternet(callback: (Boolean) -> Unit) {
     val network = cm.activeNetwork
     val capabilities = cm.getNetworkCapabilities(network)
 
-    return callback(capabilities?.hasCapability(NET_CAPABILITY_INTERNET)==true
-            && capabilities.hasCapability(NET_CAPABILITY_VALIDATED))
+    return callback(
+        capabilities?.hasCapability(NET_CAPABILITY_INTERNET) == true
+                && capabilities.hasCapability(NET_CAPABILITY_VALIDATED)
+    )
 }

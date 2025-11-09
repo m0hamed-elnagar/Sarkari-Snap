@@ -13,6 +13,7 @@ abstract class FavoritePostDataBase : RoomDatabase() {
     abstract val shortDao: ShortDao
 
 }
+
 object Migration2To3 : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(

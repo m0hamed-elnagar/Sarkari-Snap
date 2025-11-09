@@ -119,11 +119,11 @@ object WebViewCache2 {
                 loadHtmlContent(html, context)
             }
 
-        WebViewHolder(webView)
-    }
+            WebViewHolder(webView)
+        }
 
-    // Detach if already attached
-    (holder.webView.parent as? android.view.ViewGroup)?.removeView(holder.webView)
+        // Detach if already attached
+        (holder.webView.parent as? android.view.ViewGroup)?.removeView(holder.webView)
 
         holder.webView.post {
             holder.webView.scrollTo(holder.scrollX, holder.scrollY)
@@ -133,8 +133,9 @@ object WebViewCache2 {
             holder.measuredHeight = h
         }
 
-    return holder.webView
-}
+        return holder.webView
+    }
+
     fun saveScrollPosition(key: String, webView: WebView) {
         cache[key]?.apply {
             scrollX = webView.scrollX
@@ -148,7 +149,10 @@ object WebViewCache2 {
         val cleanedHtml = html
             .replace(Regex("background-color:[^;]+;?"), "")
             .replace(Regex("<p>(&nbsp;|\\s)*</p>"), "")
-            .replace(Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"), "")
+            .replace(
+                Regex("(?s)<div[^>]*(share|social|button|footer|ads|sponsor|toc)[^>]*>.*?</div>"),
+                ""
+            )
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
 
@@ -192,9 +196,14 @@ internal fun WebView.addContentHeightListener(onHeight: (Int) -> Unit) {
             }
         }
     }
-   addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-    override fun onViewAttachedToWindow(v: View) { runnable.run() }
-    override fun onViewDetachedFromWindow(v: View) { removeCallbacks(runnable) }
-})
+    addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) {
+            runnable.run()
+        }
+
+        override fun onViewDetachedFromWindow(v: View) {
+            removeCallbacks(runnable)
+        }
+    })
     post { onHeight(contentHeight) }
 }

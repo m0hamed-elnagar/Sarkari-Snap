@@ -2,7 +2,7 @@ package com.rawderm.taaza.today.bloger.ui.home
 
 import com.rawderm.taaza.today.bloger.domain.Post
 
-data class PostUiItem (
+data class PostUiItem(
     val post: Post?,
     val isAd: Boolean
 ) {

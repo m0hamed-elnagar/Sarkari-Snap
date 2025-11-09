@@ -76,52 +76,62 @@ fun ShareExpandableFab(
                 MiniFab(
                     icon = painterResource(R.drawable.ic_whatsapp),
                     cd = "Share on WhatsApp",
-                    isAnimating=isAnimating,
+                    isAnimating = isAnimating,
                     iconSize = 32.dp
-                ) {  if (!clickLocked) {
-                    onShareClick(ShareTarget.WHATSAPP)
-                    expanded = false
-                } }
+                ) {
+                    if (!clickLocked) {
+                        onShareClick(ShareTarget.WHATSAPP)
+                        expanded = false
+                    }
+                }
 
                 // 2. Facebook
                 MiniFab(
                     icon = painterResource(R.drawable.ic_facebook),
-                    isAnimating=isAnimating,
+                    isAnimating = isAnimating,
                     cd = "Share on Facebook"
-                ) {  if (!clickLocked) {
-                    onShareClick(ShareTarget.FACEBOOK)
-                    expanded = false
-                } }
+                ) {
+                    if (!clickLocked) {
+                        onShareClick(ShareTarget.FACEBOOK)
+                        expanded = false
+                    }
+                }
 
                 // 3. Telegram
                 MiniFab(
                     icon = painterResource(R.drawable.ic_telegram),
-                    isAnimating=isAnimating,
+                    isAnimating = isAnimating,
                     cd = "Share on Telegram"
-                ) {  if (!clickLocked) {
-                    onShareClick(ShareTarget.TELEGRAM)
-                    expanded = false
-                } }
+                ) {
+                    if (!clickLocked) {
+                        onShareClick(ShareTarget.TELEGRAM)
+                        expanded = false
+                    }
+                }
 
                 // 4. X / Twitter
                 MiniFab(
                     icon = painterResource(R.drawable.ic_twitter),
-                    isAnimating=isAnimating,
+                    isAnimating = isAnimating,
                     cd = "Share on X"
-                ) {  if (!clickLocked) {
-                    onShareClick(ShareTarget.X)
-                    expanded = false
-                } }
+                ) {
+                    if (!clickLocked) {
+                        onShareClick(ShareTarget.X)
+                        expanded = false
+                    }
+                }
 
                 // 5. Generic share (Share via / More)
                 MiniFab(
                     icon = painterResource(R.drawable.ic_share),
-                    isAnimating=isAnimating,
+                    isAnimating = isAnimating,
                     cd = "Share via"
-                ) {  if (!clickLocked) {
-                    onShareClick(ShareTarget.MORE)
-                    expanded = false
-                } }
+                ) {
+                    if (!clickLocked) {
+                        onShareClick(ShareTarget.MORE)
+                        expanded = false
+                    }
+                }
             }
         }
 

@@ -109,7 +109,7 @@ class ShortsViewModel(
                 }
 
             }
-            
+
             is ShortsActions.OnRefresh -> {
                 viewModelScope.launch {
                     _state.value = _state.value.copy(isRefreshing = true)

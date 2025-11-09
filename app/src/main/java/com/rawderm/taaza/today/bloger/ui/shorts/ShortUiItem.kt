@@ -3,7 +3,7 @@ package com.rawderm.taaza.today.bloger.ui.shorts
 import com.rawderm.taaza.today.bloger.domain.Short
 import java.util.UUID
 
-data class ShortUiItem  (
+data class ShortUiItem(
     val short: Short?,
     val isAd: Boolean,
     val isFavorite: Boolean,
@@ -14,6 +14,11 @@ data class ShortUiItem  (
             ShortUiItem(short = short, isAd = false, isFavorite = isFavorite, adId = null)
 
         fun ad() =
-            ShortUiItem(short = null, isAd = true, isFavorite = false, adId = UUID.randomUUID().toString())
+            ShortUiItem(
+                short = null,
+                isAd = true,
+                isFavorite = false,
+                adId = UUID.randomUUID().toString()
+            )
     }
 }

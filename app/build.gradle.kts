@@ -16,6 +16,20 @@ plugins {
 android {
     namespace = "com.rawderm.taaza.today"
     compileSdk = 36
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt"
+            )
+        }
+    }
 
     bundle {
         language {
@@ -35,8 +49,8 @@ android {
         applicationId = "com.rawderm.taaza.today"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.4"
+        versionCode = 10
+        versionName = "1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val localProps = Properties().apply {
@@ -62,12 +76,37 @@ android {
         }
         debug {
             isCrunchPngs = false
+
             // custom debug options if needed
         }
     }
+    flavorDimensions += "role"
+
+    productFlavors {
+        create("user"){
+            dimension= "role"
+        }
+        create("admin") {
+            dimension= "role"
+            applicationIdSuffix = ".admin"
+            versionNameSuffix ="-admin"
+            signingConfig = signingConfigs.getByName("release")
+            resValue("string", "app_name", "Taaza Admin")
+        }
+
+}
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    applicationVariants.all {
+        outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val flavour = flavorName
+                val version = versionName
+                output.outputFileName = "Taaza-Today-${flavour}-v${version}.apk"
+            }
     }
 
     composeOptions {
@@ -197,6 +236,8 @@ dependencies {
     //google play update check
     implementation(libs.app.update.ktx)
     implementation("com.google.android.play:app-update:2.1.0")
+// google auth
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.23.0")
 
 
 }

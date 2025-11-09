@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.rawderm.taaza.today.app.DeepLink
+import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 class LanguageManager(
     private val languageDataStore: LanguageDataStore,
-    private val context: Context
+    private val context: Context,
+    private val topicManger: TopicDataStoreManager
 ) {
     // Fix: Use proper StateFlow creation
     private val _currentLanguage = AtomicReference("en")
@@ -61,6 +63,7 @@ class LanguageManager(
 
                 /* 3.  tell Lingver */
                 Lingver.getInstance().setLocale(context, language)
+                topicManger.switchToLocale(language)
                 Log.d("LanguageManager", "Language set to: $language")
                 // Set restart pending flag instead of directly recreating
                 _restartPending.value = true
@@ -79,10 +82,11 @@ class LanguageManager(
         }
     }
 }
+
 object PendingDeepLinkStorage {
     private const val PREFS = "deep_link_prefs"
     private const val KEY_TYPE = "type"   // "post" | "short"
-    private const val KEY_DATA   = "data"
+    private const val KEY_DATA = "data"
     private const val KEY_LANG = "lang"
 
     fun save(ctx: Context, type: String, data: String, lang: String) =
@@ -92,20 +96,22 @@ object PendingDeepLinkStorage {
             .putString(KEY_DATA, data)
             .putString(KEY_LANG, lang)
             .apply()
-    fun consume(ctx: Context): Triple<String,String,String>? {
+
+    fun consume(ctx: Context): Triple<String, String, String>? {
         val p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val type = p.getString(KEY_TYPE, null) ?: return null
-        val id   = p.getString(KEY_DATA, null)   ?: return null
+        val id = p.getString(KEY_DATA, null) ?: return null
         val lang = p.getString(KEY_LANG, null) ?: return null
         p.edit().clear().apply()
         return Triple(type, id, lang)
     }
+
     /* ---------- read-only ---------- */
     fun get(ctx: Context): DeepLink? =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .let { prefs ->
                 val type = prefs.getString(KEY_TYPE, null).orEmpty()
-                val id   = prefs.getString(KEY_DATA, null).orEmpty()
+                val id = prefs.getString(KEY_DATA, null).orEmpty()
                 val lang = prefs.getString(KEY_LANG, null).orEmpty()
 
                 DeepLink(type, id, lang).takeIf { it.isValid }
@@ -118,6 +124,7 @@ object PendingDeepLinkStorage {
             .clear()
             .apply()
 }
+
 object DeepLinkHandler {
     var consumed = false
 }

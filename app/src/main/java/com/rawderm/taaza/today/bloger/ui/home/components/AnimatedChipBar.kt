@@ -46,18 +46,18 @@ fun AnimatedChipBar(
 //                exit = slideOutHorizontally() + fadeOut(),
 //                modifier = Modifier.animateItem(),
 //            ) {
-                AssistChip(
-                    onClick = { onLabelSelected(label) },
-                    label = { Text(label) },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (selected) SandYellow
-                        else MaterialTheme.colorScheme.surface,
-                        labelColor = if (selected) Color.White
-                        else MaterialTheme.colorScheme.onSurface
-                    ),
+            AssistChip(
+                onClick = { onLabelSelected(label) },
+                label = { Text(label) },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (selected) SandYellow
+                    else MaterialTheme.colorScheme.surface,
+                    labelColor = if (selected) Color.White
+                    else MaterialTheme.colorScheme.onSurface
+                ),
 
                 )
-            }
         }
+    }
 //    }
 }

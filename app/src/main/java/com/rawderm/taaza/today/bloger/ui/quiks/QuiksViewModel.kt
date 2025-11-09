@@ -27,8 +27,9 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicInteger
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class QuiksViewModel(private val postsRepo: PostsRepo,
-                     private val languageManager: LanguageManager
+class QuiksViewModel(
+    private val postsRepo: PostsRepo,
+    private val languageManager: LanguageManager
 ) : ViewModel() {
     private val _beforeDate = MutableStateFlow(
         OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -42,15 +43,16 @@ class QuiksViewModel(private val postsRepo: PostsRepo,
     val quiks: Flow<PagingData<Post>> =
         dateAndLanguage
             .flatMapLatest { (date, lang) ->
-                    postsRepo.getQuiksBeforeDateWithLanguage(date, lang)        }
+                postsRepo.getQuiksBeforeDateWithLanguage(date, lang)
+            }
             .cachedIn(viewModelScope)
             .stateIn(
                 viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000L),
                 initialValue = PagingData.empty()
             )
-                val uiQuiks: Flow<PagingData<QuikUiItem>> =
-                    quiks.map { paging ->
+    val uiQuiks: Flow<PagingData<QuikUiItem>> =
+        quiks.map { paging ->
             var adCounter = AtomicInteger(1)          // 1-based position in the list
 
             paging
@@ -77,7 +79,7 @@ class QuiksViewModel(private val postsRepo: PostsRepo,
             is QuiksActions.OnGetShortsByDate -> {
                 action.date.let { isoDate ->
                     _beforeDate.value = addOneSecond(isoDate)        // <- triggers shorts re-load
-                                    }
+                }
             }
 
 

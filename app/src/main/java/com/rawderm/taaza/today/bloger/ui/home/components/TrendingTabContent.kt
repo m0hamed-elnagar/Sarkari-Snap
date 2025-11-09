@@ -34,14 +34,16 @@ import com.rawderm.taaza.today.bloger.ui.home.HomeUiState
 fun TrendingTabContentPullRefresh(
     state: HomeUiState,
     pagedPosts: LazyPagingItems<Post>,
-    pages : LazyPagingItems<Page>,
+    pages: LazyPagingItems<Page>,
     onAction: (HomeActions) -> Unit,
 ) {
     val listState = rememberLazyListState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
-        onRefresh = { pagedPosts.refresh()
-            pages.refresh()}
+        onRefresh = {
+            pagedPosts.refresh()
+            pages.refresh()
+        }
     )
 
     Box(
@@ -50,7 +52,7 @@ fun TrendingTabContentPullRefresh(
             .pullRefresh(pullRefreshState)
     ) {
         TrendingTabContent(
-             pagedPosts, onAction, listState,
+            pagedPosts, onAction, listState,
         )
         PullRefreshIndicator(
             refreshing = state.isRefreshing,
@@ -121,7 +123,8 @@ private fun TrendingTabContent(
         }
 
         // Banner at the bottom
-        BannerAd("ca-app-pub-7395572779611582/3592956801"
+        BannerAd(
+            "ca-app-pub-7395572779611582/3592956801"
         )
     }
 }

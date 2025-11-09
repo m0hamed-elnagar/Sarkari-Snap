@@ -41,9 +41,11 @@ class PageDetailsViewModel(
             else -> {}
         }
     }
+
     init {          // ← always runs once
         fetchPageDetails()
     }
+
     fun fetchPageDetails() {
         if (pageId.isBlank()) return
         _state.value = _state.value.copy(isLoading = true)

@@ -1,6 +1,6 @@
 package com.rawderm.taaza.today.bloger.domain
 
-data class Short (
+data class Short(
     val id: String,
     val title: String,
     val selfUrl: String,
@@ -10,5 +10,5 @@ data class Short (
     val labels: List<String> = emptyList(),
     val date: String,
     val rowDate: String = "",
-    val updatedAt:String = ""
+    val updatedAt: String = ""
 )

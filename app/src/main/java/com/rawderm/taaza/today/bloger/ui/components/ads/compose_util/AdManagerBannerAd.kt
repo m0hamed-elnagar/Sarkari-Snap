@@ -35,17 +35,17 @@ import com.google.android.gms.ads.admanager.AdManagerAdView
  */
 @Composable
 fun AdManagerBannerAd(adView: AdManagerAdView, modifier: Modifier = Modifier) {
-  // Ad load does not work in preview mode because it requires a network connection.
-  if (LocalInspectionMode.current) {
-    Box { Text(text = "Google Mobile Ads preview banner.", modifier.align(Alignment.Center)) }
-    return
-  }
+    // Ad load does not work in preview mode because it requires a network connection.
+    if (LocalInspectionMode.current) {
+        Box { Text(text = "Google Mobile Ads preview banner.", modifier.align(Alignment.Center)) }
+        return
+    }
 
-  AndroidView(modifier = modifier.wrapContentSize(), factory = { adView })
+    AndroidView(modifier = modifier.wrapContentSize(), factory = { adView })
 
-  // Pause and resume the AdView when the lifecycle is paused and resumed.
-  LifecycleResumeEffect(adView) {
-    adView.resume()
-    onPauseOrDispose { adView.pause() }
-  }
+    // Pause and resume the AdView when the lifecycle is paused and resumed.
+    LifecycleResumeEffect(adView) {
+        adView.resume()
+        onPauseOrDispose { adView.pause() }
+    }
 }

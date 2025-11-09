@@ -42,9 +42,10 @@ class KtorRemoteBlogDataSource(
         Log.d("lang", "getBaseUrl: $lang ")
         return url
     }
+
     override suspend fun getPostsAfterDate(
         limit: Int,
-        label: String? ,
+        label: String?,
         beforeDate: String?,
         pageToken: String?
     ): Result<BloggerResponse, DataError.Remote> {
@@ -94,12 +95,17 @@ class KtorRemoteBlogDataSource(
         }
     }
 
-    override suspend fun getUniqueLabels(limit: Int, currentLang: String): Result<LabelsResponse, DataError.Remote> {
+    override suspend fun getUniqueLabels(
+        limit: Int,
+        currentLang: String
+    ): Result<LabelsResponse, DataError.Remote> {
         return safeCall<LabelsResponse> {
             val isHindi = currentLang.equals("hi", ignoreCase = true)
 
 
-            val baseUrl = if (isHindi){BASE_URL}else BASE_URL_english
+            val baseUrl = if (isHindi) {
+                BASE_URL
+            } else BASE_URL_english
             httpClient.get("${baseUrl}/posts") {
                 parameter("key", apiKey)
                 parameter("maxResults", limit)
@@ -132,9 +138,10 @@ class KtorRemoteBlogDataSource(
                 parameter("fields", "id,updated,url,title,content,labels")
             }.body()
         }
-  override  suspend fun getShortsBeforeDate(
+
+    override suspend fun getShortsBeforeDate(
         limit: Int,
-        label: String? ,
+        label: String?,
         beforeDate: String?,
         pageToken: String?
     ): Result<BloggerResponse, DataError.Remote> {
@@ -154,7 +161,7 @@ class KtorRemoteBlogDataSource(
             }.body()
         }
     }
-    
+
     override suspend fun getPostsBeforeDateWithLanguage(
         limit: Int,
         label: String?,

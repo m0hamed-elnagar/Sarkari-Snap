@@ -1,0 +1,14 @@
+POST https://fcm.googleapis.com/v1/projects/taaza-today/messages:send
+Content-Type: application/json
+Authorization:key  XPX1HMXfrDG5oeVAmgkZDE5ciQuZT6jywNJlhEZ1YKY
+
+{
+  "message": {
+    "topic": "test",
+    "data": {
+      "title": "Deep Link Test",
+      "body": "Tap to open link",
+      "deeplink": "https://taaza-today.web.app/en/quiks/2025-10-27T05:18:12-07:00"
+    }
+  }
+}

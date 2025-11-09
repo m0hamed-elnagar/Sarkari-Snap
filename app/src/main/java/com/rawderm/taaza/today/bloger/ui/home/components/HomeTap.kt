@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -116,26 +115,27 @@ private fun HomeTabContent(
 
             pagedUiItem.itemCount > 0 -> PostListWithAds(
                 pagedUiItem = pagedUiItem,
-                    onPostClick = { onAction(HomeActions.OnPostClick(it)) },
-                    modifier = Modifier.fillMaxSize(),
-                    scrollState = listState
-                )
+                onPostClick = { onAction(HomeActions.OnPostClick(it)) },
+                modifier = Modifier.fillMaxSize(),
+                scrollState = listState
+            )
 
-                pagedPosts.loadState.refresh is LoadState.Error ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()), // only here
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(stringResource(R.string.failed_to_load_posts))
-                        Button(onClick = {
-                            onAction(HomeActions.OnRefresh)
-                            pagedPosts.refresh() }) {
-                            Text(stringResource(R.string.retry))
-                        }
+            pagedPosts.loadState.refresh is LoadState.Error ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()), // only here
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(stringResource(R.string.failed_to_load_posts))
+                    Button(onClick = {
+                        onAction(HomeActions.OnRefresh)
+                        pagedPosts.refresh()
+                    }) {
+                        Text(stringResource(R.string.retry))
                     }
+                }
 
 
             else -> {

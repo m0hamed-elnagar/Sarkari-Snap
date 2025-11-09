@@ -30,7 +30,10 @@ fun HtmlWebView11(
 ) {
     val color = LocalContentColor.current
     val stripped = html
-        .replace(Regex("(?i)</?(p|div|h[1-6]|img|ul|ol|li|table|tr|td|th|tbody|thead|tfoot|br)[^>]*>"), " ")
+        .replace(
+            Regex("(?i)</?(p|div|h[1-6]|img|ul|ol|li|table|tr|td|th|tbody|thead|tfoot|br)[^>]*>"),
+            " "
+        )
         .replace(Regex("<a[^>]*>(\\s*)</a>"), " ")
         .replace(Regex("\\s{2,}"), " ")
 
@@ -44,14 +47,25 @@ fun HtmlWebView11(
 
             spanned.getSpans(0, length, Any::class.java).forEach { span ->
                 val start = spanned.getSpanStart(span)
-                val end   = spanned.getSpanEnd(span)
+                val end = spanned.getSpanEnd(span)
                 when (span) {
                     is StyleSpan -> when (span.style) {
-                        Typeface.BOLD  -> addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
-                        Typeface.ITALIC-> addStyle(SpanStyle(fontStyle  = FontStyle.Italic),start, end)
+                        Typeface.BOLD -> addStyle(
+                            SpanStyle(fontWeight = FontWeight.Bold),
+                            start,
+                            end
+                        )
+
+                        Typeface.ITALIC -> addStyle(
+                            SpanStyle(fontStyle = FontStyle.Italic),
+                            start,
+                            end
+                        )
                     }
+
                     is UnderlineSpan ->
                         addStyle(SpanStyle(textDecoration = TextDecoration.Underline), start, end)
+
                     is URLSpan -> {
                         addStyle(
                             SpanStyle(
@@ -60,7 +74,12 @@ fun HtmlWebView11(
                             ),
                             start, end
                         )
-                        addStringAnnotation(tag = "url", annotation = span.url, start = start, end = end)
+                        addStringAnnotation(
+                            tag = "url",
+                            annotation = span.url,
+                            start = start,
+                            end = end
+                        )
                     }
                 }
             }

@@ -30,7 +30,6 @@ import com.rawderm.taaza.today.app.BloggerApplication.Companion.isWorking
 import com.rawderm.taaza.today.app.components.TemporarilyStoppedScreen
 import com.rawderm.taaza.today.bloger.data.DeepLinkHandler
 import com.rawderm.taaza.today.bloger.data.LanguageManager
-import com.rawderm.taaza.today.bloger.data.PendingDeepLinkStorage
 import com.rawderm.taaza.today.bloger.ui.SelectedPostViewModel
 import com.rawderm.taaza.today.bloger.ui.articleDetails.PostDetailsActions
 import com.rawderm.taaza.today.bloger.ui.articleDetails.PostDetailsScreenRoot
@@ -161,30 +160,37 @@ private fun AppNavigation(navController: NavHostController) {
                 var pendingShortsDate by remember { mutableStateOf<String?>(null) }
                 val activity = LocalActivity.current
                 LaunchedEffect(Unit) { sharedVM.selectPost(null) }
-LaunchedEffect(date) {
-    if (!date.isNullOrBlank() && !DeepLinkHandler.consumed) {
-        DeepLinkHandler.consumed = true  // ✅ Prevent future triggers
+                LaunchedEffect(date) {
+                    if (!date.isNullOrBlank() && !DeepLinkHandler.consumed) {
+                        DeepLinkHandler.consumed = true  // ✅ Prevent future triggers
 
-        when (type) {
-            "shorts" -> {
-                shortsViewModel.onAction(ShortsActions.OnGetShortsByDate(date!!, lang))
-                homeVM.onAction(HomeActions.OnTabSelected(2))
-            }
-            "quiks" -> {
-                quikViewModel.onAction(QuiksActions.OnGetShortsByDate(date!!, lang))
-                homeVM.onAction(HomeActions.OnTabSelected(1))
-            }
-            else -> homeVM.onAction(HomeActions.OnTabSelected(0))
-        }
+                        when (type) {
+                            "shorts" -> {
+                                shortsViewModel.onAction(
+                                    ShortsActions.OnGetShortsByDate(
+                                        date!!,
+                                        lang
+                                    )
+                                )
+                                homeVM.onAction(HomeActions.OnTabSelected(2))
+                            }
 
-        Log.d("DeepLink", "Handled deep link: type=$type, date=$date, lang=$lang")
+                            "quiks" -> {
+                                quikViewModel.onAction(QuiksActions.OnGetShortsByDate(date!!, lang))
+                                homeVM.onAction(HomeActions.OnTabSelected(1))
+                            }
 
-        activity?.intent = Intent(activity.intent).apply { data = null }
-        date = null
-    } else if (DeepLinkHandler.consumed) {
-        Log.d("DeepLink", "Skipping already handled deep link")
-    }
-}
+                            else -> homeVM.onAction(HomeActions.OnTabSelected(0))
+                        }
+
+                        Log.d("DeepLink", "Handled deep link: type=$type, date=$date, lang=$lang")
+
+                        activity?.intent = Intent(activity.intent).apply { data = null }
+                        date = null
+                    } else if (DeepLinkHandler.consumed) {
+                        Log.d("DeepLink", "Skipping already handled deep link")
+                    }
+                }
                 HomeScreenRoot(
                     viewModel = homeVM,
                     shortsViewModel = shortsViewModel,

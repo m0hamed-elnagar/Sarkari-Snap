@@ -52,11 +52,11 @@ fun YouTubeShortsPlayer(
                 state: PlayerConstants.PlayerState
             ) {
                 if (state == PlayerConstants.PlayerState.ENDED) {
-  if (videoIds.size == 1) {
-            // SINGLE video → replay instantly
-            youTubePlayer.seekTo(0f)
-            youTubePlayer.play()
-        } else if (currentIndex < videoIds.size - 1) {
+                    if (videoIds.size == 1) {
+                        // SINGLE video → replay instantly
+                        youTubePlayer.seekTo(0f)
+                        youTubePlayer.play()
+                    } else if (currentIndex < videoIds.size - 1) {
                         currentIndex++
                         youTubePlayer.loadVideo(videoIds[currentIndex], 0f)
                     } else {
@@ -112,7 +112,7 @@ fun YouTubeShortsPlayer(
                     }
                 }
             })
-        }else{
+        } else {
             playerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                 override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                     youTubePlayer.pause()
@@ -128,7 +128,7 @@ fun YouTubeShortsPlayer(
     ) {
         AndroidView(
             factory = { playerView },
-            modifier = Modifier .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -121,6 +121,7 @@ fun BottomTabRow(
                             )
                         }
                     }
+
                     BottomTab.QUICKS -> {
                         Tab(
                             selected = selected,
@@ -135,9 +136,10 @@ fun BottomTabRow(
                                     painter = rememberVectorPainter(icon),
                                     contentDescription = null,
                                     tint = if (selected) selectedColor else unselectedColor,
-                                    modifier = Modifier .graphicsLayer(
-                                        translationX = -2f
-                                    )
+                                    modifier = Modifier
+                                        .graphicsLayer(
+                                            translationX = -2f
+                                        )
                                         .size(32.dp)
                                 )
                                 Text(

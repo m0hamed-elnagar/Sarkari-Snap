@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.bloger.ui.articleDetails
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,21 +34,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -60,6 +65,7 @@ import coil3.request.error
 import coil3.request.placeholder
 import coil3.size.Scale
 import coil3.size.Size
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.NoPostState
@@ -122,28 +128,30 @@ fun PostDetailsScreen(
     val context = LocalContext.current
     val appUrl = context.getString(R.string.app_url)
     val readFullNews = context.getString(R.string.read_full_news)
-    LaunchedEffect(scrollState) {
-        var lastLogTime = 0L
-        snapshotFlow {
-            scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset
-        }.collect { (index, offset) ->
-            val currentTime = System.currentTimeMillis()
-            // Only log every 500ms to reduce noise
-            if (currentTime - lastLogTime > 500) {
-                Log.d("SCROLL_DEBUG", "Index: $index, Offset: $offset")
-                lastLogTime = currentTime
-            }
+    var showSendNotifDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
-            // Only warn about significant unexpected jumps
-            if (index == 0 && offset > 500) {
-                Log.w(
-                    "SCROLL_WARNING",
-                    "⚠️ Significant scroll jump detected: offset=$offset"
-                )
-            }
-        }
-    }
-
+//    LaunchedEffect(scrollState) {
+//        var lastLogTime = 0L
+//        snapshotFlow {
+//            scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset
+//        }.collect { (index, offset) ->
+//            val currentTime = System.currentTimeMillis()
+//            // Only log every 500ms to reduce noise
+//            if (currentTime - lastLogTime > 500) {
+//                Log.d("SCROLL_DEBUG", "Index: $index, Offset: $offset")
+//                lastLogTime = currentTime
+//            }
+//
+//            // Only warn about significant unexpected jumps
+//            if (index == 0 && offset > 500) {
+//                Log.w(
+//                    "SCROLL_WARNING",
+//                    "⚠️ Significant scroll jump detected: offset=$offset"
+//                )
+//            }
+//        }
+//    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -158,6 +166,24 @@ fun PostDetailsScreen(
                     }
                 },
                 actions = {
+                    if (BuildConfig.FLAVOR == "admin") {
+
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.sent_notifications),
+                            contentDescription = "Notifications",
+                            tint = Black,
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .clickable {
+                                    Log.d("TopBar", "send Notifications clicked")
+                                    showSendNotifDialog = true
+
+                                }
+                        )
+
+                    }
+
                     FavoriteToggleIcon(
                         isFavorite = state.isFavorite,
                         onToggle = {
@@ -181,7 +207,8 @@ fun PostDetailsScreen(
                 ShareExpandableFab(onShareClick = { target ->
 
 
-                    val postUrl = "$appUrl/" + Lingver.getInstance().getLocale().language + "/post/" + postToShare.id
+                    val postUrl = "$appUrl/" + Lingver.getInstance()
+                        .getLocale().language + "/post/" + postToShare.id
                     val postTitle = postToShare.title + readFullNews
                     when (target) {
                         ShareTarget.WHATSAPP -> whatsApp(context, postTitle, postUrl)
@@ -242,8 +269,22 @@ fun PostDetailsScreen(
                             /* everything you already had: hero, title, date, chips, body */
                             PostDetailContent(post = post, onAction = onAction)
                         }
-                item {         NativeScreen(nativeAdUnitID = "ca-app-pub-7395572779611582/9691461291",
-                    modifier = Modifier.heightIn(400.dp).fillMaxSize())}
+                        item {
+                            var isAdLoaded by remember { mutableStateOf(false) }
+                            val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
+                            val targetAlpha = if (isAdLoaded) 1f else 0f
+
+                            NativeScreen(
+                                nativeAdUnitID = "ca-app-pub-7395572779611582/9691461291",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(targetHeight)
+                                    .graphicsLayer { alpha = targetAlpha } // hide while tiny
+                            ) { loaded ->
+                                isAdLoaded = loaded
+                            }
+                        }
+
 
 //                        item {
 //                          SectionWithPaging(
@@ -280,12 +321,25 @@ fun PostDetailsScreen(
 //
 //                    else -> Unit
 //                }
+                    val postUrl = "$appUrl/" + Lingver.getInstance()
+                        .getLocale().language + "/post/" + post.id
 
-                    }
+                    AdminNotificationFeature(
+                        showSendNotifDialog = showSendNotifDialog,
+                        onDismiss = { showSendNotifDialog = false },
+                        initialToken = post.labels.firstOrNull() ?: "",
+                        initialTitle = post.title,
+                        initialBody = "click to open",
+                        initialDeeplink = postUrl,
+                        context = context,
+                        scope = scope
+                    )
 
                 }
+
             }
         }
+    }
 
 }
 
@@ -351,7 +405,8 @@ private fun LazyItemScope.PostDetailContent(
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = colorResource(R.color.splash_background),
                         labelColor = Color.White
-                    ))
+                    )
+                )
 
             }
         }

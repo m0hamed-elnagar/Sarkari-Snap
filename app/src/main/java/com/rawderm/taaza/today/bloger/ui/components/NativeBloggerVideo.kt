@@ -51,14 +51,20 @@ fun NativeBloggerVideo(
                             PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS -> {
                                 Log.e("ExoPlayer", "HTTP Error - URL might be invalid: $videoUrl")
                             }
+
                             PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> {
                                 Log.e("ExoPlayer", "Video file not found: $videoUrl")
                             }
+
                             PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> {
                                 Log.e("ExoPlayer", "Network connection failed")
                             }
+
                             PlaybackException.ERROR_CODE_IO_INVALID_HTTP_CONTENT_TYPE -> {
-                                Log.e("ExoPlayer", "Invalid content type - might need different approach")
+                                Log.e(
+                                    "ExoPlayer",
+                                    "Invalid content type - might need different approach"
+                                )
                             }
                         }
                     }
@@ -70,6 +76,7 @@ fun NativeBloggerVideo(
                                 Log.d("ExoPlayer", "State: READY - Video loaded successfully")
                                 Log.d("ExoPlayer", "Video duration: ${duration}ms")
                             }
+
                             Player.STATE_ENDED -> Log.d("ExoPlayer", "State: ENDED")
                             Player.STATE_IDLE -> Log.d("ExoPlayer", "State: IDLE")
                         }
@@ -79,7 +86,9 @@ fun NativeBloggerVideo(
                         Log.d("ExoPlayer", "Available tracks: ${tracks.groups.size}")
                         tracks.groups.forEachIndexed { index, group ->
                             Log.d("ExoPlayer", "Track $index: ${group.mediaTrackGroup.length} ")
-                        }}
+                        }
+                    }
+
                     override fun onIsLoadingChanged(isLoading: Boolean) {
                         Log.d("ExoPlayer", "Loading: $isLoading")
                     }
@@ -139,8 +148,9 @@ fun NativeBloggerVideo(
         )
     }
 }
+
 @Composable
- fun YouTubeCard(videoId: String) {
+fun YouTubeCard(videoId: String) {
     AndroidView(
         factory = { ctx ->
             WebView(ctx).apply {
@@ -163,6 +173,7 @@ fun NativeBloggerVideo(
             .aspectRatio(9f / 16f)   // 9:16 vertical video
     )
 }
+
 private fun buildUrl(id: String): String =
     "?rel=0&autoplay=1&mute=1&playsinline=1&controls=0&loop=1".let { params ->
         // The base is provided at call site using string resource to avoid context leaks here

@@ -16,7 +16,10 @@ interface RemotePostDataSource {
         pageToken: String? = null
     ): Result<BloggerResponse, DataError.Remote>
 
-    suspend fun getUniqueLabels(limit: Int = 50, currentLang: String): Result<LabelsResponse, DataError.Remote>
+    suspend fun getUniqueLabels(
+        limit: Int = 50,
+        currentLang: String
+    ): Result<LabelsResponse, DataError.Remote>
 
     suspend fun getPages(): Result<PagesResponse, DataError.Remote>
     suspend fun getPage(pageId: String): Result<PageDto, DataError.Remote>
@@ -31,7 +34,6 @@ interface RemotePostDataSource {
     ): Result<BloggerResponse, DataError.Remote>
 
 
-
     suspend fun getShorts(limit: Int, pageToken: String?): Result<BloggerResponse, DataError.Remote>
     suspend fun getShortsBeforeDate(
         limit: Int,
@@ -39,7 +41,7 @@ interface RemotePostDataSource {
         beforeDate: String?,
         pageToken: String? = null
     ): Result<BloggerResponse, DataError.Remote>
-    
+
     // New method that accepts a language parameter
     suspend fun getPostsBeforeDateWithLanguage(
         limit: Int,

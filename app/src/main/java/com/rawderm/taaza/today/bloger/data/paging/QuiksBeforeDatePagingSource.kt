@@ -12,7 +12,8 @@ fun QuiksBeforeDatePagingSource(
 ): ContentPagingSource<Post> = beforeDatePagingSource(
     initialEndDate = endDate,
     fetch = { loadSize, end ->
-        when (val res = remote.getPostsBeforeDateWithLanguage(loadSize, "Quiks", end, null, language)) {
+        when (val res =
+            remote.getPostsBeforeDateWithLanguage(loadSize, "Quiks", end, null, language)) {
             is Result.Success -> Result.Success(
                 res.data.items
             )
@@ -21,5 +22,5 @@ fun QuiksBeforeDatePagingSource(
         }
     },
     getUpdated = { it.updated },
-    mapToDomain = {toDomain( it) }
+    mapToDomain = { toDomain(it) }
 )

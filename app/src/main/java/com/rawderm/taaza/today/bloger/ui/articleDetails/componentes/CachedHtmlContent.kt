@@ -1,7 +1,6 @@
 package com.rawderm.taaza.today.bloger.ui.articleDetails.componentes
 
 
-
 import android.content.Context
 import android.graphics.Color.TRANSPARENT
 import android.os.Parcelable
@@ -65,17 +64,17 @@ fun CachedHtmlContent(
 
 /* ---------- data class + helpers ---------- */
 @Parcelize
-data class HtmlCache(val height: Int,  val webView: String) : Parcelable
+data class HtmlCache(val height: Int, val webView: String) : Parcelable
 
 fun measureHtmlHeight(context: Context, html: String): Int {
     val latch = CountDownLatch(1)
     var height = 0
     val webView = WebView(context).apply {
         setBackgroundColor(TRANSPARENT)
-        isVerticalScrollBarEnabled   = false
+        isVerticalScrollBarEnabled = false
         isHorizontalScrollBarEnabled = false
-        overScrollMode               = View.OVER_SCROLL_NEVER
-        settings.javaScriptEnabled   = false
+        overScrollMode = View.OVER_SCROLL_NEVER
+        settings.javaScriptEnabled = false
         webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String?) {
                 view.post {
@@ -94,10 +93,10 @@ fun measureHtmlHeight(context: Context, html: String): Int {
 fun createWebView(context: Context, html: String, onLinkClicked: (String) -> Unit) =
     WebView(context).apply {
         setBackgroundColor(TRANSPARENT)
-        isVerticalScrollBarEnabled   = false
+        isVerticalScrollBarEnabled = false
         isHorizontalScrollBarEnabled = false
-        overScrollMode               = View.OVER_SCROLL_NEVER
-        settings.javaScriptEnabled   = false
+        overScrollMode = View.OVER_SCROLL_NEVER
+        settings.javaScriptEnabled = false
         webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(v: WebView?, req: WebResourceRequest?): Boolean {
                 req?.url?.let { onLinkClicked(it.toString()) }

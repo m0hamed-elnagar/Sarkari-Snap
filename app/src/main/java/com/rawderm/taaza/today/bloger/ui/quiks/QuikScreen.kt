@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -23,8 +22,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,26 +43,28 @@ import org.koin.androidx.compose.koinViewModel
 fun QuikScreenRoot(
     viewModel: QuiksViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {},
-    onQuiickClick: (postID:String) -> Unit
+    onQuiickClick: (postID: String) -> Unit
 
-){
+) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val quickPosts = viewModel.uiQuiks.collectAsLazyPagingItems()
-    BackHandler { onBackClicked()}
-     QuikTabContentPullRefresh(
+    BackHandler { onBackClicked() }
+    QuikTabContentPullRefresh(
         state = state,
-        pagedPosts=quickPosts,
+        pagedPosts = quickPosts,
         onAction = { action ->
-        when (action) {
-            is QuiksActions.OnQuickClick -> {
-                onQuiickClick(action.postId)
+            when (action) {
+                is QuiksActions.OnQuickClick -> {
+                    onQuiickClick(action.postId)
+                }
+
+                else -> viewModel.onAction(action)
             }
-            else -> viewModel.onAction(action)
-        }
-    })
+        })
 
 }
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun QuikTabContentPullRefresh(
@@ -74,7 +79,8 @@ fun QuikTabContentPullRefresh(
             onAction(
                 QuiksActions.OnRefresh
             )
-            pagedPosts.refresh() }
+            pagedPosts.refresh()
+        }
     )
 
     Box(
@@ -127,7 +133,8 @@ private fun QuikTabContent(
                     FullScreenMessage(
                         text = stringResource(R.string.something_went_wrong),
                         onRetry = { pagedPosts.refresh() }
-                    )                }
+                    )
+                }
 
                 else -> {
                     FullScreenMessage(
@@ -156,48 +163,54 @@ fun PostFullScreenList(
             count = posts.itemCount,
             key = { index ->
                 val quikItem = posts.peek(index)
-                when{
-                    quikItem?.isAd == true -> "ad_${quikItem.adId?:index}"
-                        else      -> "post_${quikItem!!.quik!!.id}"
+                when {
+                    quikItem?.isAd == true -> "ad_${quikItem.adId ?: index}"
+                    else -> "post_${quikItem!!.quik!!.id}"
 
                 }
-               }
+            }
         ) { index ->
             val post = posts[index] ?: return@items
+            var isAdLoaded by remember { mutableStateOf(false) }
+            val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
+            val targetAlpha = if (isAdLoaded) 1f else 0f
+
             if (post.isAd) {
                 NativeScreen(
                     nativeAdUnitID = "ca-app-pub-7395572779611582/5077711672",
-                    modifier = Modifier.heightIn(400.dp).fillMaxSize(),
-            onAdResult = { loaded ->
-                    }
-                )}
-         else   PostFullScreenCard (
-                        post = post.quik!!,
+                    modifier = Modifier
+                        .height(targetHeight)
+                        .graphicsLayer { alpha = targetAlpha } // hide while tiny
+                ) { loaded ->
+                    isAdLoaded = loaded
+                }
+            } else PostFullScreenCard(
+                post = post.quik!!,
                 modifier = Modifier
                     .fillMaxWidth(),
                 onQuickClick = onQuickClick
-                )
+            )
 
-            }
         }
+    }
 
 
 }
 
-    @Composable
-    private fun FullScreenMessage(text: String, onRetry: () -> Unit) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = text, style = MaterialTheme.typography.bodyLarge)
-                Spacer(Modifier.height(12.dp))
-                Button(onClick = onRetry) {
-                    Text(text = stringResource(R.string.retry))
-                }
+@Composable
+private fun FullScreenMessage(text: String, onRetry: () -> Unit) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = text, style = MaterialTheme.typography.bodyLarge)
+            Spacer(Modifier.height(12.dp))
+            Button(onClick = onRetry) {
+                Text(text = stringResource(R.string.retry))
             }
         }
     }
+}

@@ -1,8 +1,11 @@
 package com.rawderm.taaza.today.bloger.ui.shorts
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,11 +37,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,7 +53,9 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.filter
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
+import com.rawderm.taaza.today.bloger.ui.articleDetails.AdminNotificationFeature
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
 import com.rawderm.taaza.today.bloger.ui.components.YouTubeShortsPlayer
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
@@ -57,6 +64,7 @@ import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
@@ -68,7 +76,7 @@ fun ShortsScreenRoot(
     val rawFlow = viewModel.uiShorts          // Flow<PagingData<ShortUiItem>>
     val failedAdIds = remember { mutableStateSetOf<String>() }
     val state by viewModel.state.collectAsStateWithLifecycle()
-    BackHandler { onBackClicked()}
+    BackHandler { onBackClicked() }
 
     /* 1. filter the FLOW (not the LazyPagingItems) */
     val filteredFlow = remember(rawFlow, failedAdIds) {
@@ -140,8 +148,9 @@ fun ShortsScreen(
             showLoadingInsteadOfEmpty.value = false         // now allow "No posts" to appear
         }
     }
-       val pullRefreshState = rememberPullRefreshState(isRefreshing, { onAction(ShortsActions.OnRefresh) }
-    )
+    val pullRefreshState =
+        rememberPullRefreshState(isRefreshing, { onAction(ShortsActions.OnRefresh) }
+        )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -149,72 +158,72 @@ fun ShortsScreen(
             .background(Color.Black)
     ) {
 /* 1. empty state */
-if (shortsPaging.itemCount == 0) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            when {
-                shortsPaging.loadState.refresh is LoadState.Loading ||
-                showLoadingInsteadOfEmpty.value -> {
-                    CircularProgressIndicator()
-                }
+        if (shortsPaging.itemCount == 0) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    when {
+                        shortsPaging.loadState.refresh is LoadState.Loading ||
+                                showLoadingInsteadOfEmpty.value -> {
+                            CircularProgressIndicator()
+                        }
 
-                shortsPaging.loadState.refresh is LoadState.Error -> {
-                    Text(
-                        text = stringResource(R.string.something_went_wrong),
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                    androidx.compose.material3.Button(onClick = { shortsPaging.retry() }) {
-                        Text(text = stringResource(R.string.retry))
-                    }
-                }
+                        shortsPaging.loadState.refresh is LoadState.Error -> {
+                            Text(
+                                text = stringResource(R.string.something_went_wrong),
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.padding(8.dp))
+                            androidx.compose.material3.Button(onClick = { shortsPaging.retry() }) {
+                                Text(text = stringResource(R.string.retry))
+                            }
+                        }
 
-                else -> {
-                    Text(
-                        text = stringResource(R.string.no_shorts_yet),
-                        color = Color.White,
-                        fontSize = 18.sp
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                    androidx.compose.material3.Button(onClick = { onAction(ShortsActions.OnRefresh) }) {
-                        Text(text = stringResource(R.string.retry))
+                        else -> {
+                            Text(
+                                text = stringResource(R.string.no_shorts_yet),
+                                color = Color.White,
+                                fontSize = 18.sp
+                            )
+                            Spacer(modifier = Modifier.padding(8.dp))
+                            androidx.compose.material3.Button(onClick = { onAction(ShortsActions.OnRefresh) }) {
+                                Text(text = stringResource(R.string.retry))
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
-} else {
+        } else {
 
-    VerticalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxSize(),
-        pageSpacing = 0.dp,
-        beyondViewportPageCount = 3,
-        userScrollEnabled = true,
-        flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
-        key = { pageIndex ->
-            val shortItem = shortsPaging.peek(pageIndex)
-            when {
-                shortItem?.isAd == true -> "ad_${shortItem.adId ?: pageIndex}"
-                else                    -> "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
-            }
-        }
+            VerticalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+                pageSpacing = 0.dp,
+                beyondViewportPageCount = 3,
+                userScrollEnabled = true,
+                flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
+                key = { pageIndex ->
+                    val shortItem = shortsPaging.peek(pageIndex)
+                    when {
+                        shortItem?.isAd == true -> "ad_${shortItem.adId ?: pageIndex}"
+                        else -> "page_${pageIndex}_post_${shortItem?.short?.id ?: "null"}"
+                    }
+                }
 
-    ) { pageIndex ->
-        val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
-        if (shortItem.isAd) {
-            val adKey = shortItem.adId
-            NativeScreen(
-                nativeAdUnitID = "ca-app-pub-7395572779611582/5835976761",
-                onAdResult = { loaded ->
-                    // If ad failed to load, add its ID to the failed set
+            ) { pageIndex ->
+                val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
+                if (shortItem.isAd) {
+                    val adKey = shortItem.adId
+                    NativeScreen(
+                        nativeAdUnitID = "ca-app-pub-7395572779611582/5835976761",
+                        onAdResult = { loaded ->
+                            // If ad failed to load, add its ID to the failed set
 //                    adKey?.let {
 //                        if (!loaded && adKey !in failedAdIds) {
 //                       failedAdIds +=adKey
@@ -222,22 +231,23 @@ if (shortsPaging.itemCount == 0) {
 //                    }
 //                    }
 
+                        }
+                    )
+                    return@VerticalPager
+
                 }
-            )
-            return@VerticalPager
+                val videoId = remember(shortItem) { shortItem.short?.videoId }
 
+                ShortsVideoPage(
+                    shortItem = shortItem,
+                    videoId = videoId,
+                    isSelected = pageIndex == settledPage,
+                    settledPage = settledPage,
+                    pageIndex = pageIndex,
+                    onAction = onAction
+                )
+            }
         }
-        val videoId = remember(shortItem) { shortItem.short?.videoId }
-
-        ShortsVideoPage(
-            shortItem = shortItem,
-            videoId = videoId,
-            isSelected = pageIndex == settledPage,
-            settledPage = settledPage,
-            pageIndex = pageIndex,
-            onAction = onAction
-        )
-    }}
 
         PullRefreshIndicator(
             refreshing = isRefreshing,
@@ -247,45 +257,46 @@ if (shortsPaging.itemCount == 0) {
     }
 }
 
+@SuppressLint("LogNotTimber")
 @Composable
 private fun ShortsVideoPage(
-shortItem: ShortUiItem,
-videoId: String?,
-isSelected: Boolean,
-settledPage: Int,
-pageIndex: Int,
-onAction: (ShortsActions) -> Unit
+    shortItem: ShortUiItem,
+    videoId: String?,
+    isSelected: Boolean,
+    settledPage: Int,
+    pageIndex: Int,
+    onAction: (ShortsActions) -> Unit
 ) {
 // Local state for like (you might want to move this to ViewModel)
-val isLiked = shortItem.isFavorite
-val context = LocalContext.current
-val appUrl = context.getString(R.string.app_url)
-Box(
-    Modifier
-        .fillMaxSize()
-        .background(Color.Black)
-) {
-    Column(Modifier.fillMaxSize()) {
-        BannerAd("ca-app-pub-7395572779611582/3592956801")
-        /* 1. decide what to draw */
-        when {
-            videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
-            abs(pageIndex - settledPage) <= 2 -> {
-                YouTubeShortsPlayer(
-                    videoIds = listOf(videoId),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .aspectRatio(9f / 16f),
-                    autoPlay = isSelected,   // NEW flag
-                    onVideoEnd = { /* optional scroll to next */ }
-                )
+    val isLiked = shortItem.isFavorite
+    val context = LocalContext.current
+    val appUrl = context.getString(R.string.app_url)
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        Column(Modifier.fillMaxSize()) {
+            BannerAd("ca-app-pub-7395572779611582/3592956801")
+            /* 1. decide what to draw */
+            when {
+                videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))
+                abs(pageIndex - settledPage) <= 2 -> {
+                    YouTubeShortsPlayer(
+                        videoIds = listOf(videoId),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .aspectRatio(9f / 16f),
+                        autoPlay = isSelected,   // NEW flag
+                        onVideoEnd = { /* optional scroll to next */ }
+                    )
+                }
+
+                else -> PlaceholderBox(stringResource(R.string.loading_ellipsis))
             }
 
-            else -> PlaceholderBox(stringResource(R.string.loading_ellipsis))
+
         }
-
-
-    }
 //        /* Text overlay at bottom */
 //        Column(
 //            Modifier
@@ -302,72 +313,104 @@ Box(
 //            }
 //        }
 
-    val suffixShare = stringResource(R.string.share_shorts_suffix)
-    /* Action buttons on the right side */
-    Column(
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .padding(end = 16.dp, bottom = 100.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Share button
-        IconButton(
-            onClick = {
-
-                val postTitle = shortItem.short?.title + suffixShare
-                val postUrl = "$appUrl/" + Lingver.getInstance().getLocale().language +"/shorts/" + shortItem.short?.rowDate
-                systemChooser(context, postTitle, postUrl)
-            },
+        val suffixShare = stringResource(R.string.share_shorts_suffix)
+        /* Action buttons on the right side */
+        Column(
             modifier = Modifier
-                .size(48.dp)
-                .padding(horizontal = 2.dp)
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = stringResource(R.string.share),
-                tint = Color.White,
-                modifier = Modifier.size(32.dp)
-            )
-        }
+            var showSendNotifDialog by remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
 
-        Spacer(modifier = Modifier.padding(8.dp))
-
-        // Like button with count
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            IconButton(
+            val postTitle = shortItem.short?.title + suffixShare
+            val postUrl = "$appUrl/" + Lingver.getInstance()
+                .getLocale().language + "/shorts/" + shortItem.short?.rowDate
+            if (BuildConfig.FLAVOR == "admin") {
+                IconButton(
                 onClick = {
-                    onAction(ShortsActions.OnPostFavoriteClick(shortItem))
-                },
-                modifier = Modifier.size(48.dp)
+                    Log.d("notifications", "Send Notifications clicked")
+                    showSendNotifDialog = true
+                              },
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(horizontal = 2.dp)
             ) {
                 Icon(
-                    imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = stringResource(R.string.like),
-                    tint = if (isLiked) Color.White else Color.White,
+                    painter = painterResource(R.drawable.sent_notifications),
+                    contentDescription = stringResource(R.string.share),
+                    tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.padding(8.dp))
+            }
+            // Share button
+            IconButton(
+                onClick = {
+                  systemChooser(context, postTitle, postUrl)
+                },
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(horizontal = 2.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = stringResource(R.string.share),
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            // Like button with count
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(
+                    onClick = {
+                        onAction(ShortsActions.OnPostFavoriteClick(shortItem))
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = stringResource(R.string.like),
+                        tint = if (isLiked) Color.White else Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+
+
+            Spacer(modifier = Modifier.padding(8.dp))
+            AdminNotificationFeature(
+                showSendNotifDialog = showSendNotifDialog,
+                onDismiss = { showSendNotifDialog = false },
+                initialToken = "Shorts",
+                initialTitle = shortItem.short?.title ?: "",
+                initialBody = "click to open",
+                initialDeeplink = postUrl,
+                context = context,
+                scope = scope
+            )
         }
 
 
-        Spacer(modifier = Modifier.padding(8.dp))
-
     }
-
-
-}
 }
 
 @Composable
 private fun PlaceholderBox(text: String) {
-/* swap with any shimmer / circular spinner you like */
-Box(
-    Modifier
-        .fillMaxWidth()
-        .aspectRatio(9f / 16f)
-        .background(Color.Black),
-    contentAlignment = Alignment.Center
-) {
-    Text(text, color = Color.White, fontSize = 16.sp)
-}
+    /* swap with any shimmer / circular spinner you like */
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .aspectRatio(9f / 16f)
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = Color.White, fontSize = 16.sp)
+    }
 }

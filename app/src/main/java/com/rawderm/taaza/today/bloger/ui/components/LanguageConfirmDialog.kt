@@ -37,7 +37,7 @@ fun LanguageConfirmDialog(
             else -> requestedLang
         }
 
-        
+
         AlertDialog(
             onDismissRequest = {},
             title = { Text(stringResource(R.string.change_language_title)) },
@@ -53,7 +53,7 @@ fun LanguageConfirmDialog(
                 Button(
                     onClick = {
                         scope.launch {
-                            languageManager.setLanguage(requestedLang,activity)
+                            languageManager.setLanguage(requestedLang, activity)
                             onAccept()
                         }
                     },

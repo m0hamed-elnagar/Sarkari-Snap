@@ -74,17 +74,26 @@
     <string name="share_via" translatable="false">Share via\n</string>
     <string name="no_shorts_yet" translatable="false">no Shorts to show\n</string>
     <string name="app_link" translatable="false">https://play.google.com/store/apps/details?id=com.rawderm.taaza.today</string>
-    
+
     <!-- Language confirmation dialog -->
     <string name="change_language_title">Change Language</string>
     <string name="change_language_message">Do you want to change the app language to %1$s?</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
-    <string name="something_went_wrong">somthing went wrong</string>
+    <string name="something_went_wrong">something went wrong</string>
     <string name="videos_you_save_will_appear_here">Videos you save will appear here</string>
     <string name="no_favorite_videos">No Favorite Videos</string>
     <string name="videos">Videos</string>
     <string name="articles">Articles</string>
     <string name="read_more">Read More</string>
     <string name="breaking_news">🚨 BREAKING NEWS</string>
+    <string name="select_the_news_you_want_to_see_more">Select the news you want to see more.</string>
+    <string name="how_often_do_you_want_news_updates">How often do you want news updates?</string>
+    <string name="customize_your_news_experience">"Customize Your News Experience "</string>
+    <string name="breaking_mode">Breaking Mode</string>
+    <string name="get_every_important_update_instantly">Get every important update instantly.</string>
+    <string name="standard_mode">Standard Mode</string>
+    <string name="only_top_headlines_no_overload">Only top headlines, no overload.</string>
+    <string name="calm_mode">Calm Mode</string>
+    <string name="customize_your_preferences">Customize your preferences.</string>
 </resources>

@@ -23,19 +23,19 @@ import com.google.android.gms.ads.LoadAdError
 fun BannerAd(
     adUnitId: String = "ca-app-pub-3940256099942544/9214589741",
     modifier: Modifier = Modifier,
-    adView: AdView?=null
+    adView: AdView? = null
 
 ) {
 
     val context = LocalContext.current
     val adViewState = remember {
-        adView ?:AdView(context).apply {
+        adView ?: AdView(context).apply {
             this.adUnitId = adUnitId
             val adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, 360)
             setAdSize(adSize)
         }
     }
-        var isLoaded by remember { mutableStateOf(false) }
+    var isLoaded by remember { mutableStateOf(false) }
 
     // 3. listener updates the flag
     LaunchedEffect(adViewState) {

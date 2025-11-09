@@ -15,6 +15,6 @@ class ContentPagingSource<T : Any>(
 
 
     override fun getRefreshKey(state: PagingState<String, T>): String? {
-    return null
+        return null
     }
 }

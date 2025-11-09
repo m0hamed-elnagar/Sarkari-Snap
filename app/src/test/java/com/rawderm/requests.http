@@ -5,30 +5,43 @@ Accept: application/json
 ### Retrieve blog metadata by URL
 GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=http://code.blogger.com/&key=YOUR_API_KEY
 Accept: application/json
+
 ### Retrieve blog metadata by URL
-GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=https://taazatodayenglish.blogspot.com/2025/09/test-20.html/&key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/byurl?
+    url=https://taazatodayenglish.blogspot.com/2025/09/test-20.html/&
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 
 ### Retrieve list of posts for this blog
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
+
 ### Get blog ID by URL
-GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=https://sarkarisnapz.blogspot.com/&key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=https://sarkarisnapz.blogspot.com/&
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 
 ### Retrieve list of posts for this blog (using the obtained blog ID)
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
+
 ### Retrieve list of posts for this blog (using the obtained blog ID)
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 #retrieve list of pages
 ### Retrieve list of posts for the english blog (using the obtained blog ID)
-GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
+
 ### Retrieve list of pages for this blog
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
+
 ### Get page ID by URL 4565115267629106377
 #4812052307209681714
 #7099357402796700169
@@ -36,11 +49,24 @@ Accept: application/json
 #3968644153225120990
 #847919335082049403
 #6247905743648035844
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/4812052307209681714?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/4812052307209681714?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+
 ### Retrieve a single post (replace POST_ID with a real post ID)
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/6247905743648035844?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/6247905743648035844?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+
 ### Retrieve a single post (replace POST_ID with a real post ID)
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/847919335082049403?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/pages/847919335082049403?
+    key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+### Retrieve a single post (replace POST_ID with a real post ID)
+### Get only unique labels from Blogger posts
+GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &maxResults=50
+    &fields=nextPageToken,items(labels)
+Accept: application/json
+
 ### Retrieve a single post (replace POST_ID with a real post ID)
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
@@ -48,8 +74,10 @@ GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     &labels=Quick
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
+
 ### getting the vedio from the post content
 GET https://video.blogger.com/video-play.mp4?contentId=faeec605ecb48d94
+
 ### Retrieve posts from english blog
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
@@ -57,6 +85,7 @@ GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     &endDate=2025-09-30T11:07:24-07:00
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
+
 ### Retrieve posts from english blog page2
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
@@ -64,6 +93,7 @@ GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     &endDate=2025-09-30T07:23:48-07:00
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
+
 ### Retrieve posts from english blog page3
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
@@ -71,6 +101,7 @@ GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     &endDate=2025-09-30T07:21:45-07:00
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
+
 ### Retrieve posts from english blog page4
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
@@ -78,6 +109,7 @@ GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     &endDate=2025-09-30T07:18:57-07:00
     &orderBy=updated
     &fields=nextPageToken,items(id,updated,url,title,content,labels)
+
 ### Retrieve posts from english blog page5
 GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
     ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY

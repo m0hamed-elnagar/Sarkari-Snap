@@ -91,7 +91,10 @@ object WebViewCache {
 
             .replace(Regex("<span[^>]*(ez-toc-section|ez-toc-section-end)[^>]*></span>"), "")
             .replace("</a><a", "</a> <a")
-            .replace(Regex("(?s)\\A\\s*(<p[^>]*>(&nbsp;|\\s)*</p>|<div[^>]*>(&nbsp;|\\s)*</div>|<br\\s*/?>)+"), "")
+            .replace(
+                Regex("(?s)\\A\\s*(<p[^>]*>(&nbsp;|\\s)*</p>|<div[^>]*>(&nbsp;|\\s)*</div>|<br\\s*/?>)+"),
+                ""
+            )
         val fullHtml = """
             <html>
             <head>
@@ -160,8 +163,9 @@ fun PermanentHtmlContent2(
     }
 
     AndroidView(
-        modifier = modifier.fillMaxWidth()
-            .heightIn(min = 120.dp) ,
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 120.dp),
         factory = { webView },
         update = { view ->
             // Save scroll position when the view is about to be detached

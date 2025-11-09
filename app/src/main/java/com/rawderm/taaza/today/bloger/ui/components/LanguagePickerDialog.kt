@@ -21,7 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
- fun LanguagePickerDialog(
+fun LanguagePickerDialog(
     modifier: Modifier,
     languageManager: LanguageManager,
     scope: CoroutineScope,
@@ -32,35 +32,36 @@ import kotlinx.coroutines.launch
     Box(
         modifier
     ) {
-        val options = listOf( "English" to "en","हिन्दी" to "hi")
+        val options = listOf("English" to "en", "हिन्दी" to "hi")
         AlertDialog(
-        onDismissRequest = {},
-        title = { Text("Choose Language / भाषा चुनें") },
-        text = {
-            Column {
-                options.forEach { (label, code) ->
-                    TextButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.textButtonColors(),
-                        onClick = {
-                            scope.launch {
-                                LanguageDataStore(localContext).markFirstLaunchDone()
-                                languageManager.setLanguage(code,activity)
-                                onDismiss()
+            onDismissRequest = {},
+            title = { Text("Choose Language / भाषा चुनें") },
+            text = {
+                Column {
+                    options.forEach { (label, code) ->
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.textButtonColors(),
+                            onClick = {
+                                scope.launch {
+                                    LanguageDataStore(localContext).markFirstLaunchDone()
+                                    languageManager.setLanguage(code, activity)
+                                    onDismiss()
+                                }
                             }
+                        ) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentWidth(Alignment.Start)
+                            )
                         }
-                    ) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentWidth(Alignment.Start)
-                        )
                     }
                 }
-            }
-        },
-        confirmButton = {}
-    )
-}}
+            },
+            confirmButton = {}
+        )
+    }
+}

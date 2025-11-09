@@ -71,9 +71,10 @@ class PostDetailsViewModel(
 
             is PostDetailsActions.OnDeepLinkArrived -> {
                 viewModelScope.launch {
-                fetchPostDetails (action.postId)
+                    fetchPostDetails(action.postId)
                 }
             }
+
             is PostDetailsActions.OnPostFavoriteClick -> {
                 viewModelScope.launch {
                     if (state.value.isFavorite) {
@@ -88,7 +89,8 @@ class PostDetailsViewModel(
             else -> {}
         }
     }
-    fun fetchPostDetails(postId: String)  {
+
+    fun fetchPostDetails(postId: String) {
         if (postId.isBlank()) return
         _state.value = _state.value.copy(isLoading = true)
         viewModelScope.launch {

@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Tab
@@ -49,7 +48,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
- fun FavoriteTabContent(
+fun FavoriteTabContent(
     state: HomeUiState,
     onAction: (HomeActions) -> Unit,
     onBackClicked: () -> Unit = {},
@@ -58,7 +57,7 @@ import org.koin.compose.viewmodel.koinViewModel
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
-    BackHandler { onBackClicked()}
+    BackHandler { onBackClicked() }
 
     Column(
         modifier = Modifier
@@ -170,7 +169,8 @@ fun FavoriteVideosScreen(
     shorts: List<Short>,
     onVideoClick: (date: String) -> Unit = {},
     modifier: Modifier = Modifier
-) {    if (shorts.isEmpty()) {
+) {
+    if (shorts.isEmpty()) {
         // Show empty state when no favorite videos
         Column(
             modifier = modifier.fillMaxSize(),
@@ -208,6 +208,7 @@ fun FavoriteVideosScreen(
         }
     }
 }
+
 @Composable
 private fun ShortThumb(
     short: Short,
@@ -223,13 +224,14 @@ private fun ShortThumb(
             .clickable { onClick() }
             .aspectRatio(9f / 16f)
     )
-    Log.d("updatedat ", "ShortThumb: "+ short.updatedAt)
+    Log.d("updatedat ", "ShortThumb: " + short.updatedAt)
     Text(
         text = short.updatedAt,
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.padding(top = 4.dp)
     )
 }
+
 fun Short.thumbUrl(): String =
     "https://i.ytimg.com/vi/$videoId/maxresdefault.jpg"
 // -----------------  Thumb composable -----------------

@@ -56,11 +56,15 @@ class BloggerApplication : Application() {
         deleteSharedPreferences("lingver")
 
         /* WebView hack  for localisation*/
-        try { WebView(this).destroy() } catch (_: Throwable) {}
+        try {
+            WebView(this).destroy()
+        } catch (_: Throwable) {
+        }
         Lingver.getInstance().setLocale(this, language)
 
 
     }
+
     private fun setupAnalytics() {
         val analytics = Firebase.analytics
         analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)

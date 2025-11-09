@@ -84,4 +84,12 @@
     <string name="articles">लेख</string>
     <string name="read_more">और पढ़ें </string>
     <string name="breaking_news">🚨 ब्रेकिंग न्यूज़</string>
-</resources>
+    <string name="select_the_news_you_want_to_see_more">वो खबरें चुनें जिन्हें आप ज़्यादा देखना चाहते हैं।</string>
+    <string name="how_often_do_you_want_news_updates">आप कितनी बार खबरों के अपडेट चाहते हैं?</string>
+    <string name="customize_your_news_experience">अपना न्यूज़ अनुभव कस्टमाइज़ करें</string>
+    <string name="breaking_mode">तेज़ अपडेट्स</string>
+    <string name="get_every_important_update_instantly">हर ज़रूरी खबर तुरंत पाएं।</string>
+    <string name="standard_mode">सामान्य अपडेट्स</string>
+    <string name="only_top_headlines_no_overload">सिर्फ़ बड़ी खबरें, बिना ज़्यादा नोटिफिकेशन।</string>
+    <string name="calm_mode">कम अपडेट्स</string>
+    <string name="customize_your_preferences">अपनी पसंद के अनुसार सेट करें।</string></resources>

@@ -37,7 +37,7 @@ data class PageDto(
     val title: String,
     val content: String,
     val url: String,
-    val updated: String="",
+    val updated: String = "",
 
     )
 

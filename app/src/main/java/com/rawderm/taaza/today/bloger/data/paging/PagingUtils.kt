@@ -51,19 +51,19 @@ internal fun <T : Any, D> beforeDatePagingSource(
     }
 }
 
- fun subtractOneSecond(timestamp: String): String {
-        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-        val dateTime = OffsetDateTime.parse(timestamp, formatter)
-     return dateTime.minusSeconds(1).format(formatter)
+fun subtractOneSecond(timestamp: String): String {
+    val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+    val dateTime = OffsetDateTime.parse(timestamp, formatter)
+    return dateTime.minusSeconds(1).format(formatter)
 
 }
 
- fun addOneSecond(timestamp: String): String {
-     if (timestamp.isBlank()) return timestamp
+fun addOneSecond(timestamp: String): String {
+    if (timestamp.isBlank()) return timestamp
 
-     val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-        val dateTime = OffsetDateTime.parse(timestamp, formatter)
-        return dateTime.plusSeconds(1).format(formatter)
+    val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+    val dateTime = OffsetDateTime.parse(timestamp, formatter)
+    return dateTime.plusSeconds(1).format(formatter)
 
 }
 

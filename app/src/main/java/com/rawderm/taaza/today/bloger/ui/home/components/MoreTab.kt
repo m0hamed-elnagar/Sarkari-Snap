@@ -65,7 +65,7 @@ fun MoreTabScreen(
 
 
     ) {
-    BackHandler { onBackClicked()}
+    BackHandler { onBackClicked() }
     val context = LocalContext.current
     val appLink = stringResource(R.string.app_link)
     val appName = stringResource(R.string.app_name)
@@ -181,7 +181,7 @@ fun MoreTabScreen(
             Font(R.font.sanskrit_regular, FontWeight.Medium),
 //            Font(R.font.poppins_bold,     FontWeight.Bold)
         )
-        val sanskritItalic =             FontFamily(
+        val sanskritItalic = FontFamily(
             Font(R.font.sanskrit_italic, FontWeight.Medium),
         )
         // bottom spacer
@@ -195,7 +195,7 @@ fun MoreTabScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-BannerAd("ca-app-pub-7395572779611582/3592956801")
+                BannerAd("ca-app-pub-7395572779611582/3592956801")
                 Spacer(Modifier.height(4.dp))
 //                Text(
 //                    text = "Made by",
@@ -296,7 +296,7 @@ fun ShareAppLinkRow(
     val context = LocalContext.current
     val resolved = link ?: stringResource(R.string.share_app_link)
     var justCopied by remember { mutableStateOf(false) }
-val copied =stringResource(R.string.copied)
+    val copied = stringResource(R.string.copied)
     // run toast only once
     LaunchedEffect(justCopied) {
         if (justCopied) {
