@@ -80,7 +80,8 @@ object FcmSender2 {
     private suspend fun postToFcm( dto: SendMessageDto): String =
         withContext(Dispatchers.IO) {
 //             val baseUrl = "http://10.0.2.2:8080"
-            val baseUrl = "http://192.168.1.10:8080"
+//            val baseUrl = "http://192.168.1.10:8080"
+            val baseUrl = "https://taaza-today-fcm.vercel.app/api"
 
             client.post("${baseUrl}/send") {
                 contentType(ContentType.Application.Json)

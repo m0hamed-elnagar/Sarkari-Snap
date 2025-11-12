@@ -72,7 +72,8 @@ fun NotificationInputDialog(
                 ) {
                     OutlinedTextField(
                         value = token,
-                        onValueChange = { token = it },
+                        onValueChange = { raw ->
+                            token = raw.replace(Regex("\\s+"), "_")   },
                         label = { Text("FCM token") },
                         singleLine = true,
                         modifier = Modifier
@@ -126,7 +127,11 @@ fun NotificationInputDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onSend("${token.lowercase()}-$notificationLevel", title, body, deeplink) },
+                onClick = {
+                    val topic = if(notificationLevel=="none") {token.lowercase().trim()}
+                    else "${token.lowercase().trim()}-$notificationLevel"
+
+                    onSend(topic, title, body, deeplink) },
                 enabled = token.isNotBlank() && title.isNotBlank() && body.isNotBlank()
             ) {
                 Text("Send")
@@ -143,7 +148,7 @@ fun NotificationInputDialog(
 fun PrioritySelector(
     onSelectionChanged: (String) -> Unit = {}
 ) {
-    val options = listOf("high", "normal")
+    val options = listOf("high", "normal","none")
     var selectedIndex by remember { mutableStateOf(1) } // Default to "Normal"
 
     SingleChoiceSegmentedButtonRow(

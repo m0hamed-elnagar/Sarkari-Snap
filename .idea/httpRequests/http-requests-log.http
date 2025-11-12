@@ -1,3 +1,261 @@
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 125
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "to": "test101",
+  "notification": {
+    "title": "Hello",
+    "body": "World",
+    "deeplink": "myapp://detail/42"
+  }
+}
+
+<> 2025-11-12T165921.200.json
+
+###
+
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 138
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "to": "weather",
+  "notification": {
+    "title": "Hello",
+    "body": "World",
+    "deeplink": "myapp://detail/42"
+  }
+}
+
+<> 2025-11-12T165645.200.json
+
+###
+
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T164946.500.json
+
+###
+
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T163002.500.txt
+
+###
+
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T162540.500.txt
+
+###
+
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T161514.500.txt
+
+###
+
+POST https://taaza-today-7vkv7ltaw-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T161002.401.html
+
+###
+
+POST https://vercel.com/mohamed-elnagars-projects-533f78fa/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T160914.200.html
+
+###
+
+POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T160829.401.html
+
+###
+
+POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 69
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "test101",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T160434.401.html
+
+###
+
+POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 76
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "REAL_FCM_TOKEN",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T155616.401.html
+
+###
+
+POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 76
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "REAL_FCM_TOKEN",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T155319.401.html
+
+###
+
+POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 76
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "REAL_FCM_TOKEN",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T155245.401.html
+
+###
+
+POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+Content-Type: application/json
+Content-Length: 76
+User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+x-http2-scheme: https
+
+{
+  "token": "REAL_FCM_TOKEN",
+  "title": "Hello",
+  "body": "from Vercel"
+}
+
+<> 2025-11-12T155240.401.html
+
+###
+
 GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=50&fields=nextPageToken,items(labels)
 Accept: application/json
 User-Agent: IntelliJ HTTP Client/Android Studio Otter | 2025.2.1
@@ -373,132 +631,6 @@ Accept-Encoding: br, deflate, gzip, x-gzip
 Accept: */*
 
 <> 2025-09-23T203558.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&enddate=2025-02-11T23:53:46-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T203541.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&end-date=2025-02-11T23:53:46-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T203524.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&end-date=2025-09-11T23:53:46-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T203509.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&end-date=2024-09-11T11:07:24-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T203429.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&end-date=2026-09-11T11:07:24-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T203411.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&start-date=2026-09-11T11:07:24-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T203358.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&start-date=2025-09-11T11:07:24-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T194953.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&start-date=2025-09-11T22:14:36-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T194740.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&startdate=2025-09-11T23:48:22-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T194539.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&start-date=2025-09-11T23:48:22-07:00&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T194518.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY&maxResults=5&labels=Tech&start-date=2025-01-01T00:00:00Z&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T194424.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/YOUR_BLOG_ID/posts?key=YOUR_API_KEY&maxResults=5&labels=Tech&start-date=2025-01-01T00:00:00Z&orderBy=updated&fields=nextPageToken,items(id,updated,url,title,content,labels)
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-<> 2025-09-23T194347.400.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/190535731829050983/posts?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-23T190706.200.json
-
-###
-
-GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/190535731829050983?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
-Accept: application/json
-User-Agent: IntelliJ HTTP Client/Android Studio Narwhal 3 Feature Drop | 2025.1.3
-Accept-Encoding: br, deflate, gzip, x-gzip
-
-<> 2025-09-23T190648.404.json
 
 ###
 

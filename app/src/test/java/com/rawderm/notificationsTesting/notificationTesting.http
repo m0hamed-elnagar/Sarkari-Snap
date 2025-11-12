@@ -12,3 +12,24 @@ Authorization:key  XPX1HMXfrDG5oeVAmgkZDE5ciQuZT6jywNJlhEZ1YKY
     }
   }
 }
+
+###
+
+# curl -X POST https://taaza-today-e5tjti1p4-mohamed-elnagars-projects-533f78fa.vercel.app/api/send
+#  -H "Content-Type: application/json"
+#  -d '{"token":"REAL_FCM_TOKEN","title":"Hello","body":"from Vercel"}'
+POST https://taaza-today-fcm.vercel.app/api/send
+Content-Type: application/json
+
+{
+  "to": "test101",
+  "notification": {
+    "title": "Hello",
+    "body": "World",
+    "deeplink": "myapp://detail/42"
+  }
+}
+
+###
+
+

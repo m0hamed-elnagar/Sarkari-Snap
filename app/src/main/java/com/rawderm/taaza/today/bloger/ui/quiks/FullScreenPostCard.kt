@@ -227,7 +227,7 @@ fun PostFullScreenCard(
 
                 val appUrl = context.getString(R.string.app_url)
                 val postUrl = "$appUrl/" + Lingver.getInstance()
-                    .getLocale().language + "/post/" + post.id
+                    .getLocale().language + "/quiks/" + post.id
                 AdminNotificationFeature(
                     showSendNotifDialog = showSendNotifDialog,
                     onDismiss = { showSendNotifDialog = false },

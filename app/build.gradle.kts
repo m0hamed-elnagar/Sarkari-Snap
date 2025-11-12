@@ -49,8 +49,8 @@ android {
         applicationId = "com.rawderm.taaza.today"
         minSdk = 26
         targetSdk = 36
-        versionCode = 10
-        versionName = "1.5"
+        versionCode = 11
+        versionName = "1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val localProps = Properties().apply {
@@ -105,7 +105,7 @@ android {
             .forEach { output ->
                 val flavour = flavorName
                 val version = versionName
-                output.outputFileName = "Taaza-Today-${flavour}-v${version}.apk"
+                output.outputFileName = "Taaza-Today-v${version}.apk"
             }
     }
 

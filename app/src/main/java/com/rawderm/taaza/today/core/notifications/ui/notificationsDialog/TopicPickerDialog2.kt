@@ -151,7 +151,8 @@ LaunchedEffect(selectedOption) {
                     val map = allTopics
                         .filter { selected[it.id] == true }
                         .associate { def ->
-                            def.fcmTopic(Importance.HIGH, "en") to Importance.HIGH
+                            def.fcmTopic(Importance.HIGH, locale = locale.value)
+                                .replace(Regex("\\s+"), "_") to Importance.HIGH
                         }
                     scope.launch {
                         manager.replaceAllTopics(map)   // ← saves + FCM sync

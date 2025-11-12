@@ -10,20 +10,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Hearing
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -31,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +49,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.FcmSender2
 import com.rawderm.taaza.today.bloger.data.LanguageManager
@@ -54,13 +65,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
-    languageManager: LanguageManager,
-    onAction: (HomeActions) -> Unit
+    languageManager: LanguageManager, onAction: (HomeActions) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val activity = LocalActivity.current
     val context = LocalContext.current
     val locale = remember { Lingver.getInstance().getLocale().language }
+    var showSubscribeDialog by remember { mutableStateOf(false) }
     var showSendNotifDialog by remember { mutableStateOf(false) }
     var showTopicsDialog by remember { mutableStateOf(false) }
 
@@ -83,9 +94,21 @@ fun TopBar(
                 )
             },
 
-            title = {
-            },
+            title = {},
             actions = {
+                Icon(
+                    imageVector = Icons.Filled.Hearing, // add this drawable
+                    contentDescription = "Notifications",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .clickable {
+                            Log.d("TopBar", "send Notifications clicked")
+                            showSubscribeDialog = true
+
+                        }
+
+                )
                 Icon(
                     painter = painterResource(R.drawable.sent_notifications),
                     contentDescription = "Notifications",
@@ -121,8 +144,7 @@ fun TopBar(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable { expanded = true }
-                            .padding(horizontal = 8.dp)
-                    ) {
+                            .padding(horizontal = 8.dp)) {
                         Text(
                             text = if (locale == "en") "EN" else "HI",
                             color = Color.Black,
@@ -137,80 +159,72 @@ fun TopBar(
                     }
 
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text("English")
-                                    if (locale == "en") {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = "Selected"
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
+                        expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text("English")
                                 if (locale == "en") {
-                                    expanded = false
-                                    return@DropdownMenuItem
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Selected"
+                                    )
                                 }
-                                onAction(HomeActions.OnLoading)
-                                Log.d("LANG", "changeLanguage() invoked: en")
-                                // Use the new approach with recreate instead of custom restart
-                                val scope = MainScope()
-                                scope.launch {
-                                    activity?.intent =
-                                        Intent(activity.intent).apply { this@apply.data = null }
-
-                                    languageManager.setLanguage("en", activity)
-                                    onAction(HomeActions.OnRefresh)
-
-                                }
-
-                                expanded = false
                             }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text("हिन्दी")
-                                    if (locale == "hi") {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = "Selected"
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
+                        }, onClick = {
+                            if (locale == "en") {
+                                expanded = false
+                                return@DropdownMenuItem
+                            }
+                            onAction(HomeActions.OnLoading)
+                            Log.d("LANG", "changeLanguage() invoked: en")
+                            // Use the new approach with recreate instead of custom restart
+                            val scope = MainScope()
+                            scope.launch {
+                                activity?.intent =
+                                    Intent(activity.intent).apply { this@apply.data = null }
+
+                                languageManager.setLanguage("en", activity)
+                                onAction(HomeActions.OnRefresh)
+
+                            }
+
+                            expanded = false
+                        })
+                        DropdownMenuItem(text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text("हिन्दी")
                                 if (locale == "hi") {
-                                    expanded = false
-                                    return@DropdownMenuItem
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Selected"
+                                    )
                                 }
-
-
-                                // Restart the app to ensure language change is applied everywhere
-                                Log.d("LANG", "changeLanguage() invoked: hi")
-                                val scope = MainScope()
-                                scope.launch {
-                                    activity?.intent =
-                                        Intent(activity.intent).apply { this@apply.data = null }
-                                    languageManager.setLanguage("hi", activity)
-                                    onAction(HomeActions.OnRefresh)
-                                }
-
-                                expanded = false
                             }
-                        )
+                        }, onClick = {
+                            if (locale == "hi") {
+                                expanded = false
+                                return@DropdownMenuItem
+                            }
+
+
+                            // Restart the app to ensure language change is applied everywhere
+                            Log.d("LANG", "changeLanguage() invoked: hi")
+                            val scope = MainScope()
+                            scope.launch {
+                                activity?.intent =
+                                    Intent(activity.intent).apply { this@apply.data = null }
+                                languageManager.setLanguage("hi", activity)
+                                onAction(HomeActions.OnRefresh)
+                            }
+
+                            expanded = false
+                        })
                     }
                 }
             },
@@ -235,12 +249,15 @@ fun TopBar(
 //            viewModel = koinViewModel()
 //        )
 //    }
-    if(showTopicsDialog){
+    if (showTopicsDialog) {
         TaazaOnboardingDialog(
             onDismiss = {
-                showTopicsDialog=false},
-            viewModel = org.koin.androidx.compose.koinViewModel()
+                showTopicsDialog = false
+            }, viewModel = org.koin.androidx.compose.koinViewModel()
         )
+    }
+    if (showSubscribeDialog) {
+        TopicToggleButton { showSubscribeDialog = false }
     }
     if (showSendNotifDialog) {
         NotificationInputDialog(
@@ -255,14 +272,77 @@ fun TopBar(
                         body = body,
                         deeplink = deeplink
                     )) {
-                        is FcmSender2.Result.Success ->
-                            Log.d("TopBar", "Notification sent successfully")
+                        is FcmSender2.Result.Success -> Log.d(
+                            "TopBar",
+                            "Notification sent successfully"
+                        )
 
-                        is FcmSender2.Result.Failure ->
-                            Log.d("TopBar", "Error sending notification: ${r.msg}")
+                        is FcmSender2.Result.Failure -> Log.d(
+                            "TopBar",
+                            "Error sending notification: ${r.msg}"
+                        )
                     }
                 }
             })
     }
 
+}
+
+@Composable
+fun TopicToggleButton(
+    modifier: Modifier = Modifier, onDismiss: () -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    var topic by rememberSaveable { mutableStateOf("") }
+
+    AlertDialog(onDismissRequest = onDismiss,
+        title = { Text("Send test notification") }, text = {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 1.  label
+            Text(
+                text = "Enter topic name",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(4.dp))
+            OutlinedTextField(
+                value = topic,
+                onValueChange = {
+                    topic = it.trim()
+                },
+                singleLine = true,
+                placeholder = { Text("e.g. weather") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(12.dp))
+        }
+    }, confirmButton = {
+        TextButton(
+            onClick = {
+
+                scope.launch {
+
+                    Firebase.messaging.subscribeToTopic(topic)
+                }
+                onDismiss()
+
+            }, modifier = modifier
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            Text(
+                text = "Subscribe to $topic"
+            )
+        }
+    }
+    )
 }
