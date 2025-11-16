@@ -273,7 +273,7 @@ fun PostDetailsScreen(
                             var isAdLoaded by remember { mutableStateOf(false) }
                             val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
                             val targetAlpha = if (isAdLoaded) 1f else 0f
-
+                            if (BuildConfig.FLAVOR != "admin") {
                             NativeScreen(
                                 nativeAdUnitID = "ca-app-pub-7395572779611582/9691461291",
                                 modifier = Modifier
@@ -283,7 +283,7 @@ fun PostDetailsScreen(
                             ) { loaded ->
                                 isAdLoaded = loaded
                             }
-                        }
+                        }}
 
 
 //                        item {

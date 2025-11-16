@@ -150,11 +150,7 @@ class MainActivity : ComponentActivity() {
             var showLangGate by remember { mutableStateOf(true) }   // 1. start with gate open
             var showLanguagePicker by remember { mutableStateOf(false) } // For unconditional language picker
             requestNotificationPermission()
-            val scope = rememberCoroutineScope()
-            scope.launch {
-                Firebase.messaging.subscribeToTopic("test").await()
 
-            }
             // Check if this is first launch to show language picker
             LaunchedEffect(Unit) {
                 val isFirstLaunch = languageDataStore.isFirstLaunch()

@@ -6,15 +6,15 @@ object ImportanceMapper {
 
     /* UI → Datastore */
     fun toImportance(mode: FrequencyMode): Importance = when (mode) {
-        FrequencyMode.BREAKING -> Importance.HIGH
-        FrequencyMode.STANDARD -> Importance.NORMAL
-        FrequencyMode.Custom     -> Importance.NORMAL
+        FrequencyMode.BREAKING -> Importance.NORMAL
+        FrequencyMode.STANDARD -> Importance.HIGH
+        FrequencyMode.Custom     -> Importance.HIGH
     }
 
     /* Datastore → UI */
     fun toFrequencyMode(imp: Importance): FrequencyMode = when (imp) {
-        Importance.HIGH   -> FrequencyMode.BREAKING
-        Importance.NORMAL -> FrequencyMode.STANDARD
+        Importance.NORMAL   -> FrequencyMode.BREAKING
+        Importance.HIGH -> FrequencyMode.STANDARD
         Importance.NONE   -> FrequencyMode.Custom
     }
 }

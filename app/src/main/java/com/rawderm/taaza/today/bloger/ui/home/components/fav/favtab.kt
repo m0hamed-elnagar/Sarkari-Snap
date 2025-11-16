@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Short
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
@@ -148,12 +149,13 @@ fun FavoriteTabContent(
                                 }
                             }
                         }
-                        BannerAd(
+                        if (BuildConfig.FLAVOR != "admin"){
+                            BannerAd(
                             adUnitId = "ca-app-pub-7395572779611582/3592956801",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
-                        )
+                        )}
 
                     }
                 }

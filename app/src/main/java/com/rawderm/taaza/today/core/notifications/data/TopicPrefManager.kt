@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.messaging
+import com.rawderm.taaza.today.core.notifications.ui.notificationsScreen.FrequencyMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -19,8 +20,7 @@ private val Context.topicDataStore by preferencesDataStore("fcm_topic_prefs")
 
 /* --------------------- manager --------------------------- */
 class TopicDataStoreManager(
-    private val context: Context
-) {
+    private val context: Context) {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -34,76 +34,85 @@ class TopicDataStoreManager(
         context.topicDataStore.data
             .map { prefs -> prefs[TOPIC_DIALOG_SHOWN_KEY] ?: false }
 
-    /* ----------------------------------------------------------
-     *  BULK WRITE - completely replace local & FCM list
-     * ---------------------------------------------------------- */
-    suspend fun replaceAllTopics(topicMap: Map<String, Importance>) {
-        val previous = readSnapshot()
+    suspend fun applyTopicPolicy(newIds: List<Int>, newMode: FrequencyMode,locale: String) {
+
+    /* ---------- 1.  previous snapshot  ---------- */
+        val oldTopics =readFcmSnapshot()
+
+        // 1. persist the tiny data
         context.topicDataStore.edit { prefs ->
-            prefs[TOPIC_MAP_KEY] = json.encodeToString(topicMap)
+            prefs[MODE_KEY] = newMode.name
+            prefs[IDS_KEY] = newIds.sorted().joinToString(",")
+            prefs[LAST_LOCALE_KEY] = locale
         }
-        synchronizeWithFcm(desiredTopics = topicMap.keys, previousTopics = previous.keys)
+
+        // 2. build current FCM topic set for current locale
+    val newTopics = buildTopicStrings(newIds, newMode, locale)
+
+        // 3. sync with FCM
+    synchronizeWithFcm(desiredTopics = newTopics, previousTopics = oldTopics)
     }
 
-    /* ----------------------------------------------------------
-     *  SINGLE WRITE - add or change importance
-     * ---------------------------------------------------------- */
-    suspend fun addOrUpdateTopic(topic: String, importance: Importance) {
-        context.topicDataStore.edit { prefs ->
-            val current = decodeMap(prefs[TOPIC_MAP_KEY]).toMutableMap()
-            val isNew = current[topic] == null
-            current[topic] = importance
-            prefs[TOPIC_MAP_KEY] = json.encodeToString(current)
+    private suspend fun readFcmSnapshot(): Set<String> {
+        val prefs = context.topicDataStore.data.first()
+        val locale = prefs[LAST_LOCALE_KEY]?:"hi"
+        val mode = prefs[MODE_KEY]?.let { FrequencyMode.valueOf(it) } ?: FrequencyMode.STANDARD
+        val ids = prefs[IDS_KEY]?.split(",")?.mapNotNull { it.toIntOrNull() }.orEmpty()
+        return buildTopicStrings(ids, mode, locale)
+    }
 
-            if (isNew) subscribeToFcmTopic(topic)
+    private fun buildTopicStrings(
+        ids: List<Int>,
+        mode: FrequencyMode,
+        locale: String
+    ): Set<String> = buildSet {
+        ids.distinct().forEachIndexed { index, id ->
+            val def = TOPICS_LIST.first { it.id == id }
+            val label = (if (locale == "hi") def.en+"_hi" else def.en)
+
+            when (mode) {
+                FrequencyMode.BREAKING -> {
+                    add("${label}-high")
+                    add("${label}-normal")
+                }
+
+                FrequencyMode.STANDARD -> {
+                    add("${label}-high")
+                    if (index < ids.size / 2)
+                        add("${label}-normal")
+                }
+
+                FrequencyMode.Custom -> {
+                    add("${label}-high")
+
+                }
+            }
         }
     }
 
-    /* ----------------------------------------------------------
-     *  SINGLE DELETE - local + FCM
-     * ---------------------------------------------------------- */
-    suspend fun removeTopic(topic: String) {
-        context.topicDataStore.edit { prefs ->
-            val current = decodeMap(prefs[TOPIC_MAP_KEY]).toMutableMap()
-            current.remove(topic)
-            prefs[TOPIC_MAP_KEY] = json.encodeToString(current)
-        }
-        unsubscribeFromFcmTopic(topic)
+    suspend fun switchToLocale(newLocale: String) {
+        val prefs = context.topicDataStore.data.first()
+        val ids   = prefs[IDS_KEY]?.split(",").orEmpty()
+            .mapNotNull { it.toIntOrNull() }
+        val mode  = prefs[MODE_KEY]?.let { FrequencyMode.valueOf(it) } ?: return
+        applyTopicPolicy(ids, mode,newLocale)   // will use the new locale
     }
 
+data class TopicSnapshot(
+    val ids: List<Int>,
+    val mode: FrequencyMode
+)
 
-    /* ----------------------------------------------------------
-     *  LANGUAGE SWITCH - same IDs, new locale label
-     * ---------------------------------------------------------- */
-    suspend fun switchToLocale(newLocale: String) { // "en" | "hi"
-        val oldMap = readSnapshot()                 // old label_importance
-        val newMap = oldMap.mapNotNull { (oldTopic, importance) ->
-            val oldLabel = oldTopic.substringBefore("-")
-            val definition = TOPICS_LIST.firstOrNull {
-                it.en.equals(oldLabel, true) || it.hi.equals(oldLabel, true)
-            } ?: return@mapNotNull null
-            definition.fcmTopic(importance, newLocale) to importance
-        }.toMap()
-        replaceAllTopics(newMap)
+
+    suspend fun getCurrentSnapshot(): TopicSnapshot {
+        val prefs = context.topicDataStore.data.first()   // one-shot
+        val mode  = prefs[MODE_KEY]?.let { FrequencyMode.valueOf(it) } ?: FrequencyMode.STANDARD
+        val ids   = prefs[IDS_KEY]?.split(",").orEmpty()
+            .mapNotNull { it.toIntOrNull() }
+            .distinct()
+            .sorted()
+        return TopicSnapshot(ids, mode)
     }
-
-
-
-
-    /** Observe list everywhere */
-    fun observeTopics(): Flow<List<TopicItem>> =
-        context.topicDataStore.data
-            .map { prefs -> decodeMap(prefs[TOPIC_MAP_KEY]) }
-            .map { map -> map.map { (topic, importance) -> TopicItem(topic, importance) } }
-
-    /* ==========================================================
-     *  PRIVATE  -  helpers
-     * ========================================================== */
-    private suspend fun readSnapshot(): Map<String, Importance> =
-        decodeMap(context.topicDataStore.data.first()[TOPIC_MAP_KEY])
-
-    private fun decodeMap(raw: String?): Map<String, Importance> =
-        raw?.let { json.decodeFromString<Map<String, Importance>>(it) } ?: emptyMap()
 
     private suspend fun synchronizeWithFcm(
         desiredTopics: Set<String>,
@@ -124,19 +133,42 @@ class TopicDataStoreManager(
     }
 
     companion object {
-        private val TOPIC_MAP_KEY = stringPreferencesKey("fcm_topic_importance")
+        private val LAST_LOCALE_KEY = stringPreferencesKey("last_fcm_locale")
+        private val MODE_KEY = stringPreferencesKey("topic_mode")
+        private val IDS_KEY = stringPreferencesKey("topic_ids")
         private val TOPIC_DIALOG_SHOWN_KEY = booleanPreferencesKey("topics_first_ask_done")
     }
 }
+
+/* ----------------------------------------------------------
+ *  NORMAL -> HIGH + NORMAL , HIGH -> HIGH , NONE -> drop
+ * ---------------------------------------------------------- */
+private fun expandImportance(map: Map<String, Importance>): Map<String, Importance> =
+    buildMap {
+        map.forEach { (topic, imp) ->
+            when (imp) {
+                Importance.NORMAL -> {
+                    put(topic, Importance.HIGH)
+                    put(topic, Importance.NORMAL)
+                }
+
+                Importance.HIGH -> put(topic, Importance.HIGH)
+                Importance.NONE -> { /* ignore */
+                }
+            }
+        }
+    }
+
 fun TopicDef.fcmTopic(imp: Importance, locale: String): String {
     val label = if (locale == "hi") hi else en
-    return "${label.lowercase().replace(" ", "")}-${imp.name.lowercase()}"
+    return "${label.lowercase().replace(" ", "_")}-${imp.name.lowercase()}"
 }
+
 /* --------------------- model ----------------------------- */
 @Serializable
 enum class Importance { HIGH, NORMAL, NONE }
 
 data class TopicItem(
-    val topicName: String, // "sports_high"
+    val topicName: String,
     val importance: Importance
 )

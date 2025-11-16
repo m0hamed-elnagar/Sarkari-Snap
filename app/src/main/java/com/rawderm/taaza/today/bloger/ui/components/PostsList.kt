@@ -113,14 +113,15 @@ fun PostListWithAds(
                             var isAdLoaded by remember { mutableStateOf(false) }
                             val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
                             val targetAlpha = if (isAdLoaded) 1f else 0f
-                            NativeScreen(
+                            if (BuildConfig.FLAVOR != "admin"){
+                                NativeScreen(
                                 nativeAdUnitID = "ca-app-pub-7395572779611582/2939768964",
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(if (isAdLoaded) 400.dp else 0.dp),
                             ) { loaded ->
                                 isAdLoaded = loaded
-                            }
+                            }}
 
                         } else {
                             uiItem.post?.let { post ->

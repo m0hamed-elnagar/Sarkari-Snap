@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
@@ -195,7 +196,8 @@ fun MoreTabScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                BannerAd("ca-app-pub-7395572779611582/3592956801")
+                if (BuildConfig.FLAVOR != "admin"){
+                    BannerAd("ca-app-pub-7395572779611582/3592956801")}
                 Spacer(Modifier.height(4.dp))
 //                Text(
 //                    text = "Made by",

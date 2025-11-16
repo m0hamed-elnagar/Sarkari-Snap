@@ -45,6 +45,7 @@ import coil3.request.error
 import coil3.request.placeholder
 import coil3.size.Scale
 import coil3.size.Size
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
@@ -195,7 +196,8 @@ fun PageDetailsScreen(
                     val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
                     val targetAlpha = if (isAdLoaded) 1f else 0f
 
-                    NativeScreen(
+                    if (BuildConfig.FLAVOR != "admin"){
+                        NativeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(targetHeight)
@@ -203,7 +205,7 @@ fun PageDetailsScreen(
                     ) { loaded ->
                         isAdLoaded = loaded
                     }
-                }
+                }}
             }
 
 

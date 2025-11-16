@@ -16,7 +16,7 @@ initialTitle :String,
 initialBody: String,
 initialDeeplink: String,
 context: android.content.Context,
-scope: kotlinx.coroutines.CoroutineScope
+scope: CoroutineScope
 ) {
     if (showSendNotifDialog) {
         NotificationInputDialog(
@@ -38,7 +38,7 @@ scope: kotlinx.coroutines.CoroutineScope
                         is FcmSender2.Result.Success ->
                             Log.d("PostCard", "✅ Notification sent successfully")
                         is FcmSender2.Result.Failure ->
-                            Log.e("PostCard", "❌ Error sending notification: ${r.msg}")
+                            Log.e("PostCard", "❌ Error sending notification: ${r.msg} $token")
                     }
                 }
             }

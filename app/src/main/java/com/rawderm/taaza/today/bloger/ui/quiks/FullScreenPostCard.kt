@@ -226,13 +226,15 @@ fun PostFullScreenCard(
                 }
 
                 val appUrl = context.getString(R.string.app_url)
-                val postUrl = "$appUrl/" + Lingver.getInstance()
-                    .getLocale().language + "/quiks/" + post.id
+
+                val postUrl =
+                    "\n$appUrl/" + Lingver.getInstance().getLocale().language + "/quiks/" + post.rowDate
+//todo get the token with the id  and locale
                 AdminNotificationFeature(
                     showSendNotifDialog = showSendNotifDialog,
                     onDismiss = { showSendNotifDialog = false },
                     initialToken = post.labels.firstOrNull() ?: "",
-                    initialTitle = post.title,
+                    initialTitle = postTitle,
                     initialBody = "click to open",
                     initialDeeplink = postUrl,
                     context = context,

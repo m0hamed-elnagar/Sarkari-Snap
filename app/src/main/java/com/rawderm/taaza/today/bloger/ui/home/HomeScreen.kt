@@ -44,7 +44,6 @@ import com.rawderm.taaza.today.bloger.ui.quiks.QuiksViewModel
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsScreenRoot
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
-import com.rawderm.taaza.today.core.notifications.ui.notificationsDialog.TopicPickerDialog2
 import com.rawderm.taaza.today.core.notifications.ui.notificationsScreen.TaazaOnboardingDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -71,8 +70,7 @@ fun HomeScreenRoot(
     val scope = rememberCoroutineScope()
     var showLangDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val manager = remember { TopicDataStoreManager(context) }
-
+val manager = koinInject<TopicDataStoreManager>()
     val alreadyShown by manager.hasTopicDialogAlreadyShown().collectAsState(false)
     if (!alreadyShown) TaazaOnboardingDialog(
         onDismiss = {

@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import org.koin.androidx.compose.koinViewModel
@@ -176,14 +177,15 @@ fun PostFullScreenList(
             val targetAlpha = if (isAdLoaded) 1f else 0f
 
             if (post.isAd) {
-                NativeScreen(
+                if (BuildConfig.FLAVOR != "admin"){
+                    NativeScreen(
                     nativeAdUnitID = "ca-app-pub-7395572779611582/5077711672",
                     modifier = Modifier
                         .height(targetHeight)
                         .graphicsLayer { alpha = targetAlpha } // hide while tiny
                 ) { loaded ->
                     isAdLoaded = loaded
-                }
+                }}
             } else PostFullScreenCard(
                 post = post.quik!!,
                 modifier = Modifier

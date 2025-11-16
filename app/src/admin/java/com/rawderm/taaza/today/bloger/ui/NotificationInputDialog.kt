@@ -4,10 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
@@ -28,6 +34,7 @@ import com.rawderm.taaza.today.core.notifications.data.TOPICS_LIST
 import org.koin.compose.koinInject
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.focus.onFocusChanged
+import com.rawderm.taaza.today.core.notifications.data.TopicDef
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +47,9 @@ fun NotificationInputDialog(
     initialBody: String = "",
     initialDeeplink: String = "https://taaza-today.web.app/en/quiks/2025-10-27T05:18:12-07:00"
 ) {
-    var token by remember { mutableStateOf(initialToken) }
+var showPicker by remember { mutableStateOf(false) }
+
+    var token by remember { mutableStateOf(initialToken ) }
     var title by remember { mutableStateOf(initialTitle) }
     var body by remember { mutableStateOf(initialBody) }
     var deeplink by remember { mutableStateOf(initialDeeplink) }
@@ -50,7 +59,7 @@ fun NotificationInputDialog(
         TOPICS_LIST.mapNotNull { topic ->
             when (locale) {
                 "en" -> topic.en
-                "hi" -> topic.hi
+                "hi" -> topic.en+"_hi"
                 else -> null
             }?.takeIf { it.startsWith(token, ignoreCase = true) }
         }
@@ -60,7 +69,17 @@ fun NotificationInputDialog(
     var fieldHasFocus by remember { mutableStateOf(false) }
     val showMenu = fieldHasFocus && filteredStrings.isNotEmpty()
     var notificationLevel by remember { mutableStateOf("normal") }
-
+    if (showPicker) {
+        TopicPickerDialog(
+            locale = locale,
+            onPicked = { topic ->
+                val label = if (locale == "hi") topic.en+"_hi" else topic.en
+                token = label  // normalized
+                showPicker = false
+            },
+            onDismiss = { showPicker = false }
+        )
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Send test notification") },
@@ -68,14 +87,19 @@ fun NotificationInputDialog(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ExposedDropdownMenuBox(
                     expanded = showMenu,
-                    onExpandedChange = {}   // we control it ourselves
+                    onExpandedChange = {}
                 ) {
                     OutlinedTextField(
-                        value = token,
+                        value = token.replace(Regex("\\s+"), "_") ,
                         onValueChange = { raw ->
-                            token = raw.replace(Regex("\\s+"), "_")   },
+                            token = raw  },
                         label = { Text("FCM token") },
                         singleLine = true,
+                        trailingIcon = {
+                            IconButton(onClick = { showPicker = true }) {
+                                Icon(Icons.Default.ArrowDropDown, "pick")
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor(MenuAnchorType.PrimaryEditable)
@@ -107,6 +131,7 @@ fun NotificationInputDialog(
                     onValueChange = { title = it },
                     label = { Text("Title") },
                     singleLine = false,
+
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
@@ -172,7 +197,34 @@ fun PrioritySelector(
         }
     }
 }
-
+@Composable
+private fun TopicPickerDialog(
+    locale: String,
+    onPicked: (TopicDef) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Choose category") },
+        text = {
+            LazyColumn {
+                items(TOPICS_LIST) { topic ->
+                    val label = if (locale == "hi") topic.en+"_hi" else topic.en
+                    TextButton(
+                        onClick = { onPicked(topic) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(label, modifier = Modifier.fillMaxWidth())
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
 @Preview
 @Composable
 fun NotificationInputDialogPreview() {

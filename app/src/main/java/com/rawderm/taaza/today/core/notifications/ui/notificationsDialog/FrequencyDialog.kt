@@ -43,66 +43,61 @@ import com.rawderm.taaza.today.core.notifications.data.TOPICS_LIST
 import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-@Preview
-@Composable
-fun FrequencyDialogPreview() {
-    val manager = TopicDataStoreManager(LocalContext.current)
-    FrequencyDialog(manager, {})
-}
-@Composable
-fun FrequencyDialog(
-    manager: TopicDataStoreManager,
-    onDismiss: () -> Unit
-) {
-    val scope = rememberCoroutineScope()
-    var picked by remember { mutableStateOf(Importance.HIGH) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("How often do you want notifications?") },
-        text = {
-            Column(Modifier.fillMaxWidth()) {
-                Importance.values().forEach { imp ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { picked = imp }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = picked == imp,
-                            onClick = { picked = imp }
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = when (imp) {
-                                Importance.HIGH   -> "Immediately (High priority)"
-                                Importance.NORMAL -> "Once a day (Normal priority)"
-                                Importance.NONE   -> "Turn off for all topics"
-                            },
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    scope.launch {
-                        /* simply overwrite the importance of every topic the user already has */
-                        val old = manager.observeTopics().first()
-                            .associate { it.topicName to it.importance }
-                        val updated = old.mapValues { (_, _) -> picked } // same keys, new imp.
-                        manager.replaceAllTopics(updated)
-                        onDismiss()
-                    }
-                }
-            ) { Text("Save") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
+//@Composable
+//fun FrequencyDialog(
+//    manager: TopicDataStoreManager,
+//    onDismiss: () -> Unit
+//) {
+//    val scope = rememberCoroutineScope()
+//    var picked by remember { mutableStateOf(Importance.HIGH) }
+//
+//    AlertDialog(
+//        onDismissRequest = onDismiss,
+//        title = { Text("How often do you want notifications?") },
+//        text = {
+//            Column(Modifier.fillMaxWidth()) {
+//                Importance.values().forEach { imp ->
+//                    Row(
+//                        Modifier
+//                            .fillMaxWidth()
+//                            .clickable { picked = imp }
+//                            .padding(vertical = 8.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        RadioButton(
+//                            selected = picked == imp,
+//                            onClick = { picked = imp }
+//                        )
+//                        Spacer(Modifier.width(8.dp))
+//                        Text(
+//                            text = when (imp) {
+//                                Importance.HIGH   -> "Immediately (High priority)"
+//                                Importance.NORMAL -> "Once a day (Normal priority)"
+//                                Importance.NONE   -> "Turn off for all topics"
+//                            },
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
+//                    }
+//                }
+//            }
+//        },
+//        confirmButton = {
+//            TextButton(
+//                onClick = {
+//                    scope.launch {
+//                        /* simply overwrite the importance of every topic the user already has */
+//                        val old = manager.observeTopics().first()
+//                            .associate { it.topicName to it.importance }
+//                        val updated = old.mapValues { (_, _) -> picked } // same keys, new imp.
+//                        manager.replaceAllTopics(updated)
+//                        onDismiss()
+//                    }
+//                }
+//            ) { Text("Save") }
+//        },
+//        dismissButton = {
+//            TextButton(onClick = onDismiss) { Text("Cancel") }
+//        }
+//    )
+//}

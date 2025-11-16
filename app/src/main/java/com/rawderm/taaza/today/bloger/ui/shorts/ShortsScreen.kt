@@ -220,7 +220,8 @@ fun ShortsScreen(
                 val shortItem = shortsPaging[pageIndex] ?: return@VerticalPager
                 if (shortItem.isAd) {
                     val adKey = shortItem.adId
-                    NativeScreen(
+                    if (BuildConfig.FLAVOR != "admin"){
+                        NativeScreen(
                         nativeAdUnitID = "ca-app-pub-7395572779611582/5835976761",
                         onAdResult = { loaded ->
                             // If ad failed to load, add its ID to the failed set
@@ -235,7 +236,7 @@ fun ShortsScreen(
                     )
                     return@VerticalPager
 
-                }
+                }}
                 val videoId = remember(shortItem) { shortItem.short?.videoId }
 
                 ShortsVideoPage(
@@ -277,7 +278,8 @@ private fun ShortsVideoPage(
             .background(Color.Black)
     ) {
         Column(Modifier.fillMaxSize()) {
-            BannerAd("ca-app-pub-7395572779611582/3592956801")
+            if (BuildConfig.FLAVOR != "admin"){
+                BannerAd("ca-app-pub-7395572779611582/3592956801")}
             /* 1. decide what to draw */
             when {
                 videoId.isNullOrBlank() -> PlaceholderBox(stringResource(R.string.no_video))

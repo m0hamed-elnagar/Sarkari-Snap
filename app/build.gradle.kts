@@ -230,8 +230,7 @@ dependencies {
     // ads
     implementation("com.google.android.gms:play-services-ads:24.7.0")
     implementation("com.google.ads.mediation:inmobi:10.8.8.1")
-    implementation("com.google.ads.mediation:facebook:6.20.0.2")
-    implementation("com.google.ads.mediation:applovin:13.4.0.1")
+    implementation("com.google.ads.mediation:facebook:6.21.0.0")
     implementation("com.google.ads.mediation:ironsource:9.0.0.1")
     //google play update check
     implementation(libs.app.update.ktx)

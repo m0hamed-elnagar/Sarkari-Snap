@@ -232,8 +232,8 @@ fun TopBar(
 
             )
     }
-    val manager = remember { TopicDataStoreManager(context) }
-    var showNotificationsDialog by remember { mutableStateOf(false) }
+//    val manager = remember { TopicDataStoreManager(context) }
+//    var showNotificationsDialog by remember { mutableStateOf(false) }
 
     /* 1st run – show topic picker */
 //    val alreadyShown by manager.hasTopicDialogAlreadyShown().collectAsState(false)

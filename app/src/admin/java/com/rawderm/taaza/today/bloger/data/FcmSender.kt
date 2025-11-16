@@ -33,11 +33,13 @@ object FcmSender2 {
 
     private val json = Json { ignoreUnknownKeys = true }
     private val client: HttpClient = HttpClient(OkHttp) {
-        install(ContentNegotiation) { json(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        }) }
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
+        }
         install(Logging) { level = LogLevel.INFO }
         expectSuccess = true
     }
@@ -50,10 +52,10 @@ object FcmSender2 {
         body: String,
         deeplink: String
     ): Result = withContext(Dispatchers.IO) {
-
+        Log.d(TAG, "Sending notification to $targetToken")
         runCatching {
-            val payload = buildPayload(targetToken, title, body, deeplink)
-            postToFcm( payload)
+            val payload = buildPayload(targetToken.lowercase().trim(), title, body, deeplink)
+            postToFcm(payload)
         }.fold(
             onSuccess = { Result.Success(it) },
             onFailure = { Result.Failure(it.message ?: "Unknown error") }
@@ -77,7 +79,7 @@ object FcmSender2 {
         return dto
     }
 
-    private suspend fun postToFcm( dto: SendMessageDto): String =
+    private suspend fun postToFcm(dto: SendMessageDto): String =
         withContext(Dispatchers.IO) {
 //             val baseUrl = "http://10.0.2.2:8080"
 //            val baseUrl = "http://192.168.1.10:8080"
@@ -96,6 +98,7 @@ object FcmSender2 {
         data class Success(val raw: String) : Result
         data class Failure(val msg: String) : Result
     }
+
     /* ---------- DTOs ---------- */
     @Serializable
     private data class FcmDto(

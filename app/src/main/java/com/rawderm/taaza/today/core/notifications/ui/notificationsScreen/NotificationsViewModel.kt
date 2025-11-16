@@ -5,15 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.messaging
 import com.rawderm.taaza.today.bloger.data.LanguageManager
-import com.rawderm.taaza.today.core.notifications.data.Importance
-import com.rawderm.taaza.today.core.notifications.data.ImportanceMapper
 import com.rawderm.taaza.today.core.notifications.data.TOPICS_LIST
 import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
-import com.rawderm.taaza.today.core.notifications.data.fcmTopic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,33 +35,45 @@ class NotificationsViewModel(
         }
 
         viewModelScope.launch {
-            languageManager.currentLanguage.collect { locale ->
-                val stored = manager.observeTopics().first()
-                val idToImp = stored.mapNotNull { item ->
-                    val label = item.topicName.substringBefore("-")
-                    val id = TOPICS_LIST.firstOrNull {
-                        it.en.equals(label, true) || it.hi.equals(label, true)
-                    }?.id
-
-                    id?.let { it to item.importance }
-                }.toMap()
-                val selected = if (idToImp.isEmpty()) {
-                    TOPICS_LIST.map { it.id }.toSet()
-                } else {
-                    idToImp.keys.toSet()
-                }
-                _state.update {
-                    it.copy(
-                        categories = buildCategoryList(locale, idToImp),
-                        selectedCategories = selected,
-                        selectionMode = if (idToImp.keys.isEmpty()) SelectionMode.All
-                        else SelectionMode.Custom,
-                        isLoading = false
-                    )
-                }
+            languageManager.currentLanguage.collect {
+                refreshSnapshot()
             }
         }
     }
+    private suspend fun refreshSnapshot() {
+        val (ids, mode) = manager.getCurrentSnapshot()
+        val locale = languageManager.getLanguage()
+
+        val categories = TOPICS_LIST.map { def ->
+            val category=if (locale == "hi") def.hi else def.en
+            NotificationCategory(
+                id = def.id,
+                category = category.replace("_", " "),
+                level = when (mode) {
+                    FrequencyMode.BREAKING -> FrequencyMode.BREAKING
+                    FrequencyMode.STANDARD -> {
+                        val index = ids.indexOf(def.id)
+                        if (index >= 0 && index < ids.size / 2) FrequencyMode.BREAKING
+                        else FrequencyMode.STANDARD
+                    }
+                    FrequencyMode.Custom -> FrequencyMode.Custom
+                }
+            )
+        }
+        val selected = if (ids.isEmpty()) {
+            TOPICS_LIST.map { it.id }.toSet()
+        } else {
+            ids.toSet()
+        }
+        _state.update {
+            it.copy(
+                categories = categories,
+                selectedCategories = selected,
+            frequencyMode = mode,
+            selectionMode = if (ids.isEmpty()) SelectionMode.All else SelectionMode.Custom,
+            isLoading = false
+        )
+    }}
 
 
     /* ------------------------------------------------------------------
@@ -93,47 +101,7 @@ class NotificationsViewModel(
     }
 
     fun setFrequency(frequencyMode: FrequencyMode) {
-        when (frequencyMode) {
-            FrequencyMode.BREAKING -> {
-                _state.update { current ->
-                    current.copy(
-                        frequencyMode = frequencyMode,
-                        categories = current.categories.map { category ->
-                            if (category.id in current.selectedCategories) {
-                                category.copy(level = frequencyMode)
-                            } else category
-                        }
-                    )
-                }
-            }
-            FrequencyMode.STANDARD -> {
-                _state.update { current ->
-                    val selected = current.categories.filter { it.id in current.selectedCategories }
-                    val halfSize = selected.size / 2
-
-                    current.copy(
-                        frequencyMode = frequencyMode,
-                        categories = current.categories.mapIndexed { index, category ->
-                            if (category.id in current.selectedCategories) {
-                                val indexInSelected = selected.indexOf(category)
-                                val newLevel = if (indexInSelected < halfSize) {
-                                    FrequencyMode.BREAKING
-                                } else {
-                                    FrequencyMode.STANDARD
-                                }
-                                category.copy(level = newLevel)
-                            } else category
-                        }
-                    )
-                }
-            }
-
-
-            FrequencyMode.Custom -> {
-                _state.update { it.copy(frequencyMode = FrequencyMode.Custom) }
-            }
-        }
-
+        _state.update { it.copy(frequencyMode = frequencyMode) }
     }
 
     fun setSelectionMode(mode: SelectionMode) {
@@ -178,31 +146,11 @@ class NotificationsViewModel(
     fun saveCurrentChoices() {
         viewModelScope.launch {
             val locale = languageManager.getLanguage()
-            val map = state.value.categories
-                .filter { it.id in state.value.selectedCategories }
-                .associate { cat ->
-                    val imp = ImportanceMapper.toImportance(cat.level)
-                    /* rebuild correct FCM topic string */
-                    TOPICS_LIST.first { it.id == cat.id }
-                        .fcmTopic(imp, locale) to imp
-                }
-            manager.replaceAllTopics(map)
+             val newIds = state.value.selectedCategories.toList()
+            val newMode = state.value.frequencyMode
+            manager.applyTopicPolicy(newIds = newIds, newMode = newMode ,locale)
         }
     }
 
-    /* ------------------------------------------------------------------
-     * Private helpers
-     * ------------------------------------------------------------------ */
-    private fun buildCategoryList(
-        locale: String,
-        idToImp: Map<Int, Importance>
-    ): List<NotificationCategory> =
-    TOPICS_LIST.map { def ->
-        NotificationCategory(
-            id = def.id,
-            category = if (locale == "hi") def.hi else def.en,
-            level = idToImp[def.id]?.let(ImportanceMapper::toFrequencyMode)
-                ?: FrequencyMode.BREAKING
-        )
-    }
+
 }

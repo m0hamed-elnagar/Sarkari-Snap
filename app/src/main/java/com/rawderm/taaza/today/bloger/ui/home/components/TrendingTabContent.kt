@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.bloger.domain.Page
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.BannerAd
@@ -123,8 +124,9 @@ private fun TrendingTabContent(
         }
 
         // Banner at the bottom
-        BannerAd(
+        if (BuildConfig.FLAVOR != "admin"){
+            BannerAd(
             "ca-app-pub-7395572779611582/3592956801"
         )
-    }
+    }}
 }
