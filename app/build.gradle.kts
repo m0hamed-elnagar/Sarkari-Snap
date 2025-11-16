@@ -103,7 +103,6 @@ android {
         outputs
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
-                val flavour = flavorName
                 val version = versionName
                 output.outputFileName = "Taaza-Today-v${version}.apk"
             }
