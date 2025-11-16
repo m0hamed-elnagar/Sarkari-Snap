@@ -115,21 +115,15 @@ fun NotificationInputDialog(
 
 ## 5. App Screenshots
 
-### **User Experience**
 
-| Home Feed | Shorts/Quiks | Favorites |
+| Home Feed | Shorts/Quiks | Favorites | | Article Detail |
 |---|---|---|
-| ![Home Screen](assets/home.jpg) | ![Shorts Screen](assets/shorts.jpg) | ![Favorites Screen](assets/favorites.jpg) |
+| ![Home Screen](assets/home.jpg) | ![Shorts Screen](assets/shorts.jpg) | ![Favorites Screen](assets/favorites.jpg) | ![Article Detail](assets/article_detail.jpg) |
 
-| More Options | Article Detail | Notification Composer              |
+| More Options | Admin Dashboard | Quiks screen              |
 |---|---|------------------------------------|
-| ![More Tab](assets/more_tab.jpg) | ![Article Detail](assets/article_detail.jpg) | ![Quiks screen](assets/quiks.jpg) |
+| ![More Tab](assets/more.jpg) | ![Admin Home](assets/home_admin.jpg)| ![Quiks screen](assets/quiks.jpg) |
 
-### **Admin Features**
-
-| Admin Dashboard | Content Management | Analytics View |
-|---|---|---|
-| ![Admin Home](assets/home_admin.jpg) ||||
 
 ---
 
