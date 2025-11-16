@@ -110,7 +110,7 @@ fun NotificationInputDialog(
 ### **Admin Capabilities**
 - **Notification Composer** - Targeted push notification creation tool
   ![Home Screen in admin](assets/home_admin.jpg)
-*Home Screen showing Hindi & English news toggle*
+*Home Screen showing admin UI*
 
 
 [//]: # (- **Content Management** - Tools for content curation and management)
