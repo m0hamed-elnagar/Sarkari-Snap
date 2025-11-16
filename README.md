@@ -57,7 +57,7 @@ interface FavoritePostDao {
 
 ### **Scalable Notification System**
 ```kotlin
-object FcmSender{
+object FcmSender {
     suspend fun sendNotification(
         context: Context,
         targetToken: String,
@@ -109,16 +109,23 @@ fun NotificationInputDialog(
 
 ### **Admin Capabilities**
 - **Notification Composer** - Targeted push notification creation tool
-  ![Home Screen in admin](assets/home_admin.jpg)
-*Home Screen showing Hindi & English news toggle*
-
-
-[//]: # (- **Content Management** - Tools for content curation and management)
 - **Analytics Ready** - Foundation for engagement tracking
 
 ---
 
-## 5. Installation & Setup
+## 5. App Screenshots
+| Home Feed | Shorts/Quiks | Favorites | | Article Detail |
+|---|---|---|  
+| ![Home Screen](assets/home.jpg) | ![Shorts Screen](assets/shorts.jpg) | ![Favorites Screen](assets/favorites.jpg) | ![Article Detail](assets/article_detail.jpg) |
+
+| More Options | Admin Dashboard | Quiks screen              |
+|---|---|------------------------------------|
+| ![More Tab](assets/more.jpg) | ![Admin Home](assets/home_admin.jpg)| ![Quiks screen](assets/quiks.jpg) |
+
+
+---
+
+## 6. Installation & Setup
 
 ### Prerequisites
 - Android Studio Hedgehog or later
@@ -147,7 +154,7 @@ adb install app/build/outputs/apk/user/debug/app-user-debug.apk
 
 ---
 
-## 6. Architecture & Code Quality
+## 7. Architecture & Code Quality
 
 ### **Clean Architecture Implementation**
 ```
@@ -167,7 +174,7 @@ app/
 
 ---
 
-## 7. Roadmap & Future Enhancements
+## 8. Roadmap & Future Enhancements
 
 ### **Planned Features**
 - [ ] **Enhanced Personalization** - AI-driven content recommendations
@@ -183,19 +190,18 @@ app/
 
 ---
 
-## 8. License
+## 9. License
 
 This project is proprietary software. All rights reserved.
 
-## 9. Contact
+## 10. Contact
 
 **Developer**: Mohamed Elnagar  
-**Email**: mohamed.3lnagar@gmail.com 
-
+**Email**: mohamed.3lnagar@gmail.com
 
 ---
 
-## 10. Technical Achievement Highlights
+## 11. Technical Achievement Highlights
 
 * **Engineered a multi-language Android platform** using Kotlin, Jetpack Compose, and Clean Architecture
 * **Architected scalable data persistence** with Room Database, implementing reactive Flow streams and efficient CRUD operations
