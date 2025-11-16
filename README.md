@@ -197,7 +197,7 @@ This project is proprietary software. All rights reserved.
 ## 10. Contact
 
 **Developer**: Mohamed Elnagar  
-**Email**: mohamed.3lnagar@gmail.com
+**Email**: mohamed.3lnagar@gmail.com 
 
 ---
 
