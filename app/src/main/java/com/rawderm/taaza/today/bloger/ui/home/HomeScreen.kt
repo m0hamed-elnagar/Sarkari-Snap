@@ -198,7 +198,7 @@ fun HomeScreen(
                         onBackClicked = {
                             onAction(HomeActions.OnTabSelected(0))
                         },
-                        onQuiickClick = {
+                        onQuickClick = {
                             onAction(HomeActions.OnQuickClick(it))
                         }
                     )

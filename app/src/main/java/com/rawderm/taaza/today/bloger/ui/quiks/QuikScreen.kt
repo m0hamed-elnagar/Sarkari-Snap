@@ -37,6 +37,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
+import com.rawderm.taaza.today.bloger.ui.quiks.components.PostFullScreenCard
+import com.rawderm.taaza.today.bloger.ui.quiks.components.QuikFullScreen
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -44,7 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 fun QuikScreenRoot(
     viewModel: QuiksViewModel = koinViewModel(),
     onBackClicked: () -> Unit = {},
-    onQuiickClick: (postID: String) -> Unit
+    onQuickClick: (postID: String) -> Unit
 
 ) {
 
@@ -57,7 +59,7 @@ fun QuikScreenRoot(
         onAction = { action ->
             when (action) {
                 is QuiksActions.OnQuickClick -> {
-                    onQuiickClick(action.postId)
+                    onQuickClick(action.postId)
                 }
 
                 else -> viewModel.onAction(action)
@@ -186,12 +188,21 @@ fun PostFullScreenList(
                 ) { loaded ->
                     isAdLoaded = loaded
                 }}
-            } else PostFullScreenCard(
-                post = post.quik!!,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                onQuickClick = onQuickClick
-            )
+            } else
+                if (BuildConfig.FLAVOR == "quiks"){
+                    QuikFullScreen(
+                        post = post.quik!!,
+                        modifier = Modifier
+                            .fillMaxWidth())
+                }
+            else {
+                    PostFullScreenCard(
+                        post = post.quik!!,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onQuickClick = onQuickClick
+                    )
+                }
 
         }
     }

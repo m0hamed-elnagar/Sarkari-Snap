@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:168264790372:android:1c2239c1a559fb1fd90a71",
+        "android_client_info": {
+          "package_name": "com.rawderm.quiks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEY2ngf686-afhk3Phzaq6EuCQSnp2Ow8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:168264790372:android:bf688dd408d89f0ed90a71",
         "android_client_info": {
           "package_name": "com.rawderm.taaza.today"

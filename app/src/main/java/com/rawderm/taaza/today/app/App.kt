@@ -142,10 +142,6 @@ private fun AppNavigation(navController: NavHostController) {
                         uriPattern = "$appUrl/{lang}/{type}/{date}"
                         action = "android.intent.action.VIEW"
                     },
-//                    navDeepLink {
-//                        uriPattern = "$appUrl/{lang}/{type}/{date}"
-//                        action = "android.intent.action.VIEW"
-//                    },
                 )
             )
             { entry ->

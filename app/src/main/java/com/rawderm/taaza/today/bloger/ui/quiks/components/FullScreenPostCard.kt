@@ -1,4 +1,4 @@
-package com.rawderm.taaza.today.bloger.ui.quiks
+package com.rawderm.taaza.today.bloger.ui.quiks.components
 
 import android.annotation.SuppressLint
 import android.content.Context

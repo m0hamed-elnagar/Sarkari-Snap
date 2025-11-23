@@ -93,6 +93,14 @@ android {
             signingConfig = signingConfigs.getByName("release")
             resValue("string", "app_name", "Taaza Admin")
         }
+        create("quiks") {
+            applicationId ="com.rawderm.quiks"
+            versionCode = 1
+            versionName = "1.0"
+            dimension= "role"
+            signingConfig = signingConfigs.getByName("release")
+            resValue("string", "app_name", "Quiks")
+        }
 
 }
     compileOptions {
