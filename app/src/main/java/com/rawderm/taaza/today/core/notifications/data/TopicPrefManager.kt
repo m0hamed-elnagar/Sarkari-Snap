@@ -114,7 +114,7 @@ data class TopicSnapshot(
         return TopicSnapshot(ids, mode)
     }
 
-    private suspend fun synchronizeWithFcm(
+    private fun synchronizeWithFcm(
         desiredTopics: Set<String>,
         previousTopics: Set<String>
     ) {

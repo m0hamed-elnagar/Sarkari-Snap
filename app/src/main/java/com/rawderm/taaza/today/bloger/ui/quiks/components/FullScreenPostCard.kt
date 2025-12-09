@@ -56,7 +56,7 @@ import com.rawderm.taaza.today.core.ui.theme.Transparent
 import com.rawderm.taaza.today.core.utils.ShareUtils.systemChooser
 import com.yariksoffice.lingver.Lingver
 
-@SuppressLint("LogNotTimber")
+@SuppressLint("LogNotTimber", "ConfigurationScreenWidthHeight")
 @Composable
 fun PostFullScreenCard(
     post: Post,
@@ -245,7 +245,7 @@ fun PostFullScreenCard(
     }
 
     /* admin dialog – kept as-is */
-    val appUrl = context.getString(R.string.app_url)
+    val appUrl = stringResource(R.string.app_url)
     val postUrl = "\n$appUrl/" +
             Lingver.getInstance().getLocale().language +
             "/quiks/" + post.rowDate

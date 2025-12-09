@@ -271,7 +271,7 @@ private fun ShortsVideoPage(
 // Local state for like (you might want to move this to ViewModel)
     val isLiked = shortItem.isFavorite
     val context = LocalContext.current
-    val appUrl = context.getString(R.string.app_url)
+    val appUrl = stringResource(R.string.app_url)
     Box(
         Modifier
             .fillMaxSize()

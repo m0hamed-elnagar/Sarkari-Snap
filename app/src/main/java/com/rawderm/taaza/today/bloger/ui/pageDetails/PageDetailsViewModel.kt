@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class PageDetailsViewModel(
     private val postsRepo: PostsRepo,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val pageId = savedStateHandle.toRoute<Route.PageDetails>().pageId
     private val _state = MutableStateFlow(PageDetailsState())

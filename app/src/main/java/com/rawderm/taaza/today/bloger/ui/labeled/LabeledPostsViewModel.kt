@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LabeledPostsViewModel(
-    private val repo: PostsRepo,
-    private val savedStateHandle: SavedStateHandle
+    repo: PostsRepo,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val label = savedStateHandle.toRoute<Route.LabeledPosts>().label
 

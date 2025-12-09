@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 class PostDetailsViewModel(
     private val postsRepo: PostsRepo,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val postId = savedStateHandle.toRoute<Route.PostDetails>().postId
 

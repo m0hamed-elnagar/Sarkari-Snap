@@ -23,20 +23,20 @@ India's regional-language users need bilingual news that works seamlessly across
 
 ## 2. Tech Stack / Skills Used
 
-| Category | Technology |
-|---|---|
-| **Language** | Kotlin 100% (coroutines, flow, sealed classes) |
-| **UI Framework** | Jetpack Compose (Material 3) |
-| **Architecture** | MVVM + Clean Architecture (Presentation → Domain ← Data) |
-| **Dependency Injection** | Koin with flavor-specific modules |
-| **Networking** | Ktor client + Kotlinx-Serialization |
-| **Database** | Room with TypeConverters, upsert operations |
-| **State Management** | Kotlin Coroutines + Flow (StateFlow/SharedFlow) |
-| **Push Notifications** | Firebase Cloud Messaging with topic segmentation |
-| **Localization** | Dynamic language switching with persistent storage |
-| **Build System** | Gradle product flavors (`admin`, `user`) × build types |
-| **Image Loading** | Coil for efficient image handling |
-| **Content Integration** | YouTube Android Player, custom embed handling |
+| Category                 | Technology                                               |
+|--------------------------|----------------------------------------------------------|
+| **Language**             | Kotlin 100% (coroutines, flow, sealed classes)           |
+| **UI Framework**         | Jetpack Compose (Material 3)                             |
+| **Architecture**         | MVVM + Clean Architecture (Presentation → Domain ← Data) |
+| **Dependency Injection** | Koin with flavor-specific modules                        |
+| **Networking**           | Ktor client + Kotlinx-Serialization                      |
+| **Database**             | Room with TypeConverters, upsert operations              |
+| **State Management**     | Kotlin Coroutines + Flow (StateFlow/SharedFlow)          |
+| **Push Notifications**   | Firebase Cloud Messaging with topic segmentation         |
+| **Localization**         | Dynamic language switching with persistent storage       |
+| **Build System**         | Gradle product flavors (`admin`, `user`) × build types   |
+| **Image Loading**        | Coil for efficient image handling                        |
+| **Content Integration**  | YouTube Android Player, custom embed handling            |
 
 ---
 
@@ -118,9 +118,9 @@ fun NotificationInputDialog(
 |---|---|---|  
 | ![Home Screen](assets/home.jpg) | ![Shorts Screen](assets/shorts.jpg) | ![Favorites Screen](assets/favorites.jpg) | ![Article Detail](assets/article_detail.jpg) |
 
-| More Options | Admin Dashboard | Quiks screen              |
-|---|---|------------------------------------|
-| ![More Tab](assets/more.jpg) | ![Admin Home](assets/home_admin.jpg)| ![Quiks screen](assets/quiks.jpg) |
+| More Options                 | Admin Dashboard                      | Quiks screen                      |
+|------------------------------|--------------------------------------|-----------------------------------|
+| ![More Tab](assets/more.jpg) | ![Admin Home](assets/home_admin.jpg) | ![Quiks screen](assets/quiks.jpg) |
 
 
 ---

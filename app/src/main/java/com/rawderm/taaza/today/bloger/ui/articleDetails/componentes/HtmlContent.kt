@@ -45,7 +45,7 @@ fun HtmlContent2(
             linkInteractionListener = {
                 val url: String? = (it as LinkAnnotation.Url).url
                 url?.let { uri ->
-                    onLinkClicked(uri.toString())
+                    onLinkClicked(uri)
                 }
                 // e.g., open in CustomTab
             }

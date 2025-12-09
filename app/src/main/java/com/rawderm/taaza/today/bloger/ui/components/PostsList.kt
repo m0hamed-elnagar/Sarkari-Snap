@@ -54,6 +54,7 @@ import com.rawderm.taaza.today.bloger.ui.articleDetails.AdminNotificationFeature
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import com.rawderm.taaza.today.bloger.ui.home.PostUiItem
 import com.yariksoffice.lingver.Lingver
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun PostListWithAds(
@@ -311,7 +312,7 @@ fun FeaturedPost(post: Post, onClick: () -> Unit) {
             }
         }
 
-        val appUrl = context.getString(R.string.app_url)
+        val appUrl = stringResource(R.string.app_url)
         val postUrl = "$appUrl/" + Lingver.getInstance()
             .getLocale().language + "/post/" + post.id
         AdminNotificationFeature(

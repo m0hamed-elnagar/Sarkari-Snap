@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShortsViewModel(
     private val postsRepo: PostsRepo,
-    private val languageManager: LanguageManager
+    languageManager: LanguageManager
 ) : ViewModel() {
     private val _beforeDate = MutableStateFlow(
         OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)

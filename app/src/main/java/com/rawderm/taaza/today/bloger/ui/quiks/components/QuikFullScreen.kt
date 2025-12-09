@@ -57,7 +57,7 @@ fun QuikFullScreenPreview() {
 
 }
 
-@SuppressLint("LogNotTimber")
+@SuppressLint("LogNotTimber", "ConfigurationScreenWidthHeight")
 @Composable
 fun QuikFullScreen(
     post: Post,

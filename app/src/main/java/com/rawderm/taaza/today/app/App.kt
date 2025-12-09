@@ -47,6 +47,7 @@ import com.rawderm.taaza.today.bloger.ui.shorts.ShortsActions
 import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.ui.res.stringResource
 
 data class DeepLink(
     val type: String,   // "post", "short", "quiks", ...
@@ -75,7 +76,7 @@ fun App(navController: NavHostController) {
 @Composable
 private fun AppNavigation(navController: NavHostController) {
     val context = LocalContext.current
-    val appUrl = context.getString(R.string.app_url)
+    val appUrl = stringResource(R.string.app_url)
     val languageManager = koinInject<LanguageManager>()
     val currentLang by languageManager.currentLanguage.collectAsState()
     val homeVM: HomeViewModel = koinViewModel<HomeViewModel>()
@@ -133,7 +134,7 @@ private fun AppNavigation(navController: NavHostController) {
         navigation<Route.BlogGraph>(
             startDestination = Route.BlogHome::class,
             deepLinks = listOf(
-                navDeepLink { uriPattern = context.getString(R.string.app_url) + "/" }
+                navDeepLink { uriPattern = stringResource(R.string.app_url) + "/" }
             )
         ) {
             composable<Route.BlogHome>(

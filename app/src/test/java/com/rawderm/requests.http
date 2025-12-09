@@ -2,9 +2,9 @@
 GET https://www.googleapis.com/blogger/v3/blogs/3213900?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
 Accept: application/json
 
-### Retrieve blog metadata by URL
-GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=http://code.blogger.com/&key=YOUR_API_KEY
-Accept: application/json
+#### Retrieve blog metadata by URL
+#GET https://www.googleapis.com/blogger/v3/blogs/byurl?url=http://code.blogger.com/&key=YOUR_API_KEY
+#Accept: application/json
 
 ### Retrieve blog metadata by URL
 GET https://www.googleapis.com/blogger/v3/blogs/byurl?

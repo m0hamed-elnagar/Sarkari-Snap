@@ -9,7 +9,7 @@ import android.webkit.WebViewClient
 import androidx.recyclerview.widget.RecyclerView
 
 class WebViewItemViewHolder(
-    private val context: Context,
+    context: Context,
     private val onLinkClicked: (String) -> Unit
 ) : RecyclerView.ViewHolder(
     WebView(context).apply {

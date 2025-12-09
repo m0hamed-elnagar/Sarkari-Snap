@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val repo: PostsRepo,
-    private val languageManager: LanguageManager // Inject LanguageManager
+    languageManager: LanguageManager // Inject LanguageManager
 ) : ViewModel() {
 
     // Use LanguageManager's current language flow

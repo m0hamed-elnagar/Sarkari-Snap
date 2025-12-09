@@ -126,8 +126,8 @@ fun PostDetailsScreen(
         onAction(PostDetailsActions.OnLinkClicked(url))
     }
     val context = LocalContext.current
-    val appUrl = context.getString(R.string.app_url)
-    val readFullNews = context.getString(R.string.read_full_news)
+    val appUrl = stringResource(R.string.app_url)
+    val readFullNews = stringResource(R.string.read_full_news)
     var showSendNotifDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
