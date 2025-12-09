@@ -46,12 +46,14 @@ import com.rawderm.taaza.today.bloger.ui.shorts.ShortsViewModel
 import com.rawderm.taaza.today.core.notifications.data.TopicDataStoreManager
 import com.rawderm.taaza.today.core.notifications.ui.notificationsScreen.TaazaOnboardingDialog
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 val tabs = BottomTab.entries
 
+@Suppress("UNUSED_VARIABLE")
 @Composable
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
@@ -70,13 +72,29 @@ fun HomeScreenRoot(
     val scope = rememberCoroutineScope()
     var showLangDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
-val manager = koinInject<TopicDataStoreManager>()
-    val alreadyShown by manager.hasTopicDialogAlreadyShown().collectAsState(false)
-    if (!alreadyShown) TaazaOnboardingDialog(
-        onDismiss = {
-            scope.launch { manager.markTopicDialogAlreadyShown() }},
-        viewModel = org.koin.androidx.compose.koinViewModel()
-    )
+    val manager = koinInject<TopicDataStoreManager>()
+    var alreadyShown by remember { mutableStateOf<Boolean?>(null) }
+
+    LaunchedEffect(Unit) {
+        alreadyShown = manager.hasTopicDialogAlreadyShown().first()
+    }
+
+
+
+    alreadyShown?.let {
+        if (!it) {
+            TaazaOnboardingDialog(
+                onDismiss = {
+                    scope.launch {
+                        manager.markTopicDialogAlreadyShown()
+                    }
+                    alreadyShown = true
+                },
+                viewModel = koinViewModel()
+            )
+
+        }
+    }
     LaunchedEffect(Unit) {
         // run only once
         if (LanguageDataStore(context).isFirstLaunch()) {
@@ -113,7 +131,7 @@ val manager = koinInject<TopicDataStoreManager>()
                     is HomeActions.OnPostClick -> onPostClick(action.post)
                     is HomeActions.OnQuickClick -> onQuickClick(action.postId)
                     is HomeActions.OnPageClick -> onPagesClick(action.page)
-                    is HomeActions.OnTabSelected -> { ->
+                    is HomeActions.OnTabSelected -> {
                         if (state.selectedTabIndex != action.index) {
                             scope.launch {
                                 pagerState.animateScrollToPage(action.index)

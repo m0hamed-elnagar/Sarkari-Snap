@@ -38,16 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
@@ -67,30 +62,12 @@ fun PostListWithAds(
     onPostClick: (Post) -> Unit,
     scrollState: LazyListState,
 ) {
-    val noOpConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(
-                available: Offset,
-                source: NestedScrollSource
-            ) = Offset.Zero
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ) = Offset.Zero
-
-            override suspend fun onPreFling(available: Velocity) = Velocity.Zero
-            override suspend fun onPostFling(consumed: Velocity, available: Velocity) =
-                Velocity.Zero
-        }
-    }
     if (pagedUiItem != null) {
+
         LazyColumn(
             state = scrollState,
             modifier = modifier
                 .fillMaxSize()
-                .nestedScroll(noOpConnection)
                 .clipToBounds(),
             contentPadding = PaddingValues(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -109,34 +86,13 @@ fun PostListWithAds(
                 when (uiItem) {
                     is PostUiItem -> {
                         if (uiItem.isAd) {
-//                            BannerAd(adUnitId = "ca-app-pub-7395572779611582/6858599226")
-                            var isAdLoaded by remember { mutableStateOf(false) }
-                            val targetHeight = if (isAdLoaded) 400.dp else 2.dp // tiny but non-zero
-                            val targetAlpha = if (isAdLoaded) 1f else 0f
-                            if (BuildConfig.FLAVOR != "admin"){
-                                NativeScreen(
-                                nativeAdUnitID = "ca-app-pub-7395572779611582/2939768964",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(if (isAdLoaded) 400.dp else 0.dp),
-                            ) { loaded ->
-                                isAdLoaded = loaded
-                            }}
-
+                            AdItem()
                         } else {
                             uiItem.post?.let { post ->
-//                                if (index == 0) {
-                                // ✅ Special layout for the first item
                                 FeaturedPost(
                                     post = post,
                                     onClick = { onPostClick(post) }
                                 )
-//                                } else {
-//                                    NormalPost(
-//                                        post = post,
-//                                        onClick = { onPostClick(post) }
-//                                    )
-//                                }
                             }
                         }
                     }
@@ -154,19 +110,21 @@ fun PostListWithAds(
                 }
 
             }
-            // Pagination loading indicator
-            item {
-                if (pagedUiItem.loadState.append.endOfPaginationReached.not() && pagedUiItem.itemCount > 0) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
+        }
+    }
+}
+
+@Composable
+private fun AdItem() {
+    var isAdLoaded by remember { mutableStateOf(false) }
+    if (BuildConfig.FLAVOR != "admin") {
+        NativeScreen(
+            nativeAdUnitID = "ca-app-pub-7395572779611582/2939768964",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(if (isAdLoaded) 400.dp else 0.dp)
+        ) { loaded ->
+            isAdLoaded = loaded
         }
     }
 }
@@ -182,25 +140,30 @@ fun PostList(
     cardStyle: CardStyle = CardStyle.MIXED   // <-- new
 
 ) {
-    val noOpConnection = remember {
-        object : NestedScrollConnection {}
-    }
+
 
     LazyColumn(
         state = scrollState,
         modifier = modifier
             .fillMaxSize()
-            .nestedScroll(noOpConnection)
             .clipToBounds(),
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(count = posts.itemCount, key = { idx -> posts[idx]?.id ?: "" }) { index ->
+        items(
+            count = posts.itemCount,
+            key = { idx -> posts[idx]?.id ?: "" }) { index ->
             val post = posts[index]
             post?.let {
                 when (cardStyle) {               // <-- choose layout
-                    CardStyle.ALL_FEATURED -> FeaturedPost(post, onClick = { onPostClick(post) })
-                    CardStyle.ALL_NORMAL -> NormalPost(post, onClick = { onPostClick(post) })
+                    CardStyle.ALL_FEATURED -> FeaturedPost(
+                        post,
+                        onClick = { onPostClick(post) })
+
+                    CardStyle.ALL_NORMAL -> NormalPost(
+                        post,
+                        onClick = { onPostClick(post) })
+
                     CardStyle.MIXED -> if (index == 0) FeaturedPost(
                         post,
                         onClick = { onPostClick(post) })
@@ -231,30 +194,10 @@ fun PostListStatic(
     modifier: Modifier = Modifier,
     scrollState: LazyListState
 ) {
-    val noOpConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(
-                available: Offset,
-                source: NestedScrollSource
-            ) = Offset.Zero
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ) = Offset.Zero
-
-            override suspend fun onPreFling(available: Velocity) = Velocity.Zero
-            override suspend fun onPostFling(consumed: Velocity, available: Velocity) =
-                Velocity.Zero
-        }
-    }
-
     LazyColumn(
         state = scrollState,
         modifier = modifier
             .fillMaxSize()
-            .nestedScroll(noOpConnection)
             .clipToBounds(),
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)

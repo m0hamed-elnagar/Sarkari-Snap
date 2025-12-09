@@ -20,10 +20,9 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.TabRowDefaults.PrimaryIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -86,15 +85,15 @@ fun BottomTabRow(
             .background(barBackground)
             .navigationBarsPadding(), contentAlignment = Alignment.TopCenter
     ) {
-        TabRow(
+        PrimaryTabRow (
             selectedTabIndex = pagerState.currentPage,
             containerColor = barBackground,
-            indicator = { positions ->
-                val idx = pagerState.currentPage
-                TabRowDefaults.PrimaryIndicator(
-                    Modifier.tabIndicatorOffset(positions[idx]),
+            indicator = {
+                PrimaryIndicator(
+                    Modifier.tabIndicatorOffset(
+                                pagerState.currentPage),
                     height = 3.dp,
-                    color = selectedColor
+                    color = selectedColor,
                 )
             }) {
             tabs.forEachIndexed { index, tab ->

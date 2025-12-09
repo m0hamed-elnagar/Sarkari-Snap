@@ -80,16 +80,6 @@ class HomeViewModel(
         SharingStarted.WhileSubscribed(5_000L),
         PagingData.empty()
     )
-
-    val quickPosts: Flow<PagingData<Post>> = lang.flatMapLatest { language ->
-        Log.d("HomeViewModel", "Creating trending posts flow with language: $language")
-        repo.getPagedPosts("Quiks")
-            .cachedIn(viewModelScope)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000L),
-        PagingData.empty()
-    )
     val pagedUiModels: Flow<PagingData<PostUiItem>> = pagedPosts.map { pagingData ->
         var adCounter = AtomicInteger(1)          // 1-based position in the list
         pagingData
@@ -121,7 +111,6 @@ class HomeViewModel(
     )
 
     private var observeFavoritesJob: Job? = null
-    private var observeLabelsJob: Job? = null
 
     fun onAction(action: HomeActions) {
         when (action) {

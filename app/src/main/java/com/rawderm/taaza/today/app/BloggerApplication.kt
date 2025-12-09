@@ -32,8 +32,6 @@ class BloggerApplication : Application() {
         private val _isWorking = MutableStateFlow(true)   // always true until we know better
         val isWorking: StateFlow<Boolean> get() = _isWorking.asStateFlow()
 
-        private val _mustUpdateVersion = MutableStateFlow(0)   // NEW
-        val mustUpdateVersion: StateFlow<Int> get() = _mustUpdateVersion.asStateFlow()
     }
 
     override fun onCreate() {
@@ -97,7 +95,6 @@ class BloggerApplication : Application() {
         config.setDefaultsAsync(
             mapOf(
                 "isWorking" to true,
-                "must_update_version" to 0   // NEW
             )
         )
 
@@ -107,7 +104,7 @@ class BloggerApplication : Application() {
         // 2. listen for *server* updates (no extra fetch calls)
         config.addOnConfigUpdateListener(object : ConfigUpdateListener {
             override fun onUpdate(update: ConfigUpdate) {
-                if ("isWorking" in update.updatedKeys || "must_update_version" in update.updatedKeys) {
+                if ("isWorking" in update.updatedKeys ) {
                     config.activate().addOnCompleteListener { publish() }
                 }
             }
@@ -126,8 +123,5 @@ class BloggerApplication : Application() {
         _isWorking.value = v
         Log.d("RC", "activated isWorking=$v")
 
-        val muv = Firebase.remoteConfig.getLong("must_update_version").toInt() // NEW
-        _mustUpdateVersion.value = muv
-        Log.d("RC", "activated must_update_version=$muv")
     }
 }

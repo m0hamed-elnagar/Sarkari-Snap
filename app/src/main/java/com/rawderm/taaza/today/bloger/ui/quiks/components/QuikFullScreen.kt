@@ -175,6 +175,9 @@ fun QuikFullScreen(
                             color = Color.Black,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
+                        Text(post.date, fontSize = 14.sp, color = Color.Gray,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).align(androidx.compose.ui.Alignment.End))
+
                         AndroidView(
                             factory = { ctx ->
                                 TextView(ctx).apply {
@@ -197,7 +200,6 @@ fun QuikFullScreen(
 
                         )
                     }
-                    Spacer(Modifier.size(16.dp))
                 }
             }
         }

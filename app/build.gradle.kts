@@ -49,8 +49,8 @@ android {
         applicationId = "com.rawderm.taaza.today"
         minSdk = 26
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.6"
+        versionCode = 12
+        versionName = "1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val localProps = Properties().apply {
@@ -65,7 +65,6 @@ android {
         compose = true
     }
     buildTypes {
-
         release {
             isCrunchPngs = false
             isMinifyEnabled = false
@@ -77,8 +76,12 @@ android {
         debug {
             isCrunchPngs = false
 
-            // custom debug options if needed
         }
+        create("minified"){
+            isCrunchPngs = true
+            isMinifyEnabled = true
+        }
+
     }
     flavorDimensions += "role"
 
@@ -95,14 +98,16 @@ android {
         }
         create("quiks") {
             applicationId ="com.rawderm.quiks"
-            versionCode = 1
+            versionCode = 3
             versionName = "1.0"
             dimension= "role"
             signingConfig = signingConfigs.getByName("release")
             resValue("string", "app_name", "Quiks")
+            matchingFallbacks += listOf("minified")
+
         }
 
-}
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -112,7 +117,9 @@ android {
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
                 val version = versionName
-                output.outputFileName = "Taaza-Today-v${version}.apk"
+                val flavor = flavorName
+
+                output.outputFileName = "$flavor-v${version}.apk"
             }
     }
 
@@ -239,6 +246,8 @@ dependencies {
     implementation("com.google.ads.mediation:inmobi:10.8.8.1")
     implementation("com.google.ads.mediation:facebook:6.21.0.0")
     implementation("com.google.ads.mediation:ironsource:9.0.0.1")
+    implementation("com.facebook.infer.annotation:infer-annotation:0.18.0")
+
     //google play update check
     implementation(libs.app.update.ktx)
     implementation("com.google.android.play:app-update:2.1.0")

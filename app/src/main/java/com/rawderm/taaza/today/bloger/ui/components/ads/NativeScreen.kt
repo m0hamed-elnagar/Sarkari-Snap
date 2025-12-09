@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.ads.nativead.NativeAd
+import com.rawderm.taaza.today.BuildConfig
 
 @Composable
 fun NativeScreen(
@@ -42,7 +43,9 @@ fun NativeScreen(
 
         loadNativeAd(
             context = context,
-            nativeAdUnitID = nativeAdUnitID,
+            nativeAdUnitID =
+                if(BuildConfig.DEBUG) testNativeAdUnitID else
+                    nativeAdUnitID,
             onAdLoaded = { ad ->
                 // Handle the native ad being loaded.
                 if (!isDisposed) {

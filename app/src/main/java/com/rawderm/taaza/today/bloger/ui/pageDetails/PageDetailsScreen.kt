@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +50,6 @@ import com.rawderm.taaza.today.BuildConfig
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.ui.articleDetails.componentes.PermanentHtmlContent2
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
-import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import com.rawderm.taaza.today.core.utils.openUrlInCustomTab
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -100,7 +100,7 @@ fun PageDetailsScreen(
                 },
 
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = SandYellow,
+                    containerColor = colorResource(id = R.color.splash_background),
                 )
             )
         },

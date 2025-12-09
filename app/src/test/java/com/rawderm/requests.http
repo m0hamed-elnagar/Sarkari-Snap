@@ -120,3 +120,7 @@ GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
 
 # GET https://www.googleapis.com/blogger/v3/blogs/3213900/posts/POST_ID?key=YOUR_API_KEY
 # Accept: application/json
+###rerieve all the labels
+GET https://www.googleapis.com/blogger/v3/blogs/2640395952322331775/posts
+    ?key=AIzaSyDC4e2G_xH_ho3oxKf9Rm-plxJU8GyBfQY
+    &fields=nextPageToken,items(labels)

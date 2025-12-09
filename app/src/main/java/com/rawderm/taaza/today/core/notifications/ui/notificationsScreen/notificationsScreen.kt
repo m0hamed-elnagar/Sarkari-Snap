@@ -126,55 +126,6 @@ fun TaazaOnboardingDialog(
                 )
                 Spacer(Modifier.height(10.dp))
 
-                /* -------- quick-select chips -------- */
-//
-//                FlowRow(
-//                    horizontalArrangement = Arrangement.Center,
-//                    modifier = Modifier
-//                        .wrapContentSize(Alignment.Center)
-//                        .padding(vertical = 8.dp)
-//                ) {
-//                    SelectionMode.entries.forEach {
-//                        CategoryToggle(
-//                            modifier = Modifier
-//                                .wrapContentWidth()
-//                                .padding(horizontal = 8.dp, vertical = 4.dp),
-//                            category = it.name,
-//                            isSelected = state.selectionMode == it,
-//                            fontSize = 16,
-//                            onToggle = {
-//                                viewModel.onAction(NotificationsActions.OnModeClick(it))
-//                            }
-//                        )
-//                    }
-//                }
-
-//                Divider(Modifier.padding(vertical = 8.dp))
-//                Box(                    modifier = Modifier.fillMaxWidth()
-//                ){
-//
-//                    Row(
-//                        modifier = Modifier
-//                            .align(Alignment.TopEnd)
-//                            .clickable {
-////                                viewModel.onAction(NotificationsActions.OnSelectAllToggle)
-//                            },
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Checkbox(
-//                            checked = state.categories.all { it.id in state.selectedCategories },
-//                            onCheckedChange = {
-////                                viewModel.onAction(NotificationsActions.OnSelectAllToggle)
-//                            }
-//                        )
-//                        Text(
-//                            text = "All",
-//                            fontSize = 14.sp,
-//                            color = Color.Black,
-//                            modifier = Modifier.padding(start = 4.dp)
-//                        )
-//                    }
-
                     /* -------- per-topic grid -------- */
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -196,18 +147,6 @@ fun TaazaOnboardingDialog(
                 }
                 Spacer(Modifier.height(20.dp))
 
-                /* -------- global frequency (same as before) -------- */
-
-//                val selected = state.categories.filter { it.id in state.selectedCategories }
-//                selected.forEach {
-//                    TopicLevelItem(
-//                        topic = it,
-//                        onClick = {
-//                            viewModel.onAction(it)
-//                        }
-//                    )
-//                }
-//                Spacer(Modifier.weight(1f))
 
             }
         }

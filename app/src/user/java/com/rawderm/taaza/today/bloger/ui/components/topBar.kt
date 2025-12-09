@@ -36,13 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rawderm.taaza.today.R
 import com.rawderm.taaza.today.bloger.data.LanguageManager
 import com.rawderm.taaza.today.bloger.ui.home.HomeActions
-import com.rawderm.taaza.today.core.notifications.data.showTestNotification
 import com.rawderm.taaza.today.core.notifications.ui.notificationsScreen.TaazaOnboardingDialog
 import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.MainScope
@@ -56,7 +54,6 @@ fun TopBar(
 ) {
 
     val activity = LocalActivity.current
-    val context = LocalContext.current
     val locale = remember { Lingver.getInstance().getLocale().language }
     var showTopicsDialog by remember { mutableStateOf(false) }
 
