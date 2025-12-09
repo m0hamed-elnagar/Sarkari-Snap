@@ -16,7 +16,6 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
-import androidx.compose.ui.res.colorResource
 
 @Composable
 fun StableHtmlContentStatic(
@@ -39,7 +38,7 @@ fun StableHtmlContentStatic(
         factory = {
             android.widget.TextView(context).apply {
                 setText(spanned)
-                setTextColor(colorResource(android.R.color.black))
+                setTextColor(context.getColor(android.R.color.black))
                 textSize = 17f
 
                 setPadding(0, 0, 0, 0)

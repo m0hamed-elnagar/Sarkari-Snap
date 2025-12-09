@@ -20,9 +20,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Tab
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -168,9 +168,9 @@ fun FavoriteTabContent(
 
 @Composable
 fun FavoriteVideosScreen(
+    modifier: Modifier = Modifier,
     shorts: List<Short>,
-    onVideoClick: (date: String) -> Unit = {},
-    modifier: Modifier = Modifier
+    onVideoClick: (date: String) -> Unit = {}
 ) {
     if (shorts.isEmpty()) {
         // Show empty state when no favorite videos
