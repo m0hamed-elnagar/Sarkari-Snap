@@ -1,5 +1,8 @@
 package com.rawderm.taaza.today.bloger.domain
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Post(
     val id: String,
     val title: String,

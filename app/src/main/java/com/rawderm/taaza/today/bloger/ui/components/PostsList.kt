@@ -2,6 +2,7 @@ package com.rawderm.taaza.today.bloger.ui.components
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,7 +56,6 @@ import com.rawderm.taaza.today.bloger.ui.articleDetails.AdminNotificationFeature
 import com.rawderm.taaza.today.bloger.ui.components.ads.NativeScreen
 import com.rawderm.taaza.today.bloger.ui.home.PostUiItem
 import com.yariksoffice.lingver.Lingver
-import androidx.compose.ui.res.stringResource
 
 @Composable
 fun PostListWithAds(
@@ -75,11 +76,7 @@ fun PostListWithAds(
         ) {
             items(
                 count = pagedUiItem.itemCount,
-                key = { idx ->
-                    when (val item = pagedUiItem[idx]) {
-                        is PostUiItem -> if (item.isAd) "ad_$idx" else item.post?.id ?: "null_$idx"
-                        else -> "unknown_$idx"
-                    }
+                key = { index -> getKeyForItem(pagedUiItem, index)
                 }
             ) { index ->
                 val uiItem = pagedUiItem[index]
@@ -114,21 +111,31 @@ fun PostListWithAds(
         }
     }
 }
-
-@Composable
-private fun AdItem() {
-    var isAdLoaded by remember { mutableStateOf(false) }
-    if (BuildConfig.FLAVOR != "admin") {
-        NativeScreen(
-            nativeAdUnitID = "ca-app-pub-7395572779611582/2939768964",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(if (isAdLoaded) 400.dp else 0.dp)
-        ) { loaded ->
-            isAdLoaded = loaded
-        }
+private fun getKeyForItem(pagedUiItem: LazyPagingItems<PostUiItem>, index: Int): Any {
+    return when (val item = pagedUiItem[index]) {
+        is PostUiItem -> if (item.isAd) "ad_$index" else item.post?.id ?: "null_$index"
+        else -> "unknown_$index"
     }
 }
+@Composable
+private fun AdItem() {
+
+    var isAdLoaded by remember { mutableStateOf(false) }
+    val onAdLoaded: (Boolean) -> Unit = { loaded ->
+        isAdLoaded = loaded
+    }
+    val adHeight by animateDpAsState(if (isAdLoaded) 400.dp else 0.dp)
+
+
+    if (BuildConfig.FLAVOR != "admin") {
+    NativeScreen(
+        nativeAdUnitID = "ca-app-pub-7395572779611582/2939768964",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(adHeight),
+        onAdResult = onAdLoaded
+    )
+}}
 
 enum class CardStyle { MIXED, ALL_FEATURED, ALL_NORMAL }
 
@@ -213,19 +220,6 @@ fun PostListStatic(
     }
 }
 
-@Composable
-fun AdItemComposable(modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
-    ) {
-
-        BannerAd(
-            modifier = Modifier.fillMaxWidth(),
-//                nativeAdUnitID = "ca-app-pub-7395572779611582/5930969860"
-        )
-    }
-}
 
 @SuppressLint("LogNotTimber")
 @Composable

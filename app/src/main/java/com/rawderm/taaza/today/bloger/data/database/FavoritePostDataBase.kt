@@ -6,7 +6,9 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [PostEntity::class, ShortEntity::class], version = 3)
+@Database(entities = [PostEntity::class, ShortEntity::class], version = 3,
+    exportSchema = false   // Disable schema export
+)
 @TypeConverters(StringListConverter::class)
 abstract class FavoritePostDataBase : RoomDatabase() {
     abstract val favoritePostDao: FavoritePostDao

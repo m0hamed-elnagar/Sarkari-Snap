@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.gms.google.services)
     id("com.google.firebase.crashlytics")
+    id("androidx.baselineprofile") version "1.4.1"
+
 
 }
 
@@ -51,7 +53,6 @@ android {
         targetSdk = 36
         versionCode = 12
         versionName = "1.7"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val localProps = Properties().apply {
             load(FileInputStream(rootProject.file("local.properties")))
@@ -80,6 +81,7 @@ android {
         create("minified"){
             isCrunchPngs = true
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("debug")
         }
 
     }
@@ -253,6 +255,7 @@ dependencies {
     implementation("com.google.android.play:app-update:2.1.0")
 // google auth
     implementation("com.google.auth:google-auth-library-oauth2-http:1.23.0")
-
+        //profile baseline
+    implementation(libs.androidx.profileinstaller)
 
 }
