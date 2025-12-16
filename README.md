@@ -114,8 +114,9 @@ fun NotificationInputDialog(
 ---
 
 ## 5. App Screenshots
-| Home Feed | Shorts/Quiks | Favorites | | Article Detail |
-|---|---|---|  
+
+| Home Feed | Shorts/Quiks | Favorites | Article Detail |
+|-----------|--------------|-----------|----------------|
 | ![Home Screen](assets/home.jpg) | ![Shorts Screen](assets/shorts.jpg) | ![Favorites Screen](assets/favorites.jpg) | ![Article Detail](assets/article_detail.jpg) |
 
 | More Options                 | Admin Dashboard                      | Quiks screen                      |
@@ -197,7 +198,7 @@ This project is proprietary software. All rights reserved.
 ## 10. Contact
 
 **Developer**: Mohamed Elnagar  
-**Email**: mohamed.3lnagar@gmail.com
+**Email**: mohamed.3lnagar@gmail.com 
 
 ---
 
