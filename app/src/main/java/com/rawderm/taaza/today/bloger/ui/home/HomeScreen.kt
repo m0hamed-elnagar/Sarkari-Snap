@@ -183,7 +183,8 @@ fun HomeScreen(
             AnimatedVisibility(visible = pagerState.currentPage != BottomTab.SHORTS.ordinal) {
                 TopBar(languageManager, onAction)
             }
-        }, bottomBar = {
+        },
+        bottomBar = {
             BottomTabRow(
                 modifier = Modifier
                     .background(Black)

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    // Extract post ID from URL, e.g., /post/123
+    const path = window.location.pathname; 
+    const postId = path.split('/post/')[1] || '';
+
+    // Redirect to the app via custom scheme
+    window.location.href = `taaza://post/${postId}`;
+
+    // Fallback to website if app not installed
+    setTimeout(() => {
+      window.location.href = 'https://taaza-today.com';
+    }, 2000);
+  </script>
+</head>
+<body>
+  <p>Redirecting to the app...</p>
+</body>
+</html>

@@ -1,0 +1,15 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.rawderm.taaza.today",
+      "sha256_cert_fingerprints": [
+       "4E:28:DE:27:7A:71:1F:F3:60:F9:A3:A1:0B:53:A3:A9:50:70:93:9F:C8:80:77:83:18:76:93:4C:2A:F1:6F:F0",
+        "D1:6D:8D:EA:0C:98:7E:6B:A7:5D:BD:04:1D:BD:34:5F:06:00:F5:2E:B2:17:54:62:56:E6:64:D2:8B:B9:37:8E",
+        "79:6E:57:4C:55:14:6A:8F:28:07:69:39:60:A6:42:1B:9F:5B:6A:DE:5B:00:AF:0E:CE:E8:3A:3D:4C:DD:AD:47"
+      ]   
+    }
+  }
+]
+

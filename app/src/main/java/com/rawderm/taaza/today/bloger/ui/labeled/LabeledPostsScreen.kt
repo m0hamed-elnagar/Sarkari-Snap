@@ -26,13 +26,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.rawderm.taaza.today.bloger.domain.Post
 import com.rawderm.taaza.today.bloger.ui.components.PostList
 import com.rawderm.taaza.today.core.ui.theme.SandYellow
 import org.koin.compose.viewmodel.koinViewModel
-
+@Preview
+@Composable
+fun LabeledScreenPreview() {
+    LabeledScreenRoot(onBackClick = {}, onPostClick = {})
+}
 @Composable
 fun LabeledScreenRoot(
     viewModel: LabeledPostsViewModel = koinViewModel(),

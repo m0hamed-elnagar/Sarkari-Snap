@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Taaza Today - Redirecting...</title>
+    
+    <!-- Your App Icon in browser tab -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 50px;
+            text-align: center;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .app-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .loading {
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-icon">📰</div>
+        <h1>Taaza Today</h1>
+        <p>Latest News & Short Videos</p>
+        <div class="loading">Opening Play Store...</div>
+    </div>
+
+    <script>
+        // Direct redirect to Play Store
+        const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.rawderm.taaza.today';
+        
+        // For Android: Briefly try to open app, then redirect to Play Store
+        if (/android/i.test(navigator.userAgent)) {
+            // Quick attempt to open app
+            window.location.href = 'intent://taaza.page.link/#Intent;scheme=https;package=com.rawderm.taaza.today;end';
+            
+            // Fallback to Play Store
+            setTimeout(() => {
+                window.location.href = PLAY_STORE_URL;
+            }, 500);
+        } else {
+            // Direct to Play Store for non-Android
+            window.location.href = PLAY_STORE_URL;
+        }
+    </script>
+</body>
+</html>
